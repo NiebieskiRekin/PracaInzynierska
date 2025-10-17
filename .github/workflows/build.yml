@@ -41,3 +41,8 @@ jobs:
           name: PDF
           path: out/main.pdf
 
+      - name: Release
+        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # 2.4.1
+        if: github.ref_type == 'tag'
+        with:
+          files: out/main.pdf
