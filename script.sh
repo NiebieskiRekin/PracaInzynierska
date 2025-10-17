@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-output="dist"
+output="main"
 filename="main"
 mkdir -p out
 pdflatex -output-directory=out -jobname $output $filename
