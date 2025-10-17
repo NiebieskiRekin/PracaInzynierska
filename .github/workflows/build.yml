@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: xu-cheng/latex-action@25080975331dc4fc8e6f1af55788e00f84f51fff # v4.0.0
+        with:
+          root_file: main.tex
+          docker_image: ghcr.io/xu-cheng/texlive-alpine:20251002@sha256:556e2e2caa7d489ce155de0eb3f43e324e6502ed4e9871aa400662b156cf00ad
+          # extra_fonts: |
+          # ./path/to/custom.ttf
+          # ./fonts/*.otf
+          # extra_system_packages: "inkscape ghostscript"
+          # pre_compile:
+          # post_compile:
+      - name: Upload PDF file
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: PDF
+          path: main.pdf
+
