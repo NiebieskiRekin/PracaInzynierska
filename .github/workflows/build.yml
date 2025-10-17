@@ -2,7 +2,6 @@ name: Build
 
 on:
   workflow_dispatch:
-  pull_request:
   push:
 
 jobs:
@@ -10,9 +9,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      
+      - name: Cache LaTeX dependencies
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: /usr/local/share/texmf
+          key: ${{ runner.os }}-texmf-${{ hashFiles('**/*.tex') }}
+
+      - name: Cache auxiliary files
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ./out
+          key: ${{ runner.os }}-auxfiles-${{ hashFiles('**/*.tex') }}
+          restore-keys: |
+            ${{ runner.os }}-auxfiles-
+
       - uses: xu-cheng/latex-action@25080975331dc4fc8e6f1af55788e00f84f51fff # v4.0.0
         with:
           root_file: main.tex
+          args: "-output-directory=./out"
           docker_image: ghcr.io/xu-cheng/texlive-alpine:20251002@sha256:556e2e2caa7d489ce155de0eb3f43e324e6502ed4e9871aa400662b156cf00ad
           # extra_fonts: |
           # ./path/to/custom.ttf
@@ -24,5 +39,5 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: PDF
-          path: main.pdf
+          path: out/main.pdf
 
