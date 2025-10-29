@@ -1,36 +1,37 @@
-
 \chapter{Wstęp}
 
-Wstęp do pracy powinien zawierać następujące elementy:
-\begin{itemize}
-    \item krótkie uzasadnienie podjęcia tematu; 
-    \item cel pracy (patrz niżej); 
-    \item zakres (przedmiotowy, podmiotowy, czasowy) wyjaśniający, w jakim rozmiarze praca będzie realizowana; 
-    \item ewentualne hipotezy, które autor zamierza sprawdzić lub udowodnić; 
-    \item krótką charakterystykę źródeł, zwłaszcza literaturowych; 
-    \item układ pracy (patrz niżej), czyli zwięzłą charakterystykę zawartości poszczególnych rozdziałów; 
-    \item ewentualne uwagi dotyczące realizacji tematu pracy np.~trudności, które pojawiły się w trakcie 
-    realizacji poszczególnych zadań, uwagi dotyczące wykorzystywanego sprzętu, współpraca z firmami zewnętrznymi. 
-\end{itemize}
+Postęp technologiczny w zakresie sztucznej inteligencji oraz przetwarzania języka naturalnego (ang. \textit{Natural Language Processing}, NLP) sprawia, że interakcja człowieka z komputerem staje się coraz bardziej intuicyjna. Jak zauważył Alan Turing już w 1950 roku\footnote{A.~M. Turing. \textit{Computing Machinery and Intelligence}. \textit{Mind}, Vol.~59, No.~236, pp.~433--460, 1950.}: „Maszyna może być uznana za inteligentną, jeśli jej odpowiedzi są nieodróżnialne od odpowiedzi człowieka”. Dziś wizja ta znajduje odzwierciedlenie w systemach zdolnych do interpretacji ludzkich wypowiedzi i podejmowania działań w oparciu o ich znaczenie.
 
-\noindent
-\textbf{Wstęp do pracy musi się kończyć dwoma następującymi akapitami:}
-\begin{quote}
-Celem pracy jest opracowanie / wykonanie analizy / zaprojektowanie / ...........
-\end{quote}
-oraz:
-\begin{quote}
-Struktura pracy jest następująca. W rozdziale 2 przedstawiono przegląd literatury na temat ........ 
-Rozdział 3 jest poświęcony ....... (kilka zdań). 
-Rozdział 4 zawiera ..... (kilka zdań) ............ itd. 
-Rozdział X stanowi podsumowanie pracy. 
-\end{quote}
+Inspiracją do podjęcia niniejszego tematu była obserwacja potrzeb środowiska hodowców koni – grupy zawodowej, która mimo dużego doświadczenia praktycznego często cechuje się niskim stopniem zinformatyzowania. Pomysł stworzenia aplikacji zrodził się z rozmowy z jednym z hodowców, wujkiem jednego z członków zespołu, który zwrócił uwagę na brak narzędzi umożliwiających wygodne zarządzanie stadniną. Zidentyfikowany problem oraz szybki rozwój technologii NLP doprowadziły do koncepcji stworzenia aplikacji sterowanej językiem naturalnym.
 
-W przypadku prac inżynierskich zespołowych lub magisterskich 2-osobowych, po tych dwóch w/w akapitach 
-musi w pracy znaleźć się akapit, w którym będzie opisany udział w pracy poszczególnych członków zespołu. Na przykład:
+Celem projektu stało się opracowanie systemu webowego umożliwiającego zarządzanie stadniną koni oraz obsługę aplikacji poprzez komendy w języku naturalnym. Tego rodzaju rozwiązanie może istotnie obniżyć próg wejścia dla użytkowników nieposiadających kompetencji technicznych, a jednocześnie stanowić przykład praktycznego wykorzystania nowoczesnych modeli językowych w rzeczywistym środowisku.
+
+Zakres pracy obejmuje analizę problemu, zaprojektowanie i implementację aplikacji webowej \textit{Moje Konie}, stworzenie klasyfikatora intencji użytkownika, a także opracowanie metody automatycznego generowania zapytań REST na podstawie wypowiedzi naturalnych. Zakres czasowy pracy obejmował pełny cykl wytwarzania oprogramowania – od analizy wymagań, poprzez implementację i integrację, aż po testy oraz ocenę skuteczności zastosowanych metod.
+
+W pracy przyjęto hipotezę, że możliwe jest skuteczne sterowanie aplikacją webową poprzez wypowiedzi użytkownika w języku naturalnym, przy użyciu współczesnych modeli językowych (LLM), takich jak Gemini~2.5~Pro. Zakłada się również, że odpowiednio zaprojektowany klasyfikator intencji i moduł interpretacji poleceń umożliwią poprawne odwzorowanie wypowiedzi na konkretne żądania aplikacyjne.
+
+Źródła literaturowe wykorzystane w pracy obejmują zarówno klasyczne opracowania z zakresu przetwarzania języka naturalnego, jak i najnowsze publikacje dotyczące dużych modeli językowych, architektury REST oraz projektowania aplikacji webowych. Ważnym odniesieniem stały się również dokumentacje narzędzi i bibliotek programistycznych wykorzystanych w projekcie, takich jak React, Node.js, PostgreSQL oraz Python.
+
+Podczas realizacji projektu zespół napotkał na wyzwania związane z integracją komponentów aplikacji oraz dostosowaniem modeli NLP do specyficznej dziedziny, jaką jest hodowla koni. Kluczowe było także zapewnienie odpowiedniej komunikacji pomiędzy warstwą frontendową i serwerową, a także stworzenie środowiska umożliwiającego eksperymentalną ocenę skuteczności modeli.
 
 \begin{quote}
-Jan Kowalski w ramach niniejszej pracy wykonał projekt tego i tego, opracował ......
-Grzegorz Brzęczyszczykiewicz wykonał ......, itd. 
+Celem pracy jest opracowanie aplikacji webowej \textit{Moje Konie} wykorzystującej przetwarzanie języka naturalnego do sterowania funkcjami systemu oraz analiza skuteczności zastosowanych metod klasyfikacji intencji i mapowania wypowiedzi użytkownika na żądania REST.
 \end{quote}
-
+\begin{quote}
+Struktura pracy jest następująca:
+\begin{description}
+    \item[Rozdział~2] przedstawia przegląd literatury dotyczącej przetwarzania języka naturalnego oraz dużych modeli językowych.
+    \item[Rozdział~3] opisuje projekt i implementację serwerowej części aplikacji do zarządzania stadniną koni.
+    \item[Rozdział~4] zawiera opracowanie i ocenę eksperymentalną klasyfikatora intencji użytkownika.
+    \item[Rozdział~5] opisuje metodę wypełniania żądań REST na podstawie wypowiedzi użytkownika przy użyciu modelu językowego LLM.
+    \item[Rozdział~6] prezentuje integrację opracowanych modułów w aplikacji \textit{Moje Konie}.
+    \item[Rozdział~7] zawiera podsumowanie oraz wnioski z przeprowadzonej pracy.
+\end{description}
+\end{quote}
+\begin{quote}
+Tomasz Pawłowski opracował architekturę systemu oraz był odpowiedzialny za implementację części serwerowej aplikacji. Jakub Buler pełnił funkcję głównego programisty, odpowiadając za implementację i integrację aplikacji webowej. Adam Detmer, jako kierownik projektu, zajmował się analizą biznesową, zarządzaniem zadaniami zespołu oraz opracowaniem klasyfikatora intencji użytkownika. Jakub Kamieniarz odpowiadał za przygotowanie modułu generowania żądań REST z wykorzystaniem modelu językowego Gemini~2.5~Pro.
+\end{quote}
+\bibliographystyle{plain}
+\begin{thebibliography}{1}
+\bibitem{turing1950} A.~M. Turing. \textit{Computing Machinery and Intelligence}. \textit{Mind}, Vol.~59, No.~236, pp.~433--460, 1950.
+\end{thebibliography}
