@@ -14,24 +14,84 @@ W pracy przyjęto hipotezę, że możliwe jest skuteczne sterowanie aplikacją w
 
 Podczas realizacji projektu zespół napotkał na wyzwania związane z integracją komponentów aplikacji oraz dostosowaniem modeli NLP do specyficznej dziedziny, jaką jest hodowla koni. Kluczowe było także zapewnienie odpowiedniej komunikacji pomiędzy warstwą frontendową i serwerową, a także stworzenie środowiska umożliwiającego eksperymentalną ocenę skuteczności modeli.
 
-\begin{quote}
 Celem pracy jest opracowanie aplikacji webowej \textit{Moje Konie} wykorzystującej przetwarzanie języka naturalnego do sterowania funkcjami systemu oraz analiza skuteczności zastosowanych metod klasyfikacji intencji i mapowania wypowiedzi użytkownika na żądania REST.
-\end{quote}
-\begin{quote}
-Struktura pracy jest następująca:
-\begin{description}
-    \item[Rozdział~2] przedstawia przegląd literatury dotyczącej przetwarzania języka naturalnego oraz dużych modeli językowych.
-    \item[Rozdział~3] opisuje projekt i implementację serwerowej części aplikacji do zarządzania stadniną koni.
-    \item[Rozdział~4] zawiera opracowanie i ocenę eksperymentalną klasyfikatora intencji użytkownika.
-    \item[Rozdział~5] opisuje metodę wypełniania żądań REST na podstawie wypowiedzi użytkownika przy użyciu modelu językowego LLM.
-    \item[Rozdział~6] prezentuje integrację opracowanych modułów w aplikacji \textit{Moje Konie}.
-    \item[Rozdział~7] zawiera podsumowanie oraz wnioski z przeprowadzonej pracy.
-\end{description}
-\end{quote}
-\begin{quote}
-Tomasz Pawłowski opracował architekturę systemu oraz był odpowiedzialny za implementację części serwerowej aplikacji. Jakub Buler pełnił funkcję głównego programisty, odpowiadając za implementację i integrację aplikacji webowej. Adam Detmer, jako kierownik projektu, zajmował się analizą biznesową, zarządzaniem zadaniami zespołu oraz opracowaniem klasyfikatora intencji użytkownika. Jakub Kamieniarz odpowiadał za przygotowanie modułu generowania żądań REST z wykorzystaniem modelu językowego Gemini~2.5~Pro.
-\end{quote}
-\bibliographystyle{plain}
-\begin{thebibliography}{1}
-\bibitem{turing1950} A.~M. Turing. \textit{Computing Machinery and Intelligence}. \textit{Mind}, Vol.~59, No.~236, pp.~433--460, 1950.
-\end{thebibliography}
+
+	
+
+	Struktura pracy jest następująca:
+	\begin{description}
+		\item[Rozdział~1] przedstawia przegląd literatury dotyczącej przetwarzania języka naturalnego oraz systemów interakcji człowiek–komputer.
+		\item[Rozdział~2] opisuje projekt i implementację serwerowej części aplikacji do zarządzania stadniną koni.
+		\item[Rozdział~3] zawiera opracowanie i ocenę eksperymentalną klasyfikatora intencji użytkownika.
+		\item[Rozdział~4] opisuje metodę wypełniania żądań REST na podstawie wypowiedzi użytkownika przy użyciu modelu językowego LLM.
+		\item[Rozdział~5] prezentuje integrację opracowanych modułów w aplikacji \textit{Moje Konie}.
+		\item[Rozdział~6] zawiera podsumowanie oraz wnioski z przeprowadzonej pracy.
+	\end{description}
+
+	
+
+	Tomasz Pawłowski opracował architekturę systemu oraz był odpowiedzialny za implementację części serwerowej aplikacji. Jakub Buler pełnił funkcję głównego programisty, odpowiadając za implementację i integrację aplikacji webowej. Adam Detmer, jako kierownik projektu, zajmował się analizą biznesową, zarządzaniem zadaniami zespołu oraz opracowaniem klasyfikatora intencji użytkownika. Jakub Kamieniarz odpowiadał za przygotowanie modułu generowania żądań REST z wykorzystaniem modelu językowego Gemini~2.5~Pro.
+
+	
+	\chapter{Przetwarzanie Języka Naturalnego (NLP) i Klasyfikacja Intencji}
+	
+	\section{Wprowadzenie do NLP}
+	
+	Przetwarzanie języka naturalnego (ang. \textit{Natural Language Processing}, NLP) jest dziedziną sztucznej inteligencji, której celem jest umożliwienie komputerom zrozumienia, analizy i generowania ludzkiego języka w sposób, który jest zarówno wartościowy, jak i funkcjonalny. NLP obejmuje szereg technik i metod, które pozwalają na wydobywanie znaczenia z tekstu w języku naturalnym, co jest kluczowe w systemach takich jak chatboty, wyszukiwarki internetowe czy asystenci głosowi.
+	
+	Z punktu widzenia technologii, NLP jest ściśle powiązane z takimi dziedzinami jak lingwistyka komputerowa, uczenie maszynowe, analiza tekstu i statystyka. W ciągu ostatnich kilku lat, dzięki postępom w głębokich sieciach neuronowych i modelach językowych, NLP osiągnęło ogromny postęp, umożliwiając bardziej precyzyjne rozumienie i generowanie tekstu.
+	
+	\section{Modele Word Embeddings}
+	
+	Jednym z najważniejszych osiągnięć w dziedzinie NLP jest koncepcja \textit{word embeddings} (ang. osadzenia słów), które stanowią matematyczne reprezentacje słów w przestrzeni wektorowej. Celem word embeddings jest odwzorowanie słów w przestrzeni, w której słowa o podobnym znaczeniu mają podobne reprezentacje numeryczne, czyli znajdują się blisko siebie w tej przestrzeni.
+	
+	Do najbardziej popularnych algorytmów tworzenia embeddings należą modele takie jak \textit{Word2Vec}, \textit{GloVe} oraz nowsze podejścia oparte na transformatorach, takie jak \textit{BERT} czy \textit{GPT}. W tych modelach każde słowo w tekście jest reprezentowane przez wektor liczb, który odzwierciedla jego semantykę oraz kontekst użycia. Modele te bazują na analizie kontekstów słów w dużych korpusach tekstów, co pozwala na wyłapywanie zależności pomiędzy słowami.
+	
+	Jednym z popularniejszych algorytmów używanych do osadzania słów w przestrzeni wektorowej jest model \textit{Sentence-BERT} (SBERT), który rozbudowuje BERT o możliwość generowania wektorów dla całych zdań, a nie tylko pojedynczych słów. Dzięki temu SBERT jest szeroko stosowany w zadaniach takich jak klasyfikacja tekstu, wyszukiwanie informacji czy dopasowanie zapytań do odpowiedzi.
+	
+	\section{Dopasowanie Kosinusowe}
+	
+	Po utworzeniu embeddings, kolejnym krokiem w NLP jest ocena podobieństwa między różnymi wektorami. Najczęściej używaną miarą w tym przypadku jest \textit{cosine similarity}, czyli podobieństwo kosinusowe. Kosinusowe podobieństwo mierzy kąt między dwoma wektorami, traktując je jako wektory w przestrzeni wektorowej. Miara ta jest szczególnie użyteczna, ponieważ daje wynik w zakresie od -1 do 1, gdzie wartość 1 oznacza, że wektory są identyczne, wartość -1 oznacza, że są diametralnie różne, a wartość 0 oznacza brak jakiejkolwiek zależności.
+	
+	W kontekście klasyfikacji intencji, dopasowanie kosinusowe pozwala na ocenę, jak blisko w przestrzeni wektorowej znajdują się zapytania użytkowników względem dostępnych przykładów. Dzięki temu możliwe jest przypisanie odpowiednich endpointów API do zapytań użytkowników w systemach sterowanych językiem naturalnym.
+	
+	\section{Opisy Klasyfikatorów Intencji}
+	
+	Klasyfikatory intencji to systemy, które mają na celu przypisanie zapytania użytkownika do odpowiedniej intencji. W kontekście NLP klasyfikatory intencji najczęściej wykorzystują embeddings słów oraz różne techniki dopasowania, takie jak podobieństwo kosinusowe, do porównania zapytań z wcześniej zdefiniowanymi przykładami. Celem tych systemów jest przypisanie odpowiedniego kontekstu do zapytania, co pozwala na efektywne sterowanie aplikacjami lub systemami, jak np. asystenci głosowi, chatboty czy systemy rekomendacji.
+	
+	\textit{Intencje użytkowników} są zazwyczaj definiowane poprzez zestaw fraz, które mogą być używane przez użytkownika do wyrażenia swojej woli. Każda fraza przypisana jest do określonej intencji, a klasyfikator intencji jest odpowiedzialny za przypisanie zapytania użytkownika do jednej z tych intencji.
+	
+	Klasyfikacja intencji jest często realizowana przez modele oparte na głębokich sieciach neuronowych, które są trenowane na dużych zbiorach danych. Modele te uczą się rozpoznawania wzorców w tekstach, dzięki czemu mogą efektywnie klasyfikować zapytania do odpowiednich kategorii. Wykorzystanie technik takich jak word embeddings oraz dopasowanie kosinusowe pozwala na efektywne porównanie zapytań użytkowników z wcześniej zdefiniowanymi intencjami, co pozwala na przypisanie odpowiednich akcji lub odpowiedzi w systemach bazujących na NLP.
+	
+	\section{Transformery i Mechanizm Atencji}
+	
+	Transformery to jedna z najnowszych i najbardziej przełomowych architektur w dziedzinie NLP, wprowadzona przez Vaswaniego i współpracowników w pracy \textit{Attention is All You Need} (2017). Głównym celem tej architektury było poprawienie efektywności modeli językowych poprzez wyeliminowanie rekurencyjnych warstw, które były wykorzystywane w poprzednich modelach, takich jak LSTM i GRU. Transformer jest oparty na mechanizmie \textit{self-attention}, który umożliwia modelowi analizowanie wszystkich słów w zdaniu równocześnie i decydowanie o tym, które słowa są najbardziej istotne w kontekście innych słów.
+	
+	\subsection{Mechanizm Atencji}
+	
+	Mechanizm atencji (ang. \textit{attention mechanism}) jest kluczowym elementem działania transformera i służy do ważenia różnych słów w zdaniu na podstawie ich istotności. Działa to w następujący sposób: dla każdego słowa w zdaniu model przypisuje wagę, która zależy od tego, jak ważne jest to słowo w kontekście innych słów w zdaniu. Dzięki temu, model może uwzględnić nie tylko lokalne zależności między słowami, ale także globalne konteksty, co znacznie poprawia jakość przetwarzania informacji.
+	
+	W mechanizmie atencji transformera każdy token (słowo lub inna jednostka tekstu) jest reprezentowany przez trzy wektory: zapytanie (query), klucz (key) oraz wartość (value). Wartość atencji dla danego słowa jest obliczana jako iloczyn skalarnego zapytania i klucza, a następnie zastosowanie funkcji softmax w celu uzyskania wag, które są następnie używane do ważenia wartości.
+	
+	\subsection{Zalety Transformerów}
+	
+	Największą zaletą transformera w porównaniu do wcześniejszych modeli rekurencyjnych, takich jak LSTM czy GRU, jest jego zdolność do równoczesnego przetwarzania wszystkich słów w zdaniu (równoległość), co znacznie przyspiesza proces trenowania. Ponadto, dzięki mechanizmowi atencji, modele transformera są w stanie uchwycić długoterminowe zależności w tekście, co jest trudne do osiągnięcia w modelach sekwencyjnych.
+	
+	Transformery stały się podstawą dla wielu nowoczesnych modeli językowych, takich jak \textit{BERT}, \textit{GPT-2}, \textit{GPT-3}, które osiągnęły znaczące sukcesy w zadaniach NLP, takich jak klasyfikacja tekstów, tłumaczenie maszynowe, generowanie tekstu, odpowiedzi na pytania czy analiza sentymentu.
+	
+	\section{Podsumowanie}
+	
+	Przetwarzanie języka naturalnego stanowi jeden z fundamentów współczesnych systemów inteligentnych, umożliwiając komputerom interakcję z użytkownikami w sposób zbliżony do ludzkiego. Modele osadzania słów, takie jak Word2Vec, GloVe, BERT czy Sentence-BERT, stanowią podstawę nowoczesnych rozwiązań NLP, pozwalając na analizę i klasyfikację tekstów. Dopasowanie kosinusowe jest jedną z najczęściej stosowanych miar podobieństwa, umożliwiającą efektywne porównywanie zapytań użytkowników z przykładami intencji w systemach klasyfikacji. Klasyfikatory intencji, oparte na tych technologiach, umożliwiają skuteczne przypisanie zapytań do odpowiednich działań w aplikacjach, takich jak chatboty czy asystenci głosowi.
+	
+	Współczesne modele oparte na mechanizmie atencji, takie jak transformatory, zrewolucjonizowały dziedzinę NLP, oferując wydajność i dokładność, które były niemożliwe do osiągnięcia w poprzednich modelach. Dzięki transformatorom możliwe stało się przetwarzanie długich tekstów oraz uchwycenie głębokich, globalnych zależności w tekście.
+	
+	
+	
+	\bibliographystyle{plain}
+	\begin{thebibliography}{1}
+		\bibitem{turing1950} A.~M. Turing. \textit{Computing Machinery and Intelligence}. \textit{Mind}, Vol.~59, No.~236, pp.~433--460, 1950.
+		\bibitem{reimers2019} N.~Reimers, I.~Gurevych. \textit{Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks}, 2019.  
+		\bibitem{devlin2018} J.~Devlin, M.-W. Chang, K. Lee, K. Toutanova. \textit{BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding}, 2018.  
+		\bibitem{pennington2014} J.~Pennington, R.~Socher, C.~Manning. \textit{Glove: Global Vectors for Word Representation}, 2014.
+		\bibitem{turing1950} A.~M. Turing. \textit{Computing Machinery and Intelligence}. \textit{Mind}, Vol.~59, No.~236, pp.~433--460, 1950.
+	\end{thebibliography}
