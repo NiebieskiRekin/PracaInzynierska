@@ -75,6 +75,69 @@ czemu:
 
 ---
 
+Backend:
+
+Hono:
+opis: Web application framework. Fast, lightweight, built on Web Standards. Support for any JavaScript runtime.
+czemu: 
+Ultrafast 🚀 - The router RegExpRouter is really fast. Not using linear loops. Fast.
+Lightweight 🪶 - The hono/tiny preset is under 14kB. Hono has zero dependencies and uses only the Web Standards.
+Multi-runtime 🌍 - Works on Cloudflare Workers, Fastly Compute, Deno, Bun, AWS Lambda, or Node.js. The same code runs on all platforms.
+Batteries Included 🔋 - Hono has built-in middleware, custom middleware, third-party middleware, and helpers. Batteries included.
+Delightful DX 😃 - Super clean APIs. First-class TypeScript support. Now, we've got "Types"
+
+Hono is a simple web application framework similar to Express, without a frontend. But it runs on CDN Edges and allows you to construct larger applications when combined with middleware. Here are some examples of use-cases.
+
+    Building Web APIs
+
+czemu:
+- prosty framework w typescipt do tworzenia api,
+- szybki do nauczenia się,
+- działa szybko i ma małe zużycie zasobów
+- czemu backend w js? aby używać tego samego modelu danych i komunikacji z frontendem za pomocą hono RPC
+
+Zod: jak we frontendzie, dodatkowo ładnie integruje się z adapterem do bazy danych Drizzle i odpowiada za definicje schematów OpenAPI
+
+
+DrizzleORM: 
+(opis tego będzie trudny) ORM with both relational and SQL-like query APIs. Pozwala na zdefiniowanie tabel i relacji kompatybilnych z Zod i typami w Typescript, a następnie używać API bliźniaczego do czystego SQL z minimalnym narzutem. Dodatkowo dostarcza narzędzia ułatwiające zarządzanie połączeniem, migracjami oraz udostępnia niskopoziomowe optymalizacje bezpośrednio do Typescript zapobiegając SQL injection
+
+Node mailer - wysyłka maili jako powiadomienia i do raportów
+google-cloud/storage - do obsługi google cloud storage (odpowiednika S3)
+google/generative-ai - do połączenia z gemini
+hono/swagger-ui, hono/zod-openapi, zod-openapi, hono-openapi - konwersja routes hono do schematu openapi
+node-cron - zadania okresowe
+winston - logi
+bcrypt - hashowanie haseł
+dotenv - odczyt sekretów z pliku .env
+
+---
+
+Przechowywanie danych
+
+postgres - relacyjna baza danych SQL, szybka, uniwersalna, prosta
+zapis do dedykowanej partycji - zapewnienie, że braki miejsca na dysku w danej partycji nie spowodują błędów w innej, osobne IOPS, backupy (pgdump) dla uproszczenia na innej partycji
+
+borgmatic - program owijający pgdump o wiele przydatnych funkcji takich jak rotowanie backupów (np. max 5 z 3 miesięcy), progresywną kompresję z użyciem borgbackup , automatyczne zadania, integracje z ansible, ntfy.sh, nic poza bazą nie jest backupowane, gdyż z założenia jest odtwarzalne z kodu 
+
+borgbackup - deduplicating backup program. Optionally, it supports compression and authenticated encryption.
+
+
+---
+
+Klasyfikator
+
+Transformator działający na osadzaniach słów w celu wydobycia informacji o możliwym wykorzystywanym API endpoint dla wybranych zapytań dodawania danych.
+
+Zrobiony jako osobny moduł, ze względu na zupełnie oddzielny zestaw zależności.
+
+Wykorzystywane:
+sentence-transformers - operacje na osadzeniach słów
+scikit-learn - podział zbioru danych i inne operacje często wykorzystywane w uczeniu maszynowym
+numpy, torch - operacje na wektorach i macierzach
+fastapi - wystawienie REST API
+pydantic, typing - wzbogacenie dynamicznego Pythona o deklaracje typów
+
 
 ---
 
@@ -107,3 +170,9 @@ Referencje:
 - Zod: https://zod.dev/
 - Nginx: https://nginx.org/
 - Nginx chainguard (distroless): https://images.chainguard.dev/directory/image/nginx/overview
+- Hono: https://hono.dev/
+- DrizzleORM: https://orm.drizzle.team/
+- Borgmatic: https://torsion.org/borgmatic/
+- Borgbackup: https://borgbackup.readthedocs.io/en/stable/
+
+
