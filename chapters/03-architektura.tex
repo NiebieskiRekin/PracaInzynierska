@@ -102,10 +102,10 @@ Zod: jak we frontendzie, dodatkowo ładnie integruje się z adapterem do bazy da
 DrizzleORM: 
 (opis tego będzie trudny) ORM with both relational and SQL-like query APIs. Pozwala na zdefiniowanie tabel i relacji kompatybilnych z Zod i typami w Typescript, a następnie używać API bliźniaczego do czystego SQL z minimalnym narzutem. Dodatkowo dostarcza narzędzia ułatwiające zarządzanie połączeniem, migracjami oraz udostępnia niskopoziomowe optymalizacje bezpośrednio do Typescript zapobiegając SQL injection
 
-Node mailer - wysyłka maili jako powiadomienia i do raportów
-google-cloud/storage - do obsługi google cloud storage (odpowiednika S3)
-google/generative-ai - do połączenia z gemini
-hono/swagger-ui, hono/zod-openapi, zod-openapi, hono-openapi - konwersja routes hono do schematu openapi
+Node mailer - wysyłka maili jako powiadomienia i do raportów, korzysta z Gmail SMTP
+google-cloud/storage - do obsługi Google cloud storage (odpowiednika S3) i przechowywania zdjęć - pozwala to uniknąć wysokich opłat za ruch sieciowy egress, zapewnia lepszą izolację środowisk, prostsze udostępnianie danych, mniejsze obciążenie serwera
+google/generative-ai - do połączenia z Gemini LLM poprzez API, służy do przetwarzania języka naturalnego i wyciągania intencji użytkownika do późniejszej konwersji na akcje na API (TODO: koniecznie bardziej opisać)
+hono/swagger-ui, hono/zod-openapi, zod-openapi, hono-openapi - konwersja routes hono do schematu openapi, wykorzystywane przez nasz klasyfikator i gemini do uzyskania informacji o możliwościach naszego backendu
 node-cron - zadania okresowe
 winston - logi
 bcrypt - hashowanie haseł
@@ -137,7 +137,29 @@ scikit-learn - podział zbioru danych i inne operacje często wykorzystywane w u
 numpy, torch - operacje na wektorach i macierzach
 fastapi - wystawienie REST API
 pydantic, typing - wzbogacenie dynamicznego Pythona o deklaracje typów
+uv - zarządzanie zależnościami i środowiskiem wykonawczym
 
+---
+
+Przepływ ruchu sieciowego od użytkowników końcowych:
+
+Użytkownik łącząc się z serwerem DNS i pytając o nazwę domenową naszej strony otrzymuje adres serwera Cloudflare, który służy do filtrowania niechcianego ruchu sieciowego (Web Application Firewall).
+Następnie ruch jest przekazywany dalej do podsieci naszego serwera w Google Cloud Platform. Jest tam filtrowany przez firewall, który zezwala na ruch tylko na określonych portach i dodatkowo ogranicza nadużycia.
+Co idzie dalej, do instancji serwera działającego jako VMka na Google Cloud Platform dociera zapytanie od klienta. Jest ono interpretowane i przetwarzane przez Traefik pod względem poprawności i w razie pomyślnej interpretacji przekazywane do usługi downstream.
+domyślnie zapytania (/) idą do frontendu, aby wyświetlić interfejs użytkownika
+/klasyfikator obsługuje api klasyfikatora intencji 
+/api obsługuje backend aplikacji
+
+Traefik - wykorzystywany jako HTTP reverse proxy
+- pozwala na scentralizowanie wszystkich usług pod jedną domeną i korzystanie ze ścieżek zamiast portów
+- automatyzuje pozyskiwanie zaufanych certyfikatów TLS do HTTPS dzięki Let's Encrypt (zewnętrzna usługa publiczna)
+- izoluje usługi za proxy przed bezpośrednim ruchem zewnętrznym i daje więcej możliwości w kwestii skalowalności, ma możliwość rozszerzenia o filtry bazujące na zaufaniu
+
+Frontend na tym etapie to zwykły serwer HTTP nginx, skonfigurowany do serwowania statycznych plików HTML, CSS i JS, które są renderowane po stronie klienta.
+
+Klasyfikator przetwarza żadanie na podstawie lokalnych danych i zwraca wynik.
+
+Najciekawiej jest na backendzie. Po uwierzytelnieniu użytkownika za pomocą dopasowania hashy danych uwierzytelniających do znajdujących się w bazie danych i wygenerowaniu 2 tokenów JWT (krótkotrwałego tokenu sesji oraz długotrwałego tokenu odświeżenia poświadczeń) zapytania mogą być kontynuowane. Większość zapytań dotyczy wyświetlenia lub modyfikacji danych, co za tym idzie nasze żądanie REST HTTP jest mapowane na odpowiednie zapytanie SQL do bazy danych PostgreSQL z użyciem adaptera DrizzleORM. W przypadku listingu i wyświetlania szczegółów koni są pokazywane ich zdjęcia, które są przechowywane i udostępniane przez Cloud Storage Bucket. Aby to się jednak stało musi zostać wygenerowany specjalny link tzw. signed URL, który jest unikalnym odniesieniem do danego obiektu dla tego użytkownika w tej sesji. Dodatkowo backend obsługuje również komunikację z agentem LLM Gemini do zapytań o intencje operacji wstawienia skomponowanych w formie zapytań języka naturalnego od użytkownika (backend proxuje zapytania do gemini). Finalnie backend wysyła maile łącząc się z serwerem Google SMTP.
 
 ---
 
@@ -174,5 +196,5 @@ Referencje:
 - DrizzleORM: https://orm.drizzle.team/
 - Borgmatic: https://torsion.org/borgmatic/
 - Borgbackup: https://borgbackup.readthedocs.io/en/stable/
-
+- Traefik: https://doc.traefik.io/traefik/
 
