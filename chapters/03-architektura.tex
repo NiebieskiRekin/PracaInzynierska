@@ -8,10 +8,75 @@ Przyjęte ograniczenia:
 - bezpieczny, bazujący na rozwiązaniach open-source i modularny, ułatwiając migrację i zmniejszając możliwy obszar nadużyć w przypadku naruszenia bezpieczeństwa
 - oferuje przyjazny i intuicyjny interfejs graficzny do użycia w przeglądarce na komputerze oraz w postaci aplikacji mobilnej PWA
 
-Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem użytkownika dostępnym w przeglądarce. Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych.  
+---
+
+Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem użytkownika dostępnym w przeglądarce. Dostęp do usługi z wykorzystaniem przeglądarki do wyświeltania interfejsu użytkownika pozwala na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, znacząco upraszcza aspekt dystrybucji oprogramowania oraz współczesnego dostępu do danych. 
+Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych (podlegających nieczęstym zmianom i niezmienialnych) dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania Javascript. Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie ich na osobne procesy. 
+
+---
+
+Frontend:
+Framework React Router
+- czemu: prosty, lekki, pozwala na łatwy client-side rendering
+- korzysta z: React, Typescript, Vite, Nginx
+- Dodatki: VitePWA, Zod, Tailwind
+- opis: multi-strategy router for React bridging the gap from React 18 to React 19. You can use it maximally as a React framework or as minimally as you want
+
+czemu React:
+czemu:
+- popularny, prosty, znany przez zespół
+opis: React is a JavaScript library for building user interfaces.
+
+    Declarative: React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes. Declarative views make your code more predictable, simpler to understand, and easier to debug.
+    Component-Based: Build encapsulated components that manage their own state, then compose them to make complex UIs. Since component logic is written in JavaScript instead of templates, you can easily pass rich data through your app and keep the state out of the DOM.
+    Learn Once, Write Anywhere: We don't make assumptions about the rest of your technology stack, so you can develop new features in React without rewriting existing code. React can also render on the server using Node and power mobile apps using React Native.
 
 
+Typescript:
+czemu
+- uzupełnia Javascript o brakujące elementy (typy)
+- poprawia jakość kodu
+opis: TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale
 
+
+Vite:
+opis: a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
+
+    A dev server that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
+
+    A build command that bundles your code with Rollup, pre-configured to output highly optimized static assets for production.
+czemu:
+- poprawia wydajność stron
+- ułatwia ich przygotowania do wdrożenia
+- zapewnia PWA wraz z pluginem VitePWA
+
+Zod:
+opis:
+Zod is a TypeScript-first validation library. Using Zod, you can define schemas you can use to validate data
+czemu:
+    Walidacja danych po obu stronach z jednakowym schematem, bogaty system obsługi błędów i integracje
+    Zero external dependencies
+    Works in Node.js and all modern browsers
+    Tiny: 2kb core bundle (gzipped)
+    Immutable API: methods return a new instance
+    Concise interface
+    Works with TypeScript and plain JS
+    Built-in JSON Schema conversion
+    Extensive ecosystem
+
+Nginx:
+opis: an HTTP web server, reverse proxy, content cache, load balancer, TCP/UDP proxy server, and mail proxy server
+czemu:
+- wykorzystywany tylko HTTP web serwer
+- wydajny i mały rozmiar instalacji
+- bardzo bogaty w funkcje
+- dobrze znany
+
+
+---
+
+
+---
 
 
 Możliwa lista tematów:
@@ -22,7 +87,7 @@ Możliwa lista tematów:
 - (INNE) ciekawe zagadnienia architektury: modularność za pomocą mikro usług, współdzielenie schematu danych i dostępnych funkcji API za pomocą RPC, optymalizacja kosztów stałych do zera za wyjątkiem dns
 
 
-
+---
 
 
 Referencje:
@@ -31,3 +96,14 @@ Referencje:
   2. https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
 - RWD:
    1. https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design
+- HTML, CSS, JS
+    1. https://pl.wikipedia.org/wiki/HTML
+    2. https://pl.wikipedia.org/wiki/Kaskadowe_arkusze_styl%C3%B3w
+
+- React: https://react.dev/
+- React Router: https://reactrouter.com/home
+- Typescript: https://www.typescriptlang.org/
+- Vite: https://vite.dev/
+- Zod: https://zod.dev/
+- Nginx: https://nginx.org/
+- Nginx chainguard (distroless): https://images.chainguard.dev/directory/image/nginx/overview
