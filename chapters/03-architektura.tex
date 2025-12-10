@@ -1,6 +1,19 @@
 
 \chapter{Architektura systemu}
 
+Przyjęte ograniczenia:
+- tani w utrzymaniu długoterminowym, najlepiej bezpłatny
+- niewielki narzut czasowy na operacje podtrzymania, możliwie prosty
+- wystarczająco wydajny, by zapewnić dostęp dla max 400 użytkowników (100 w danym momencie czasu) do tej samej bazy danych
+- bezpieczny, bazujący na rozwiązaniach open-source i modularny, ułatwiając migrację i zmniejszając możliwy obszar nadużyć w przypadku naruszenia bezpieczeństwa
+- oferuje przyjazny i intuicyjny interfejs graficzny do użycia w przeglądarce na komputerze oraz w postaci aplikacji mobilnej PWA
+
+Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem użytkownika dostępnym w przeglądarce. Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych.  
+
+
+
+
+
 Możliwa lista tematów:
 - (INFRA) opis infrastruktury: konfiguracja ~sprzętowa vmki, dysków, bucketów z uzyciem terraform, przygotowanie zależności i ustawień systemu operacyjnego z ansible, modularność i powtarzalność środowiska uruchomieniowego z docker
 - (NET) opis ruchu sieciowego end2end: dns i waf z cloudflare, reverse proxy traefik, firewall, podział frontend - backend, komunikacja backchannel z zewnętrznymi usługami (certy, mail, gemini), optymalizacja dostarczania z optimistic caching i pwa
@@ -12,4 +25,9 @@ Możliwa lista tematów:
 
 
 
-
+Referencje:
+- PWA:
+  1. https://web.dev/explore/progressive-web-apps?hl=pl
+  2. https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
+- RWD:
+   1. https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design
