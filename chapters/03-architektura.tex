@@ -1,239 +1,241 @@
-
 \chapter{Architektura systemu}
 
-Przyjęte ograniczenia:
-- tani w utrzymaniu długoterminowym, najlepiej bezpłatny
-- niewielki narzut czasowy na operacje podtrzymania, możliwie prosty
-- wystarczająco wydajny, by zapewnić dostęp dla max 400 użytkowników (100 w danym momencie czasu) do tej samej bazy danych
-- bezpieczny, bazujący na rozwiązaniach open-source i modularny, ułatwiając migrację i zmniejszając możliwy obszar nadużyć w przypadku naruszenia bezpieczeństwa
-- oferuje przyjazny i intuicyjny interfejs graficzny do użycia w przeglądarce na komputerze oraz w postaci aplikacji mobilnej PWA
+\section{Założenia projektowe}
 
----
+Projektowany system musi spełniać kilka istotnych ograniczeń funkcjonalnych i niefunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
+
+\begin{itemize}
+    \item niski koszt utrzymania długoterminowego, preferencyjnie z wykorzystaniem bezpłatnych technologii open-source,
+    \item niewielki narzut czasowy na operacje administracyjne i utrzymaniowe,
+    \item wydajność wystarczająca do obsługi do 400 użytkowników, w tym około 100 jednoczesnych,
+    \item wysoki poziom bezpieczeństwa, modularność i izolacja komponentów systemu, co ułatwia migrację i minimalizuje potencjalny obszar nadużyć,
+    \item intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna w technologii PWA.
+\end{itemize}
+
+\section{Uzasadnienie wyboru architektury webowej}
 
 Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem użytkownika dostępnym w przeglądarce. Dostęp do usługi z wykorzystaniem przeglądarki do wyświeltania interfejsu użytkownika pozwala na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, znacząco upraszcza aspekt dystrybucji oprogramowania oraz współczesnego dostępu do danych. 
 Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych (podlegających nieczęstym zmianom i niezmienialnych) dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania Javascript. Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie ich na osobne procesy. 
 
----
+\section{Frontend}
 
-Frontend:
-Framework React Router
-- czemu: prosty, lekki, pozwala na łatwy client-side rendering
-- korzysta z: React, Typescript, Vite, Nginx
-- Dodatki: VitePWA, Zod, Tailwind
-- opis: multi-strategy router for React bridging the gap from React 18 to React 19. You can use it maximally as a React framework or as minimally as you want
+Warstwa frontendowa odpowiada za wizualną prezentację danych i interakcję użytkownika z systemem. Została zaprojektowana jako aplikacja typu SPA (Single Page Application), wykorzystująca nowoczesne technologie webowe.
 
-czemu React:
-czemu:
-- popularny, prosty, znany przez zespół
-opis: React is a JavaScript library for building user interfaces.
+\subsection{React Router}
 
-    Declarative: React makes it painless to create interactive UIs. Design simple views for each state in your application, and React will efficiently update and render just the right components when your data changes. Declarative views make your code more predictable, simpler to understand, and easier to debug.
-    Component-Based: Build encapsulated components that manage their own state, then compose them to make complex UIs. Since component logic is written in JavaScript instead of templates, you can easily pass rich data through your app and keep the state out of the DOM.
-    Learn Once, Write Anywhere: We don't make assumptions about the rest of your technology stack, so you can develop new features in React without rewriting existing code. React can also render on the server using Node and power mobile apps using React Native.
+Do implementacji routingu po stronie klienta wykorzystano framework React Router. Zapewnia on:
+
+\begin{itemize}
+    \item lekkość i prostotę konfiguracji,
+    \item obsługę renderowania po stronie klienta,
+    \item wsparcie dla React 18 oraz React 19,
+    \item możliwość zarówno minimalnego, jak i kompleksowego wykorzystania w aplikacji.
+\end{itemize}
+
+React Router korzysta z bibliotek i narzędzi: React, TypeScript, Vite oraz Nginx. Projekt uzupełniają również VitePWA, Zod oraz Tailwind CSS.
+
+\subsection{React}
+
+React pełni rolę biblioteki odpowiedzialnej za budowę interfejsu. Został wybrany ze względu na:
+
+\begin{itemize}
+    \item bardzo dużą popularność i wsparcie społeczności,
+    \item prostotę i deklaratywny model programowania,
+    \item komponentową strukturę umożliwiającą skalowanie aplikacji,
+    \item możliwość ponownego wykorzystania kodu,
+    \item znajomość technologii przez zespół projektowy.
+\end{itemize}
+
+React umożliwia tworzenie złożonych interfejsów przy użyciu komponentów zarządzających własnym stanem, z możliwością integracji z TypeScript i narzędziami budującymi.
+
+\subsection{TypeScript}
+
+TypeScript został wykorzystany w celu rozszerzenia języka JavaScript o statyczny system typów, co zapewnia:
+
+\begin{itemize}
+    \item poprawę jakości kodu,
+    \item redukcję błędów wykonania,
+    \item lepsze narzędzia developerskie (np. IntelliSense),
+    \item kompatybilność z nowoczesnymi bibliotekami frontendowymi.
+\end{itemize}
+
+\subsection{Vite}
+
+Vite jest narzędziem developerskim i bundlerem zaprojektowanym z myślą o optymalnej wydajności.
+
+\begin{itemize}
+    \item Bardzo szybki serwer deweloperski oparty o moduły ES.
+    \item Obsługa natychmiastowego przeładowania (HMR).
+    \item Integracja z Rollup na potrzeby kompilacji produkcyjnej.
+    \item Wsparcie dla PWA poprzez plugin VitePWA.
+\end{itemize}
+
+\subsection{Zod}
+
+Zod jest biblioteką walidacji danych typu TypeScript-first. Zapewnia:
+
+\begin{itemize}
+    \item spójne walidowanie danych po obu stronach aplikacji,
+    \item bogaty system błędów i prosty interfejs API,
+    \item integrację z narzędziami backendowymi i ORM,
+    \item generowanie schematów JSON Schema oraz OpenAPI.
+\end{itemize}
+
+\subsection{Tailwind CSS}
+
+Tailwind CSS został użyty do budowy warstwy prezentacji poprzez zestaw niskopoziomowych klas użytkowych, co umożliwia szybkie prototypowanie oraz utrzymanie spójnej stylistyki interfejsu.
+
+\subsection{Nginx}
+
+W środowisku produkcyjnym frontend jest udostępniany przez serwer Nginx. Wybrano go ze względu na:
+
+\begin{itemize}
+    \item wysoką wydajność,
+    \item niewielki narzut zasobów,
+    \item bogatą funkcjonalność mimo niewielkiego rozmiaru,
+    \item sprawdzone działanie i dojrzałość technologii.
+\end{itemize}
+
+\section{Backend}
+
+Backend realizuje logikę biznesową aplikacji, odpowiada za dostęp do bazy danych, uwierzytelnianie użytkowników oraz komunikację z usługami zewnętrznymi.
+
+\subsection{Hono}
+
+Hono jest lekkim frameworkiem webowym zgodnym ze standardami Web Standards, działającym na wielu środowiskach wykonawczych. Najważniejsze cechy:
+
+\begin{itemize}
+    \item bardzo wysoka wydajność routera,
+    \item brak zewnętrznych zależności,
+    \item obsługa środowisk Node.js, Deno, Bun, Cloudflare Workers i innych,
+    \item szeroki zestaw wbudowanych middleware’ów,
+    \item pełne wsparcie dla TypeScript.
+\end{itemize}
+
+Hono pełni rolę warstwy REST API oraz kanału RPC umożliwiającego komunikację z frontendem z wykorzystaniem wspólnych schematów danych.
+
+\subsection{Zod w backendzie}
+
+Podobnie jak we frontendzie, Zod odpowiada za walidację danych wejściowych, generowanie schematów OpenAPI oraz integrację z DrizzleORM, zapewniając pełną spójność typów.
+
+\subsection{DrizzleORM}
+
+DrizzleORM pełni funkcję warstwy dostępu do danych. Zapewnia:
+
+\begin{itemize}
+    \item definiowanie schematów tabel zgodnych z TypeScript i Zod,
+    \item API wzorowane na SQL, zapewniające niski narzut,
+    \item bezpieczeństwo przed SQL injection,
+    \item narzędzia do migracji bazy danych,
+    \item interoperacyjność z PostgreSQL.
+\end{itemize}
+
+\subsection{Biblioteki dodatkowe}
+
+Backend wykorzystuje również:
+
+\begin{itemize}
+    \item NodeMailer — wysyłanie wiadomości e-mail przez SMTP Google,
+    \item Google Cloud Storage — przechowywanie zdjęć i generowanie podpisanych odnośników,
+    \item Google Generative AI — komunikacja z modelem Gemini w celu przetwarzania zapytań języka naturalnego,
+    \item node-cron — harmonogramowanie zadań cyklicznych,
+    \item Winston — logowanie zdarzeń,
+    \item bcrypt — bezpieczne hashowanie haseł użytkowników,
+    \item dotenv — ładowanie zmiennych środowiskowych.
+\end{itemize}
+
+\section{Przechowywanie danych}
+
+\subsection{PostgreSQL}
+
+Głównym silnikiem bazy danych jest PostgreSQL. Wybrano go z uwagi na:
+
+\begin{itemize}
+    \item wysoką stabilność i niezawodność,
+    \item zgodność z DrizzleORM,
+    \item duży ekosystem narzędzi administracyjnych,
+    \item dobrą wydajność w scenariuszach transakcyjnych.
+\end{itemize}
+
+Dane zapisywane są na dedykowanej partycji dyskowej, co ogranicza ryzyko problemów związanych z brakiem miejsca oraz zapewnia izolację operacji I/O.
+
+\subsection{Kopie zapasowe}
+
+Do wykonywania kopii zapasowych zastosowano:
+
+\begin{itemize}
+    \item borgbackup — deduplikacja i kompresja danych,
+    \item borgmatic — automatyzacja harmonogramów, rotacja backupów, integracja z narzędziami administracyjnymi.
+\end{itemize}
+
+Zgodnie z założeniami projektu backupowane są wyłącznie dane z bazy, a kod aplikacji może zostać przywrócony z repozytorium.
+
+\section{Moduł klasyfikatora}
+
+Moduł klasyfikatora odpowiada za analizę zapytań języka naturalnego oraz przypisywanie ich do odpowiednich operacji API. Został wdrożony jako oddzielna mikro-usługa z uwagi na odmienny zestaw zależności.
+
+Wykorzystuje:
+
+\begin{itemize}
+    \item sentence-transformers — generowanie osadzeń tekstowych,
+    \item scikit-learn — podział danych oraz metody ewaluacyjne,
+    \item numpy i torch — obliczenia tensorowe,
+    \item FastAPI — udostępnienie punktów końcowych REST,
+    \item Pydantic — walidacja danych wejściowych,
+    \item uv — zarządzanie środowiskiem wykonawczym.
+\end{itemize}
+
+\section{Przepływ ruchu sieciowego}
+
+Przepływ zapytań od użytkownika przebiega następująco:
+
+\begin{enumerate}
+    \item Użytkownik zapytuje DNS o domenę systemu, otrzymując adres serwerów Cloudflare, które pełnią funkcję WAF.
+    \item Zapytanie trafia do infrastruktury Google Cloud Platform, gdzie jest filtrowane przez firewall.
+    \item Ruch kierowany jest do instancji wirtualnej maszyny, w której Traefik pełni rolę reverse proxy.
+    \item Traefik rozdziela ruch:
+    \begin{itemize}
+        \item ścieżka ``/'' — frontend (Nginx),
+        \item ``/klasyfikator'' — moduł klasyfikatora,
+        \item ``/api'' — backend aplikacji.
+    \end{itemize}
+\end{enumerate}
+
+Backend po uwierzytelnieniu użytkownika za pomocą tokenów JWT realizuje żądania REST, mapując je na zapytania SQL przy użyciu DrizzleORM. W przypadku danych multimedialnych generowane są podpisane odnośniki do zasobów Cloud Storage. Dodatkowo backend komunikuje się z agentem Gemini LLM w celu analizy intencji użytkownika.
+
+\section{Powtarzalność i izolacja środowiska uruchomieniowego (Docker)}
+
+Komponenty aplikacji działają w izolowanych kontenerach Docker, co zapewnia powtarzalność środowiska oraz minimalizację zależności systemowych.
+
+\textbf{TODO:} Opisać szczegółowo:
+\begin{itemize}
+    \item charakterystykę kontenerów i ich zalety,
+    \item model warstw obrazu i wpływ na czas wdrażania,
+    \item izolację zasobów oraz minimalne obrazy distroless,
+    \item proces budowania obrazów w monorepo.
+\end{itemize}
+
+\section{Definicja infrastruktury jako kod (Terraform i Ansible)}
+
+\textbf{TODO:} Rozszerzyć opis:
+\begin{itemize}
+    \item Terraform jako narzędzie Day~0 (provisioning VM, dysków, bucketów, firewalli),
+    \item Ansible jako narzędzie Day~1--2 (konfiguracja systemu, Docker Engine, borgmatic),
+    \item modułowość i powtarzalność procesów provisioningowych.
+\end{itemize}
+
+\section{Automatyzacja CI/CD}
+
+Proces ciągłej integracji i wdrażania został oparty o GitHub Actions i Ansible.
+
+\textbf{TODO:} Dopisać:
+\begin{itemize}
+    \item opis potoku kompilacji TypeScript,
+    \item budowanie i publikację obrazów Docker,
+    \item proces aktualizacji aplikacji na serwerze (pobranie obrazów, restart usług),
+    \item model pracy z monorepo, pull requesty i kontrola jakości kodu.
+\end{itemize}
 
 
-Typescript:
-czemu
-- uzupełnia Javascript o brakujące elementy (typy)
-- poprawia jakość kodu
-opis: TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale
-
-
-Vite:
-opis: a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
-
-    A dev server that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
-
-    A build command that bundles your code with Rollup, pre-configured to output highly optimized static assets for production.
-czemu:
-- poprawia wydajność stron
-- ułatwia ich przygotowania do wdrożenia
-- zapewnia PWA wraz z pluginem VitePWA
-
-Zod:
-opis:
-Zod is a TypeScript-first validation library. Using Zod, you can define schemas you can use to validate data
-czemu:
-    Walidacja danych po obu stronach z jednakowym schematem, bogaty system obsługi błędów i integracje
-    Zero external dependencies
-    Works in Node.js and all modern browsers
-    Tiny: 2kb core bundle (gzipped)
-    Immutable API: methods return a new instance
-    Concise interface
-    Works with TypeScript and plain JS
-    Built-in JSON Schema conversion
-    Extensive ecosystem
-
-Nginx:
-opis: an HTTP web server, reverse proxy, content cache, load balancer, TCP/UDP proxy server, and mail proxy server
-czemu:
-- wykorzystywany tylko HTTP web serwer
-- wydajny i mały rozmiar instalacji
-- bardzo bogaty w funkcje
-- dobrze znany
-
-
----
-
-Backend:
-
-Hono:
-opis: Web application framework. Fast, lightweight, built on Web Standards. Support for any JavaScript runtime.
-czemu: 
-Ultrafast 🚀 - The router RegExpRouter is really fast. Not using linear loops. Fast.
-Lightweight 🪶 - The hono/tiny preset is under 14kB. Hono has zero dependencies and uses only the Web Standards.
-Multi-runtime 🌍 - Works on Cloudflare Workers, Fastly Compute, Deno, Bun, AWS Lambda, or Node.js. The same code runs on all platforms.
-Batteries Included 🔋 - Hono has built-in middleware, custom middleware, third-party middleware, and helpers. Batteries included.
-Delightful DX 😃 - Super clean APIs. First-class TypeScript support. Now, we've got "Types"
-
-Hono is a simple web application framework similar to Express, without a frontend. But it runs on CDN Edges and allows you to construct larger applications when combined with middleware. Here are some examples of use-cases.
-
-    Building Web APIs
-
-czemu:
-- prosty framework w typescipt do tworzenia api,
-- szybki do nauczenia się,
-- działa szybko i ma małe zużycie zasobów
-- czemu backend w js? aby używać tego samego modelu danych i komunikacji z frontendem za pomocą hono RPC
-
-Zod: jak we frontendzie, dodatkowo ładnie integruje się z adapterem do bazy danych Drizzle i odpowiada za definicje schematów OpenAPI
-
-
-DrizzleORM: 
-(opis tego będzie trudny) ORM with both relational and SQL-like query APIs. Pozwala na zdefiniowanie tabel i relacji kompatybilnych z Zod i typami w Typescript, a następnie używać API bliźniaczego do czystego SQL z minimalnym narzutem. Dodatkowo dostarcza narzędzia ułatwiające zarządzanie połączeniem, migracjami oraz udostępnia niskopoziomowe optymalizacje bezpośrednio do Typescript zapobiegając SQL injection
-
-Node mailer - wysyłka maili jako powiadomienia i do raportów, korzysta z Gmail SMTP
-google-cloud/storage - do obsługi Google cloud storage (odpowiednika S3) i przechowywania zdjęć - pozwala to uniknąć wysokich opłat za ruch sieciowy egress, zapewnia lepszą izolację środowisk, prostsze udostępnianie danych, mniejsze obciążenie serwera
-google/generative-ai - do połączenia z Gemini LLM poprzez API, służy do przetwarzania języka naturalnego i wyciągania intencji użytkownika do późniejszej konwersji na akcje na API (TODO: koniecznie bardziej opisać)
-hono/swagger-ui, hono/zod-openapi, zod-openapi, hono-openapi - konwersja routes hono do schematu openapi, wykorzystywane przez nasz klasyfikator i gemini do uzyskania informacji o możliwościach naszego backendu
-node-cron - zadania okresowe
-winston - logi
-bcrypt - hashowanie haseł
-dotenv - odczyt sekretów z pliku .env
-
----
-
-Przechowywanie danych
-
-postgres - relacyjna baza danych SQL, szybka, uniwersalna, prosta
-zapis do dedykowanej partycji - zapewnienie, że braki miejsca na dysku w danej partycji nie spowodują błędów w innej, osobne IOPS, backupy (pgdump) dla uproszczenia na innej partycji
-
-borgmatic - program owijający pgdump o wiele przydatnych funkcji takich jak rotowanie backupów (np. max 5 z 3 miesięcy), progresywną kompresję z użyciem borgbackup , automatyczne zadania, integracje z ansible, ntfy.sh, nic poza bazą nie jest backupowane, gdyż z założenia jest odtwarzalne z kodu 
-
-borgbackup - deduplicating backup program. Optionally, it supports compression and authenticated encryption.
-
-
----
-
-Klasyfikator
-
-Transformator działający na osadzaniach słów w celu wydobycia informacji o możliwym wykorzystywanym API endpoint dla wybranych zapytań dodawania danych.
-
-Zrobiony jako osobny moduł, ze względu na zupełnie oddzielny zestaw zależności.
-
-Wykorzystywane:
-sentence-transformers - operacje na osadzeniach słów
-scikit-learn - podział zbioru danych i inne operacje często wykorzystywane w uczeniu maszynowym
-numpy, torch - operacje na wektorach i macierzach
-fastapi - wystawienie REST API
-pydantic, typing - wzbogacenie dynamicznego Pythona o deklaracje typów
-uv - zarządzanie zależnościami i środowiskiem wykonawczym
-
----
-
-Przepływ ruchu sieciowego od użytkowników końcowych:
-
-Użytkownik łącząc się z serwerem DNS i pytając o nazwę domenową naszej strony otrzymuje adres serwera Cloudflare, który służy do filtrowania niechcianego ruchu sieciowego (Web Application Firewall).
-Następnie ruch jest przekazywany dalej do podsieci naszego serwera w Google Cloud Platform. Jest tam filtrowany przez firewall, który zezwala na ruch tylko na określonych portach i dodatkowo ogranicza nadużycia.
-Co idzie dalej, do instancji serwera działającego jako VMka na Google Cloud Platform dociera zapytanie od klienta. Jest ono interpretowane i przetwarzane przez Traefik pod względem poprawności i w razie pomyślnej interpretacji przekazywane do usługi downstream.
-domyślnie zapytania (/) idą do frontendu, aby wyświetlić interfejs użytkownika
-/klasyfikator obsługuje api klasyfikatora intencji 
-/api obsługuje backend aplikacji
-
-Traefik - wykorzystywany jako HTTP reverse proxy
-- pozwala na scentralizowanie wszystkich usług pod jedną domeną i korzystanie ze ścieżek zamiast portów
-- automatyzuje pozyskiwanie zaufanych certyfikatów TLS do HTTPS dzięki Let's Encrypt (zewnętrzna usługa publiczna)
-- izoluje usługi za proxy przed bezpośrednim ruchem zewnętrznym i daje więcej możliwości w kwestii skalowalności, ma możliwość rozszerzenia o filtry bazujące na zaufaniu
-
-Frontend na tym etapie to zwykły serwer HTTP nginx, skonfigurowany do serwowania statycznych plików HTML, CSS i JS, które są renderowane po stronie klienta.
-
-Klasyfikator przetwarza żadanie na podstawie lokalnych danych i zwraca wynik.
-
-Najciekawiej jest na backendzie. Po uwierzytelnieniu użytkownika za pomocą dopasowania hashy danych uwierzytelniających do znajdujących się w bazie danych i wygenerowaniu 2 tokenów JWT (krótkotrwałego tokenu sesji oraz długotrwałego tokenu odświeżenia poświadczeń) zapytania mogą być kontynuowane. Większość zapytań dotyczy wyświetlenia lub modyfikacji danych, co za tym idzie nasze żądanie REST HTTP jest mapowane na odpowiednie zapytanie SQL do bazy danych PostgreSQL z użyciem adaptera DrizzleORM. W przypadku listingu i wyświetlania szczegółów koni są pokazywane ich zdjęcia, które są przechowywane i udostępniane przez Cloud Storage Bucket. Aby to się jednak stało musi zostać wygenerowany specjalny link tzw. signed URL, który jest unikalnym odniesieniem do danego obiektu dla tego użytkownika w tej sesji. Dodatkowo backend obsługuje również komunikację z agentem LLM Gemini do zapytań o intencje operacji wstawienia skomponowanych w formie zapytań języka naturalnego od użytkownika (backend proxuje zapytania do gemini). Finalnie backend wysyła maile łącząc się z serwerem Google SMTP.
-
----
-
-Powtarzalność i izolacja środowika uruchomieniowego z Docker
-
-Komponenty tworzące aplikację (frontend, backend, klasyfikator, baza danych, reverse proxy) korzystają z instalacji na serwerze za pomocą środowiska uruchomieniowego Docker. 
-
-TODO:
-- opisz czym są kontenery i ich zalety
-- opisz powtarzalność i warstwy, uproszczenie wdrożenia przy zachowaniu małego rozmiaru paczki i zużycia zasobów
-- opisz ich użycie w projekcie, tworzenie obrazów na podstawie monorepo, optymalizacja i izolacja zależności, distroless
-
-
-Docker container image is a lightweight, standalone, executable package of software that includes everything needed to run an application: code, runtime, system tools, system libraries and settings.
-Container images become containers at runtime and in the case of Docker containers – images become containers when they run on Docker Engine. Available for both Linux and Windows-based applications, containerized software will always run the same, regardless of the infrastructure. Containers isolate software from its environment and ensure that it works uniformly despite differences for instance between development and staging.
-Docker containers that run on Docker Engine:
-Standard: Docker created the industry standard for containers, so they could be portable anywhere
-Lightweight: Containers share the machine’s OS system kernel and therefore do not require an OS per application, driving higher server efficiencies and reducing server and licensing costs
-Secure: Applications are safer in containers and Docker provides the strongest default isolation capabilities in the industry 
-
----
-
-Definicja powtarzalnej infrastruktury aplikacji w kodzie
-
-TODO:
-- Terraform jako Day 0 provisioning, konfiguracja VMki, bucketów GCS, dysków wirtualnych, firewalla i systemu operacyjnego
-- Ansible jako Day 1-2 provisioning, konfiguracja usług działających w systemie, zależności takich jak silnik docker czy borgmatic
-
----
-
-
-Automatyzacja potoku ciągłego wdrożenia metodą push
-
-Każde wypchnięcie zmian powoduje uruchomienie potoku do kompilacji kodu typescript i budowania paczek dystrybucji. Te przygotowane paczki po walidacji są pakowane w zminimalizowane obrazy Docker, a następnie publikowane do registry. Następne zadanie wymusza pobranie na maszynę wirtualną obrazów Dockera z rejestru, aktualizację sekretów oraz pobranie innych dodatkowych plików konfiguracyjnych z repozytorium, a następnie restartuje aplikację.
-
-Ansible
-Github Actions
-
---- 
-
-
-Możliwa lista tematów:
-- (INFRA) opis infrastruktury: konfiguracja ~sprzętowa vmki, dysków, bucketów z uzyciem terraform, przygotowanie zależności i ustawień systemu operacyjnego z ansible, modularność i powtarzalność środowiska uruchomieniowego z docker
-- (NET) opis ruchu sieciowego end2end: dns i waf z cloudflare, reverse proxy traefik, firewall, podział frontend - backend, komunikacja backchannel z zewnętrznymi usługami (certy, mail, gemini), optymalizacja dostarczania z optimistic caching i pwa
-- (GIT) opis działania potoków ciągłej integracji / ciągłego wdrażania z ansible i github actions, hostowanie repozytorium git monorepo, model współpracy nad kodem pull request i weryfikacja jakości kodu z eslint i etapem kompilacji 
-- (DATA) opis modelu danych i sposobu ich przechowywania, schemat bazy danych, główne rodzaje zapytań, zapewnienia spójności danych, sposób backupu, współdzielony model walidacji danych zod
-- (INNE) ciekawe zagadnienia architektury: modularność za pomocą mikro usług, współdzielenie schematu danych i dostępnych funkcji API za pomocą RPC, optymalizacja kosztów stałych do zera za wyjątkiem dns
-
-
----
-
-
-Referencje:
-- PWA:
-  1. https://web.dev/explore/progressive-web-apps?hl=pl
-  2. https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps
-- RWD:
-   1. https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design
-- HTML, CSS, JS
-    1. https://pl.wikipedia.org/wiki/HTML
-    2. https://pl.wikipedia.org/wiki/Kaskadowe_arkusze_styl%C3%B3w
-
-- React: https://react.dev/
-- React Router: https://reactrouter.com/home
-- Typescript: https://www.typescriptlang.org/
-- Vite: https://vite.dev/
-- Zod: https://zod.dev/
-- Nginx: https://nginx.org/
-- Nginx chainguard (distroless): https://images.chainguard.dev/directory/image/nginx/overview
-- Hono: https://hono.dev/
-- DrizzleORM: https://orm.drizzle.team/
-- Borgmatic: https://torsion.org/borgmatic/
-- Borgbackup: https://borgbackup.readthedocs.io/en/stable/
-- Traefik: https://doc.traefik.io/traefik/
-- Docker: https://www.docker.com/
 
 
