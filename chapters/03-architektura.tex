@@ -34,7 +34,7 @@ Zaprojektowany system spełnia następujące wymagania funkcjonalne:
 \end{itemize}
 
 
-Wymagania pozafunkcjonalne (co mi przyjdzie to piszę):
+Wymagania pozafunkcjonalne:
 
 \begin{itemize}
     \item Logowanie użytkownika odbywa się poprzez email oraz hasło.
@@ -50,6 +50,10 @@ Wymagania pozafunkcjonalne (co mi przyjdzie to piszę):
     \item Użytkownik po wybraniu widoku dodawania zdarzeń profilaktycznych ma do wyboru 5 kafelków, każdy odpowiada akcji dodania odpowiedniego zdarzenia.
     \item Użytkownik przełącza się pomiędzy wieloma zdjęciami danego konia za pomocą strzałek na ekranie szczegółów.
     \item Pod ostatnimi wydarzeniami znajduje sie panel do dodawania wydarzeń, gdzie do wybrania jest dodanie wydarzenia związanego z rozrodami/chorobami/leczeniami/zdarzeniami profilaktycznymi /podkucia
+    \item Niewielki koszt i prostota administracyjna utrzymania w dłuższej perspektywie
+    \item Obsługa 400 łącznych użytkowników, w tym 100 jednoczesnych sesji.
+    \item Wysoki poziom bezpieczeństwa, modularnośc i izolacja komponentów systemu
+    \item Intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna
 \end{itemize}
 
 Coś czego nie mamy (aby się nie walnąć):
@@ -65,7 +69,7 @@ Coś czego nie mamy (aby się nie walnąć):
     \item wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
 \end{itemize}
 
-Błędy, które chciałem zapisać:
+Błędy, które nie mogą nam umknąć:
 \begin{itemize}
     \item Sesja logowania nie utrzymuje się
     \item Przycisk wyloguj nie działa - sesja dalej pozostaje
@@ -81,22 +85,14 @@ Błędy, które chciałem zapisać:
     \item W ustawieniach powiadomień są wciąż opcje "Oba" i "Push", które nie działają w oczekiwany sposób
 \end{itemize}
 
-... pozafunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
 
-\begin{itemize}
-    \item niski koszt utrzymania długoterminowego, preferencyjnie z wykorzystaniem bezpłatnych technologii open-source,
-    \item niewielki narzut czasowy na operacje administracyjne i utrzymaniowe,
-    \item wydajność wystarczająca do obsługi do 400 użytkowników, w tym około 100 jednoczesnych,
-    \item wysoki poziom bezpieczeństwa, modularność i izolacja komponentów systemu, co ułatwia migrację i minimalizuje potencjalny obszar nadużyć,
-    \item intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna w technologii PWA.
-\end{itemize}
+\section{Opis architektury aplikacji}
 
+Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych.
 
+Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera - wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych. Interaktywna prezentacja danych jest możliwa natomiast poprzez zmianę struktury wyświetlanego dokumentu hipertekstowego wykonywaną po stronie klienta z użyciem kodu JavaScript w przeglądarce.
 
-\section{Uzasadnienie wyboru architektury webowej}
-
-Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem użytkownika dostępnym w przeglądarce. Dostęp do usługi z wykorzystaniem przeglądarki do wyświeltania interfejsu użytkownika pozwala na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, znacząco upraszcza aspekt dystrybucji oprogramowania oraz współczesnego dostępu do danych. 
-Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych (podlegających nieczęstym zmianom i niezmienialnych) dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania Javascript. Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie ich na osobne procesy. 
+Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną "back end", od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - "front end".
 
 \section{Frontend}
 
