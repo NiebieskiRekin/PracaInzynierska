@@ -5,13 +5,29 @@
 Zaprojektowany system spełnia następujące wymagania funkcjonalne:
 
 \begin{itemize}
-    \item Użytkownika może się uwierzytelnić na ekranie logowania.
+    \item Użytkownik może się uwierzytelnić na ekranie logowania.
     \item Po pomyślnym uwierzytelnieniu użytkownik jest autoryzowany do podejmowania działań na obiektach należących do wskazanej hodowli.
     \item Użytkownika ma możliwość zmiany składnika uwierzytelniającego (hasła).
+    \item Po podaniu niepoprawnych danych uwierzytelniających przez użytkownika system wyświetla komunikat błędu.
     \item Użytkownik po zalogowaniu może zobaczyć wszystkie swoje konie (przypisane dla danej hodowli), 
     \item Strona pokazująca listę koni udostępnia wyszukiwarkę, za pomocą której można filtrować wyświetlanie konie.
     \item Strona z listą koni umożliwia przejście do strony z informacjami szczegółowymi danego konia.
     \item System umożliwia podejrzenie zdjęcia konia i jego powiększenie.
+    \item System pozwala na dodanie wielu zdjęć do jednego konia, przełączanie się pomiędzy nimi, a także na wybór ulubionego zdjęcia.
+    \item Po dodaniu pierwszego zdjęcia do konia jest ono ustalane jako ulubione.
+    \item Użytkownik ma możliwość dodania, edycji oraz usunięcia koni z systemu.
+    \item System pozwala na nawigację pomiędzy modułami funkcjonalności takimi jak: Konie, Weterynarze, Kowale, Wydarzenia w stajni, Asystent, Ustawienia  
+    \item System umożliwia dodawanie wydarzeń dla wielu koni, czyli podkuć i zdarzeń profilaktycznych.
+    \item Spośród zdarzeń profilaktycznych użytkownik ma wybór pomiędzy: dentystą, podaniem witamin, szczepieniem, odrobaczaniem.
+    \item W celu dodania zdarzenia profilaktycznego użytkownik musi wybrać jego typ, uzupełnić wymagane pola, a także wybrać listę koni, do których dane zdarzenie ma zastosowanie.
+    \item W miejscach, gdzie użytkownik ma do wyboru konie z listy, dostępny jest również przycisk do zaznaczenia wszystkich.
+    \item Użytkownik ma możliwość dodania do tabeli weterynarza, z którym współpracuje.
+    \item System podpowiada użytkownikowi weterynarzy, gdy użytkownik dodaje nowe wydarzenie wymagające podania weterynarza.
+    \item Użytkownik ma możliwość dodania do tabeli kowala, z którym współpracuje.
+    \item System podpowiada użytkownikowi kowali, gdy użytkownik dodaje nowe podkucie.
+    \item Użytkownik może zobaczyć informacje takie jak: numer przyżyciowy, numer chipa, rocznik urodzenia, rodzaj, płeć, data przybycia do stajni, data odejścia ze stajni, a także najnowsze aktywne wydarzenia: podkucie, odrobaczanie, podanie suplementów, szczepienie, dentystę odnośnie wybranego konia na ekranie ze szczegółami. 
+    \item Użytkownik może przejść z ekranu szczegółów danego konia bezpośrednio do ostatnich wydarzeń z nim związanych.
+    \item Użytkownik może wygenerować raport zawierający informacje o danym koniu oraz wybrać podzbiór wydarzeń i ich zakres czasu (według daty zdarzenia).
 \end{itemize}
 
 
@@ -22,10 +38,14 @@ Wymagania pozafunkcjonalne (co mi przyjdzie to piszę):
     \item Do zmiany hasła wymagane jest podanie starego hasła oraz dwukrotne podanie nowego hasła.
     \item Treść hasła jest domyślnie maskowana na ekranie logowania, użytkownik może ją podejrzeć podczas wpisywania.
     \item przechowywanie danych autoryzacji w sposób bezpieczny, wyłącznie hashe bcrypt haseł,
-    \item Lista koni jest wyświetlana jako karty ze zdjęciem i nazwą konia. W formacie przeznaczonym na większe ekrany są to 3 kolumny, natomiast na urządzeniach mobilnych jest to 1 kolumna.
+    \item Lista koni jest wyświetlana jako karty ze zdjęciem (wybranym jako ulubione) i nazwą konia. W formacie przeznaczonym na większe ekrany są to 3 kolumny, natomiast na urządzeniach mobilnych jest to 1 kolumna.
     \item Po zalogowaniu wyświetlana jest lista koni.
     \item Filtrowanie koni na liście odbywa się po nazwie za pomocą wyszukania podciągu znaków frazy.
-    \item Ekran pokazujący zdjęcie konia jest 
+    \item Ekran pokazujący zdjęcie konia jest pokazywany po kliknięciu na zdjęcie i jest powiększany do pełnego rozmiaru karty.
+    \item Dodawanie i edycja informacji dotyczących koni odbywa się poprzez dedykowany formularz walidujący podstawową poprawność pól (właściwie tylko sprawdza czy wymagane pola są uzupełnione)
+    \item Operacje usunięcia wymagają potwierdzenia.
+    \item Użytkownik po wybraniu widoku dodawania zdarzeń profilaktycznych ma do wyboru 5 kafelków, każdy odpowiada akcji dodania odpowiedniego zdarzenia.
+    \item Użytkownik przełącza się pomiędzy wieloma zdjęciami danego konia za pomocą strzałek na ekranie szczegółów.
 \end{itemize}
 
 Coś czego nie mamy (aby się nie walnąć):
@@ -40,7 +60,20 @@ Coś czego nie mamy (aby się nie walnąć):
     \item utrzymywanie sesji logowania, sesja trwa 15 minut i się nie odświeża (coś było implementowane, ale nie działa)
 \end{itemize}
 
-
+Błędy, które chciałem zapisać:
+\begin{itemize}
+    \item Sesja logowania nie utrzymuje się
+    \item Przycisk wyloguj nie działa - sesja dalej pozostaje
+    \item Można kliknąć na zdjęcie na ekranie z listą koni, aby je powiększyć zamiast przejść do szczegółów konia
+    \item Można powiększyć domyślne zdjęcie - jego brak
+    \item Na mniejszym ekranie (u mnie na laptopie 13 cali) nagłówek ma dziwne odstępy
+    \item Miejscami zdarzenia są zapisywane jako wydarzenia i na odwrót
+    \item Dodawanie zdjęć nie działa - błąd z json payload
+    \item Koń po dodaniu ma jakiś pusty wpis ze zdjęciem, przez co cały czas się kręci, ale nic nie pokazuje
+    \item Przekierowanie z / do /konie nie działa
+    \item Czerwone komunikaty błędu na ciemnozielonym gradiencie tła są słabo widoczne (mają zbyt niski kontrast)
+    \item Tworzenie raportu dla konia bez wydarzeń nie działa (przykład koń aaa)
+\end{itemize}
 
 ... pozafunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
 
