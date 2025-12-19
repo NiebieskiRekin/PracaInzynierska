@@ -29,6 +29,8 @@ Zaprojektowany system spełnia następujące wymagania funkcjonalne:
     \item Użytkownik może przejść z ekranu szczegółów danego konia bezpośrednio do ostatnich wydarzeń z nim związanych.
     \item Użytkownik może wygenerować raport zawierający informacje o danym koniu oraz wybrać podzbiór wydarzeń i ich zakres czasu (według daty zdarzenia).
     \item TODO: opis zdarzeń profilaktycznych, jakie pola, co wymagane, jak obliczane
+    \item System wysyła powiadomienia o zbliżającym się upływie ważności podkucia lub zdarzenia profilaktycznego do użytkowników.
+    \item Użytkownik ma możliwość ustawić preferencje wysyłanych powiadomień (zbiorcze dla wszystkich koni) dla każdego typu wydarzenia z osobna, z jakim wyprzedzeniem ma przyjść informacja o wygaśnięciu ważności (ile dni wyprzedzenia, o której godzinie), a także sposób transportu wiadomości (email, \st{push})
 \end{itemize}
 
 
@@ -60,6 +62,7 @@ Coś czego nie mamy (aby się nie walnąć):
     \item integracja z zewnętrznymi systemami uwierzytelniającymi
     \item rate limiting prób logowania, ban po zbyt wielu próbach
     \item utrzymywanie sesji logowania, sesja trwa 15 minut i się nie odświeża (coś było implementowane, ale nie działa)
+    \item wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
 \end{itemize}
 
 Błędy, które chciałem zapisać:
@@ -75,6 +78,7 @@ Błędy, które chciałem zapisać:
     \item Przekierowanie z / do /konie nie działa
     \item Czerwone komunikaty błędu na ciemnozielonym gradiencie tła są słabo widoczne (mają zbyt niski kontrast)
     \item Tworzenie raportu dla konia bez wydarzeń nie działa (przykład koń aaa)
+    \item W ustawieniach powiadomień są wciąż opcje "Oba" i "Push", które nie działają w oczekiwany sposób
 \end{itemize}
 
 ... pozafunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
