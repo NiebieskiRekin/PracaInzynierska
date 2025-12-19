@@ -2,7 +2,47 @@
 
 \section{Założenia projektowe}
 
-Projektowany system musi spełniać kilka istotnych ograniczeń funkcjonalnych i niefunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
+Zaprojektowany system spełnia następujące wymagania funkcjonalne:
+
+\begin{itemize}
+    \item Użytkownika może się uwierzytelnić na ekranie logowania.
+    \item Po pomyślnym uwierzytelnieniu użytkownik jest autoryzowany do podejmowania działań na obiektach należących do wskazanej hodowli.
+    \item Użytkownika ma możliwość zmiany składnika uwierzytelniającego (hasła).
+    \item Użytkownik po zalogowaniu może zobaczyć wszystkie swoje konie (przypisane dla danej hodowli), 
+    \item Strona pokazująca listę koni udostępnia wyszukiwarkę, za pomocą której można filtrować wyświetlanie konie.
+    \item Strona z listą koni umożliwia przejście do strony z informacjami szczegółowymi danego konia.
+    \item System umożliwia podejrzenie zdjęcia konia i jego powiększenie.
+\end{itemize}
+
+
+Wymagania pozafunkcjonalne (co mi przyjdzie to piszę):
+
+\begin{itemize}
+    \item Logowanie użytkownika odbywa się poprzez email oraz hasło.
+    \item Do zmiany hasła wymagane jest podanie starego hasła oraz dwukrotne podanie nowego hasła.
+    \item Treść hasła jest domyślnie maskowana na ekranie logowania, użytkownik może ją podejrzeć podczas wpisywania.
+    \item przechowywanie danych autoryzacji w sposób bezpieczny, wyłącznie hashe bcrypt haseł,
+    \item Lista koni jest wyświetlana jako karty ze zdjęciem i nazwą konia. W formacie przeznaczonym na większe ekrany są to 3 kolumny, natomiast na urządzeniach mobilnych jest to 1 kolumna.
+    \item Po zalogowaniu wyświetlana jest lista koni.
+    \item Filtrowanie koni na liście odbywa się po nazwie za pomocą wyszukania podciągu znaków frazy.
+    \item Ekran pokazujący zdjęcie konia jest 
+\end{itemize}
+
+Coś czego nie mamy (aby się nie walnąć):
+
+\begin{itemize}
+    \item resetowanie hasła przez użytkownika, tylko admin z dostępem do bazy danych (lub ogólnie całej instancji API)
+    \item rejestracja użytkowników przez użytkownika, j.w.
+    \item rejestracja hodowli przez użytkownika, j.w.
+    \item ustawienie złożoności hasła,
+    \item integracja z zewnętrznymi systemami uwierzytelniającymi
+    \item rate limiting prób logowania, ban po zbyt wielu próbach
+    \item utrzymywanie sesji logowania, sesja trwa 15 minut i się nie odświeża (coś było implementowane, ale nie działa)
+\end{itemize}
+
+
+
+... pozafunkcjonalnych, wynikających zarówno z charakteru domeny, jak i przewidywanego sposobu eksploatacji. Do najważniejszych należą:
 
 \begin{itemize}
     \item niski koszt utrzymania długoterminowego, preferencyjnie z wykorzystaniem bezpłatnych technologii open-source,
@@ -11,6 +51,8 @@ Projektowany system musi spełniać kilka istotnych ograniczeń funkcjonalnych i
     \item wysoki poziom bezpieczeństwa, modularność i izolacja komponentów systemu, co ułatwia migrację i minimalizuje potencjalny obszar nadużyć,
     \item intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna w technologii PWA.
 \end{itemize}
+
+
 
 \section{Uzasadnienie wyboru architektury webowej}
 
