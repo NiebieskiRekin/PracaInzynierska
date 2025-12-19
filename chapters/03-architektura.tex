@@ -92,36 +92,18 @@ Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących
 
 Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera - wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych. Interaktywna prezentacja danych jest możliwa natomiast poprzez zmianę struktury wyświetlanego dokumentu hipertekstowego wykonywaną po stronie klienta z użyciem kodu JavaScript w przeglądarce. Wymienione działanie jest wykonywane poprzez interfejs programowania Document Object Model (DOM, pl. \textit{Model Obiektowy Dokumentu}) pozwalający na częściową lub pełną modyfikację dowolnego węzła (np. paragrafu tekstu, separatora, kontrolek, obiektu multimedialnego) w hierachicznej strukturze drzewa dokumentu HTML. Interfejs ten jest w praktyce wykorzystywany przez bibliotekę React, która nieco modyfikuje model z dokumentów HTML i skryptów JavaScript na komponenty wielokrotnego użytku (zawierające wymagane fragmenty dokumentu HTML i funkcje JavaScript) budujące deklaratywne widoki (strony internetowe). Komponenty można powiązać z danymi, czyli zaprojektować ich wygląd w celu prezentacji danych zgodnie z ich schematem oraz skonfigurować ich źródło, które będzie automatycznie odświeżane dążąc do zadeklarowanego stanu. Komponenty można w sobie zagnieżdżać, odtwarzając te same aspekty hierachicznej struktury, a ich zmiany są śledzone poprzez użycie wewnętrznej dla tej biblioteki kopii Modelu Obiektowego Dokumentu nazywanego Virtual (pl. Wirtualnego) DOM.
 
-Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-page application, SPA}), co wynika głównie ze sposobu aktualizowania interfejsu na podstawie zmian w danych poprzez kod po stronie klienta i przesyłania statycznych dokumentów HTML, pomijając jednocześnie aspekt użycia wielu stron. W przypadku prezentowanej pracy rama projektowa została dostarczona przez bibliotekę React Router, która dostarcza strategię renderowania do Aplikacji jednostronicowej, dostarczając ponadto .
+Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-page application, SPA}), co wynika głównie ze sposobu aktualizowania interfejsu na podstawie zmian w danych poprzez kod po stronie klienta i przesyłania statycznych dokumentów HTML, pomijając jednocześnie aspekt użycia wielu stron. W przypadku prezentowanej pracy rama projektowa została dostarczona przez bibliotekę React Router, która dostarcza pakiet budujący do Aplikacji jednostronicowej, dostarczając ponadto zestaw narzędzi służących do przechodzenia pomiędzy osobnymi widokami w zależności od użytego adresu URL - nazwany router, a także moduły do efektywnego pobierania danych w tle za pomocą funkcji asynchronicznych.
 
 Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną "back end", od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - "front end".
 
-\subsection{React Router}
+Cały proces tworzenia paczki do dystrybucji dla części "front end" jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony. Proces budowania przebiega następująco:
+1. Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
+2. Kod w JavaScript i style CSS są minifikowane (krótkie arbitralne nazwy funkcji i plików, usuwanie pomijalnych białych znaków i komentarzy, przepisywanie wyrażeń na krótsze o równoważnym znaczeniu).
+3. Zawartość plików jest przenoszona do innych plików o arbitralnych, unikalnych nazwach i stałym rozmiarze
+4. Zależności są analizowane pod kątem wykorzystania funkcji, a nieużywany kod usuwany
+5. Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache.
 
-Do implementacji routingu po stronie klienta wykorzystano framework React Router. Zapewnia on:
 
-\begin{itemize}
-    \item lekkość i prostotę konfiguracji,
-    \item obsługę renderowania po stronie klienta,
-    \item wsparcie dla React 18 oraz React 19,
-    \item możliwość zarówno minimalnego, jak i kompleksowego wykorzystania w aplikacji.
-\end{itemize}
-
-React Router korzysta z bibliotek i narzędzi: React, TypeScript, Vite oraz Nginx. Projekt uzupełniają również VitePWA, Zod oraz Tailwind CSS.
-
-\subsection{React}
-
-React pełni rolę biblioteki odpowiedzialnej za budowę interfejsu. Został wybrany ze względu na:
-
-\begin{itemize}
-    \item bardzo dużą popularność i wsparcie społeczności,
-    \item prostotę i deklaratywny model programowania,
-    \item komponentową strukturę umożliwiającą skalowanie aplikacji,
-    \item możliwość ponownego wykorzystania kodu,
-    \item znajomość technologii przez zespół projektowy.
-\end{itemize}
-
-React umożliwia tworzenie złożonych interfejsów przy użyciu komponentów zarządzających własnym stanem, z możliwością integracji z TypeScript i narzędziami budującymi.
 
 \subsection{TypeScript}
 
