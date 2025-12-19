@@ -56,34 +56,34 @@ Wymagania pozafunkcjonalne:
     \item Intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna
 \end{itemize}
 
-Coś czego nie mamy (aby się nie walnąć):
+% Coś czego nie mamy (aby się nie walnąć):
 
-\begin{itemize}
-    \item resetowanie hasła przez użytkownika, tylko admin z dostępem do bazy danych (lub ogólnie całej instancji API)
-    \item rejestracja użytkowników przez użytkownika, j.w.
-    \item rejestracja hodowli przez użytkownika, j.w.
-    \item ustawienie złożoności hasła,
-    \item integracja z zewnętrznymi systemami uwierzytelniającymi
-    \item rate limiting prób logowania, ban po zbyt wielu próbach
-    \item utrzymywanie sesji logowania, sesja trwa 15 minut i się nie odświeża (coś było implementowane, ale nie działa)
-    \item wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
-\end{itemize}
+% \begin{itemize}
+%     \item resetowanie hasła przez użytkownika, tylko admin z dostępem do bazy danych (lub ogólnie całej instancji API)
+%     \item rejestracja użytkowników przez użytkownika, j.w.
+%     \item rejestracja hodowli przez użytkownika, j.w.
+%     \item ustawienie złożoności hasła,
+%     \item integracja z zewnętrznymi systemami uwierzytelniającymi
+%     \item rate limiting prób logowania, ban po zbyt wielu próbach
+%     \item utrzymywanie sesji logowania, sesja trwa 15 minut i się nie odświeża (coś było implementowane, ale nie działa)
+%     \item wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
+% \end{itemize}
 
-Błędy, które nie mogą nam umknąć:
-\begin{itemize}
-    \item Sesja logowania nie utrzymuje się
-    \item Przycisk wyloguj nie działa - sesja dalej pozostaje
-    \item Można kliknąć na zdjęcie na ekranie z listą koni, aby je powiększyć zamiast przejść do szczegółów konia
-    \item Można powiększyć domyślne zdjęcie - jego brak
-    \item Na mniejszym ekranie (u mnie na laptopie 13 cali) nagłówek ma dziwne odstępy
-    \item Miejscami zdarzenia są zapisywane jako wydarzenia i na odwrót
-    \item Dodawanie zdjęć nie działa - błąd z json payload
-    \item Koń po dodaniu ma jakiś pusty wpis ze zdjęciem, przez co cały czas się kręci, ale nic nie pokazuje
-    \item Przekierowanie z / do /konie nie działa
-    \item Czerwone komunikaty błędu na ciemnozielonym gradiencie tła są słabo widoczne (mają zbyt niski kontrast)
-    \item Tworzenie raportu dla konia bez wydarzeń nie działa (przykład koń aaa)
-    \item W ustawieniach powiadomień są wciąż opcje "Oba" i "Push", które nie działają w oczekiwany sposób
-\end{itemize}
+% Błędy, które nie mogą nam umknąć:
+% \begin{itemize}
+%     \item Sesja logowania nie utrzymuje się
+%     \item Przycisk wyloguj nie działa - sesja dalej pozostaje
+%     \item Można kliknąć na zdjęcie na ekranie z listą koni, aby je powiększyć zamiast przejść do szczegółów konia
+%     \item Można powiększyć domyślne zdjęcie - jego brak
+%     \item Na mniejszym ekranie (u mnie na laptopie 13 cali) nagłówek ma dziwne odstępy
+%     \item Miejscami zdarzenia są zapisywane jako wydarzenia i na odwrót
+%     \item Dodawanie zdjęć nie działa - błąd z json payload
+%     \item Koń po dodaniu ma jakiś pusty wpis ze zdjęciem, przez co cały czas się kręci, ale nic nie pokazuje
+%     \item Przekierowanie z / do /konie nie działa
+%     \item Czerwone komunikaty błędu na ciemnozielonym gradiencie tła są słabo widoczne (mają zbyt niski kontrast)
+%     \item Tworzenie raportu dla konia bez wydarzeń nie działa (przykład koń aaa)
+%     \item W ustawieniach powiadomień są wciąż opcje "Oba" i "Push", które nie działają w oczekiwany sposób
+% \end{itemize}
 
 
 \section{Opis architektury aplikacji}
@@ -94,204 +94,15 @@ Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressi
 
 Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-page application, SPA}), co wynika głównie ze sposobu aktualizowania interfejsu na podstawie zmian w danych poprzez kod po stronie klienta i przesyłania statycznych dokumentów HTML, pomijając jednocześnie aspekt użycia wielu stron. W przypadku prezentowanej pracy rama projektowa została dostarczona przez bibliotekę React Router, która dostarcza pakiet budujący do Aplikacji jednostronicowej, dostarczając ponadto zestaw narzędzi służących do przechodzenia pomiędzy osobnymi widokami w zależności od użytego adresu URL - nazwany router, a także moduły do efektywnego pobierania danych w tle za pomocą funkcji asynchronicznych.
 
-Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną "back end", od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - "front end".
+Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną "back end", od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - "front end". Obie warstwy nie komunikują się ze sobą, lecz współdziałają w celu tworzenia pełnej funkcjonalności aplikacji. Użytkownik inicuje wszelkie interakcje z obydwoma komponentami, choć zapytania do "back end" są inicjowane w przeglądarce użytkownika wchodzącego w interakcję z "front end", a także otrzymane dane i komunikaty diagnostyczne są wyłącznie obsługiwane przez ten system. Komunikacja odbywa się wyłącznie na warstwie 7 modelu ISO/OSI (warstwie aplikacji) za pomocą protokołu HTTP. "Front end" obługuje żądania zwracając pliki HTML, CSS i JavaScript, natomiast "back end" działa w architekturze sieciowego interfejsu programowania REST zwracającego dane w formacie serializacji JSON. Bezpieczeństwo zapewniane przez protokół HTTPS jest zapewniane poprzez wdrożenie aplikacji za reverse proxy, które jednocześnie centralizuje żądania do systemu i umożliwia niezależną skalowalność komponentów schowanych za nim. W przypadku tego projektu zdecydowano się na wybór Traefik, ze względu na wysoką wydajność przetwarzania zapytań, prostą konfiguracją z dobrą integracją ze środowiskiem konteneryzacji Docker (w szczególności z Docker Compose) i zewnętrznym serwisem do wystawiania publicznie zaufanych certyfikatów TLS Let's Encrypt. 
 
-Cały proces tworzenia paczki do dystrybucji dla części "front end" jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony. Proces budowania przebiega następująco:
+Cały proces tworzenia paczki do dystrybucji dla części "front end" jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony, a także sztywny podział odpowiedzialności, zapewniający lepsze bezpieczeństwo i wydajność przetwarzania. Proces budowania przebiega następująco:
 1. Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
 2. Kod w JavaScript i style CSS są minifikowane (krótkie arbitralne nazwy funkcji i plików, usuwanie pomijalnych białych znaków i komentarzy, przepisywanie wyrażeń na krótsze o równoważnym znaczeniu).
 3. Zawartość plików jest przenoszona do innych plików o arbitralnych, unikalnych nazwach i stałym rozmiarze
 4. Zależności są analizowane pod kątem wykorzystania funkcji, a nieużywany kod usuwany
-5. Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache.
+5. Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem HTTP Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache oraz manifestem progresywnej aplikacji internetowej.
 
-
-
-\subsection{TypeScript}
-
-TypeScript został wykorzystany w celu rozszerzenia języka JavaScript o statyczny system typów, co zapewnia:
-
-\begin{itemize}
-    \item poprawę jakości kodu,
-    \item redukcję błędów wykonania,
-    \item lepsze narzędzia developerskie (np. IntelliSense),
-    \item kompatybilność z nowoczesnymi bibliotekami frontendowymi.
-\end{itemize}
-
-\subsection{Vite}
-
-Vite jest narzędziem developerskim i bundlerem zaprojektowanym z myślą o optymalnej wydajności.
-
-\begin{itemize}
-    \item Bardzo szybki serwer deweloperski oparty o moduły ES.
-    \item Obsługa natychmiastowego przeładowania (HMR).
-    \item Integracja z Rollup na potrzeby kompilacji produkcyjnej.
-    \item Wsparcie dla PWA poprzez plugin VitePWA.
-\end{itemize}
-
-\subsection{Zod}
-
-Zod jest biblioteką walidacji danych typu TypeScript-first. Zapewnia:
-
-\begin{itemize}
-    \item spójne walidowanie danych po obu stronach aplikacji,
-    \item bogaty system błędów i prosty interfejs API,
-    \item integrację z narzędziami backendowymi i ORM,
-    \item generowanie schematów JSON Schema oraz OpenAPI.
-\end{itemize}
-
-\subsection{Tailwind CSS}
-
-Tailwind CSS został użyty do budowy warstwy prezentacji poprzez zestaw niskopoziomowych klas użytkowych, co umożliwia szybkie prototypowanie oraz utrzymanie spójnej stylistyki interfejsu.
-
-\subsection{Nginx}
-
-W środowisku produkcyjnym frontend jest udostępniany przez serwer Nginx. Wybrano go ze względu na:
-
-\begin{itemize}
-    \item wysoką wydajność,
-    \item niewielki narzut zasobów,
-    \item bogatą funkcjonalność mimo niewielkiego rozmiaru,
-    \item sprawdzone działanie i dojrzałość technologii.
-\end{itemize}
-
-\section{Backend}
-
-Backend realizuje logikę biznesową aplikacji, odpowiada za dostęp do bazy danych, uwierzytelnianie użytkowników oraz komunikację z usługami zewnętrznymi.
-
-\subsection{Hono}
-
-Hono jest lekkim frameworkiem webowym zgodnym ze standardami Web Standards, działającym na wielu środowiskach wykonawczych. Najważniejsze cechy:
-
-\begin{itemize}
-    \item bardzo wysoka wydajność routera,
-    \item brak zewnętrznych zależności,
-    \item obsługa środowisk Node.js, Deno, Bun, Cloudflare Workers i innych,
-    \item szeroki zestaw wbudowanych middleware’ów,
-    \item pełne wsparcie dla TypeScript.
-\end{itemize}
-
-Hono pełni rolę warstwy REST API oraz kanału RPC umożliwiającego komunikację z frontendem z wykorzystaniem wspólnych schematów danych.
-
-\subsection{Zod w backendzie}
-
-Podobnie jak we frontendzie, Zod odpowiada za walidację danych wejściowych, generowanie schematów OpenAPI oraz integrację z DrizzleORM, zapewniając pełną spójność typów.
-
-\subsection{DrizzleORM}
-
-DrizzleORM pełni funkcję warstwy dostępu do danych. Zapewnia:
-
-\begin{itemize}
-    \item definiowanie schematów tabel zgodnych z TypeScript i Zod,
-    \item API wzorowane na SQL, zapewniające niski narzut,
-    \item bezpieczeństwo przed SQL injection,
-    \item narzędzia do migracji bazy danych,
-    \item interoperacyjność z PostgreSQL.
-\end{itemize}
-
-\subsection{Biblioteki dodatkowe}
-
-Backend wykorzystuje również:
-
-\begin{itemize}
-    \item NodeMailer — wysyłanie wiadomości e-mail przez SMTP Google,
-    \item Google Cloud Storage — przechowywanie zdjęć i generowanie podpisanych odnośników,
-    \item Google Generative AI — komunikacja z modelem Gemini w celu przetwarzania zapytań języka naturalnego,
-    \item node-cron — harmonogramowanie zadań cyklicznych,
-    \item Winston — logowanie zdarzeń,
-    \item bcrypt — bezpieczne hashowanie haseł użytkowników,
-    \item dotenv — ładowanie zmiennych środowiskowych.
-\end{itemize}
-
-\section{Przechowywanie danych}
-
-\subsection{PostgreSQL}
-
-Głównym silnikiem bazy danych jest PostgreSQL. Wybrano go z uwagi na:
-
-\begin{itemize}
-    \item wysoką stabilność i niezawodność,
-    \item zgodność z DrizzleORM,
-    \item duży ekosystem narzędzi administracyjnych,
-    \item dobrą wydajność w scenariuszach transakcyjnych.
-\end{itemize}
-
-Dane zapisywane są na dedykowanej partycji dyskowej, co ogranicza ryzyko problemów związanych z brakiem miejsca oraz zapewnia izolację operacji I/O.
-
-\subsection{Kopie zapasowe}
-
-Do wykonywania kopii zapasowych zastosowano:
-
-\begin{itemize}
-    \item borgbackup — deduplikacja i kompresja danych,
-    \item borgmatic — automatyzacja harmonogramów, rotacja backupów, integracja z narzędziami administracyjnymi.
-\end{itemize}
-
-Zgodnie z założeniami projektu backupowane są wyłącznie dane z bazy, a kod aplikacji może zostać przywrócony z repozytorium.
-
-\section{Moduł klasyfikatora}
-
-Moduł klasyfikatora odpowiada za analizę zapytań języka naturalnego oraz przypisywanie ich do odpowiednich operacji API. Został wdrożony jako oddzielna mikro-usługa z uwagi na odmienny zestaw zależności.
-
-Wykorzystuje:
-
-\begin{itemize}
-    \item sentence-transformers — generowanie osadzeń tekstowych,
-    \item scikit-learn — podział danych oraz metody ewaluacyjne,
-    \item numpy i torch — obliczenia tensorowe,
-    \item FastAPI — udostępnienie punktów końcowych REST,
-    \item Pydantic — walidacja danych wejściowych,
-    \item uv — zarządzanie środowiskiem wykonawczym.
-\end{itemize}
-
-\section{Przepływ ruchu sieciowego}
-
-Przepływ zapytań od użytkownika przebiega następująco:
-
-\begin{enumerate}
-    \item Użytkownik zapytuje DNS o domenę systemu, otrzymując adres serwerów Cloudflare, które pełnią funkcję WAF.
-    \item Zapytanie trafia do infrastruktury Google Cloud Platform, gdzie jest filtrowane przez firewall.
-    \item Ruch kierowany jest do instancji wirtualnej maszyny, w której Traefik pełni rolę reverse proxy.
-    \item Traefik rozdziela ruch:
-    \begin{itemize}
-        \item ścieżka ``/'' — frontend (Nginx),
-        \item ``/klasyfikator'' — moduł klasyfikatora,
-        \item ``/api'' — backend aplikacji.
-    \end{itemize}
-\end{enumerate}
-
-Backend po uwierzytelnieniu użytkownika za pomocą tokenów JWT realizuje żądania REST, mapując je na zapytania SQL przy użyciu DrizzleORM. W przypadku danych multimedialnych generowane są podpisane odnośniki do zasobów Cloud Storage. Dodatkowo backend komunikuje się z agentem Gemini LLM w celu analizy intencji użytkownika.
-
-\section{Powtarzalność i izolacja środowiska uruchomieniowego (Docker)}
-
-Komponenty aplikacji działają w izolowanych kontenerach Docker, co zapewnia powtarzalność środowiska oraz minimalizację zależności systemowych.
-
-\textbf{TODO:} Opisać szczegółowo:
-\begin{itemize}
-    \item charakterystykę kontenerów i ich zalety,
-    \item model warstw obrazu i wpływ na czas wdrażania,
-    \item izolację zasobów oraz minimalne obrazy distroless,
-    \item proces budowania obrazów w monorepo.
-\end{itemize}
-
-\section{Definicja infrastruktury jako kod (Terraform i Ansible)}
-
-\textbf{TODO:} Rozszerzyć opis:
-\begin{itemize}
-    \item Terraform jako narzędzie Day~0 (provisioning VM, dysków, bucketów, firewalli),
-    \item Ansible jako narzędzie Day~1--2 (konfiguracja systemu, Docker Engine, borgmatic),
-    \item modułowość i powtarzalność procesów provisioningowych.
-\end{itemize}
-
-\section{Automatyzacja CI/CD}
-
-Proces ciągłej integracji i wdrażania został oparty o GitHub Actions i Ansible.
-
-\textbf{TODO:} Dopisać:
-\begin{itemize}
-    \item opis potoku kompilacji TypeScript,
-    \item budowanie i publikację obrazów Docker,
-    \item proces aktualizacji aplikacji na serwerze (pobranie obrazów, restart usług),
-    \item model pracy z monorepo, pull requesty i kontrola jakości kodu.
-\end{itemize}
 
 
 
