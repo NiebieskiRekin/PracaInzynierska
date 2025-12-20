@@ -2,7 +2,7 @@
 
 \section{Założenia projektowe}
 
-Zaprojektowany system spełnia następujące wymagania funkcjonalne:
+Zaprojektowany system spełnia następujące wymagania funkcjonalne (TODO: scalić w spójny tekst):
 
 \begin{itemize}
     \item Użytkownik może się uwierzytelnić na ekranie logowania.
@@ -16,7 +16,7 @@ Zaprojektowany system spełnia następujące wymagania funkcjonalne:
     \item System pozwala na dodanie wielu zdjęć do jednego konia, przełączanie się pomiędzy nimi, a także na wybór ulubionego zdjęcia.
     \item Po dodaniu pierwszego zdjęcia do konia jest ono ustalane jako ulubione.
     \item Użytkownik ma możliwość dodania, edycji oraz usunięcia koni z systemu.
-    \item System pozwala na nawigację pomiędzy modułami funkcjonalności takimi jak: Konie, Weterynarze, Kowale, Wydarzenia w stajni, Asystent, Ustawienia  
+    \item System pozwala na nawigację pomiędzy modułami funkcjonalności takimi jak: Konie, Weterynarze, Kowale, Wydarzenia w stajni, Asystent, Ustawienia (TODO: czy możemy to jakoś lepiej nazwać?)
     \item System umożliwia dodawanie wydarzeń dla wielu koni, czyli podkuć i zdarzeń profilaktycznych.
     \item Spośród zdarzeń profilaktycznych użytkownik ma wybór pomiędzy: dentystą, podaniem witamin, szczepieniem, odrobaczaniem.
     \item W celu dodania zdarzenia profilaktycznego użytkownik musi wybrać jego typ, uzupełnić wymagane pola, a także wybrać listę koni, do których dane zdarzenie ma zastosowanie.
@@ -56,7 +56,7 @@ Wymagania pozafunkcjonalne:
     \item Intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna
 \end{itemize}
 
-% Coś czego nie mamy (aby się nie walnąć):
+% TODO: Coś czego nie mamy (aby się nie walnąć):
 
 % \begin{itemize}
 %     \item resetowanie hasła przez użytkownika, tylko admin z dostępem do bazy danych (lub ogólnie całej instancji API)
@@ -69,7 +69,7 @@ Wymagania pozafunkcjonalne:
 %     \item wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
 % \end{itemize}
 
-% Błędy, które nie mogą nam umknąć:
+% TODO: Błędy, które nie mogą nam umknąć:
 % \begin{itemize}
 %     \item Sesja logowania nie utrzymuje się
 %     \item Przycisk wyloguj nie działa - sesja dalej pozostaje
@@ -88,9 +88,17 @@ Wymagania pozafunkcjonalne:
 
 \section{Opis architektury aplikacji}
 
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{figures/architektura-sieciowa}
+\caption{Architektura sieciowa aplikacji}\label{rys:architektura-sieciowa}
+\end{figure}
+
 Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z interfejsem przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych.
 
 Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną backend, od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - frontend. Obie warstwy nie komunikują się ze sobą, lecz współdziałają w celu tworzenia pełnej funkcjonalności aplikacji. Użytkownik inicuje wszelkie interakcje z obydwoma komponentami, choć zapytania do backendu są inicjowane w przeglądarce użytkownika wchodzącego w interakcję z frontendem, a także otrzymane dane i komunikaty diagnostyczne są wyłącznie obsługiwane przez ten system. Komunikacja odbywa się wyłącznie na warstwie 7 modelu ISO/OSI (warstwie aplikacji) za pomocą protokołu HTTP. Frontend obługuje żądania zwracając pliki HTML, CSS i JavaScript, natomiast backend działa w architekturze sieciowego interfejsu programowania REST zwracającego dane w formacie serializacji JSON. 
+
+
+
 
 \subsection{Frontend}
 
@@ -99,12 +107,19 @@ Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressi
 Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-page application, SPA}), co wynika głównie ze sposobu aktualizowania interfejsu na podstawie zmian w danych poprzez kod po stronie klienta i przesyłania statycznych dokumentów HTML, pomijając jednocześnie aspekt użycia wielu stron. W przypadku prezentowanej pracy rama projektowa została dostarczona przez bibliotekę React Router, która dostarcza pakiet budujący do Aplikacji jednostronicowej, dostarczając ponadto zestaw narzędzi służących do przechodzenia pomiędzy osobnymi widokami w zależności od użytego adresu URL - nazwany router, a także moduły do efektywnego pobierania danych w tle za pomocą funkcji asynchronicznych.
 
 
+\subsection{Backend}
+
 \subsection{Mechanizmy bezpiczeństwa}
 
 Bezpieczeństwo zapewniane przez protokół HTTPS jest zapewniane poprzez wdrożenie aplikacji za reverse proxy, które jednocześnie centralizuje żądania do systemu i umożliwia niezależną skalowalność komponentów schowanych za nim. W przypadku tego projektu zdecydowano się na wybór Traefik, ze względu na wysoką wydajność przetwarzania zapytań, prostą konfiguracją z dobrą integracją ze środowiskiem konteneryzacji Docker (w szczególności z Docker Compose) i zewnętrznym serwisem do wystawiania publicznie zaufanych certyfikatów TLS Let's Encrypt. 
 
 
-\subsection{Wdrożenie projektu i jego dystrybucja}
+\subsection{Wdrożenie i dystrybucja projektu}
+
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{figures/repozytorium-zaleznosci-budowanie.png}
+\caption{Struktura repozytorium kodu, uproszczony diagram zależności oraz tworzenia paczki dystrybucyjnej}\label{rys:repozytorium-zaleznosci-budowanie}
+\end{figure}
 
 Cały proces tworzenia paczki do dystrybucji dla części "front end" jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony, a także sztywny podział odpowiedzialności, zapewniający lepsze bezpieczeństwo i wydajność przetwarzania. Proces budowania przebiega następująco:
 1. Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
@@ -115,5 +130,8 @@ Cały proces tworzenia paczki do dystrybucji dla części "front end" jest zło�
 
 
 
-
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{figures/diagram-wdrozenia.png}
+\caption{Diagram wdrożenia z użyciem Terraform i Ansible}\label{rys:diagram-wdrozenia}
+\end{figure}
 
