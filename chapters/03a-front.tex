@@ -1,0 +1,459 @@
+\chapter{Implementacja warstwy prezentacji}
+
+Warstwa prezentacji aplikacji \textit{Moje Konie} stanowi kluczowy element systemu, pośredniczący między użytkownikiem a zaawansowanymi modułami przetwarzania języka naturalnego. Została ona zaprojektowana w architekturze jednostronicowej aplikacji webowej (ang. \textit{Single Page Application}, SPA), co zapewnia płynność interakcji zbliżoną do aplikacji natywnych poprzez eliminację konieczności przeładowywania całej strony przy nawigacji. 
+
+
+
+Takie podejście architektoniczne jest kluczowe w kontekście sterowania głosowego i tekstowego – pozwala na asynchroniczną komunikację z modelem Gemini 2.5 Pro przy jednoczesnym zachowaniu ciągłości stanu interfejsu (ang. \textit{UI state}). Przekłada się to bezpośrednio na wysoką jakość doświadczeń użytkownika (ang. \textit{User Experience}, UX), zapewniając natychmiastową reakcję wizualną na wydawane komendy.
+
+\section{Stos technologiczny}
+
+Wybór narzędzi do budowy warstwy prezentacji był podyktowany koniecznością zapewnienia wysokiej wydajności, statycznego typowania danych oraz pełnej responsywności na urządzeniach mobilnych.
+
+\subsection{Język programowania TypeScript}
+W procesie implementacji warstwy prezentacji zdecydowano się na wykorzystanie języka \textbf{TypeScript}. Jako nadzbiór języka JavaScript, wprowadza on mechanizm statycznego typowania, co w ramach niniejszej pracy inżynierskiej pozwoliło na uporządkowanie struktur danych przesyłanych pomiędzy interfejsem użytkownika a warstwą serwerową. Dzięki zastosowaniu rozszerzeń \texttt{.ts} oraz \texttt{.tsx}, możliwe było precyzyjne określenie kształtu obiektów reprezentujących kluczowe elementy systemu, takie jak \textit{Kon} czy \textit{Kowal}. Zastosowanie silnego typowania umożliwiło bezpieczne zarządzanie dynamicznymi listami oraz formularzami zdarzeń, eliminując ryzyko wystąpienia błędów typu \textit{runtime} wynikających z prób odczytu nieistniejących właściwości obiektów. TypeScript odegrał również istotną rolę w procesie integracji z modelem językowym Gemini, pozwalając na rygorystyczne mapowanie odpowiedzi tekstowych na ustrukturyzowane komponenty React. Statyczna analiza kodu ułatwiła proces refaktoryzacji oprogramowania oraz zapewniła przewidywalną komunikację z punktami końcowymi API, co znacząco podniosło ogólną niezawodność i czytelność kodu źródłowego aplikacji.
+
+\subsection{Biblioteka React.js}
+Głównym fundamentem interfejsu użytkownika jest biblioteka \textbf{React.js}, która została wybrana ze względu na swoją wydajność oraz deklaratywny model programowania. Kluczowym aspektem inżynierskim tej technologii jest wykorzystanie mechanizmu wirtualnego modelu dokumentu (ang. \textit{Virtual DOM}), stanowiącego lekką kopię rzeczywistego drzewa dokumentu HTML w pamięci operacyjnej. React operuje na tym mechanizmie, aby optymalizować proces aktualizacji widoku poprzez wykonywanie operacji porównywania stanów (ang. \textit{reconciliation/diffing}), a następnie wprowadzanie jedynie niezbędnych zmian w rzeczywistym drzewie DOM przeglądarki. Jest to rozwiązanie niezbędne w kontekście niniejszej aplikacji, szczególnie przy dynamicznym renderowaniu wyników analizy AI w czasie rzeczywistym. Dzięki temu interfejs Asystenta NLP pozostaje płynny i responsywny, nawet w momencie generowania złożonych, interaktywnych kart z danymi koni czy lekarzy weterynarii. Ponadto, komponentowa architektura biblioteki pozwoliła na enkapsulację logiki biznesowej i warstwy prezentacji wewnątrz niezależnych modułów, co znacząco ułatwiło zarządzanie stanem aplikacji (ang. \textit{state management}) oraz zapewniło wysoką reużywalność kodu źródłowego w obrębie całego systemu.
+
+\subsection{Środowisko budowania Vite}
+Jako nowoczesne narzędzie budowania (ang. \textit{build tool}) oraz serwer deweloperski wykorzystano środowisko \textbf{Vite}. Wybór ten podyktowany był koniecznością zapewnienia maksymalnej wydajności podczas procesu wytwarzania oprogramowania. Dzięki pełnemu wykorzystaniu natywnych modułów ECMAScript (ang. \textit{ES Modules}), Vite oferuje znacznie szybsze odświeżanie aplikacji w czasie rzeczywistym (ang. \textit{Hot Module Replacement}, HMR) w porównaniu do tradycyjnych narzędzi opartych na procesie bundlowania całego kodu źródłowego przed uruchomieniem. Mechanizm ten pozwala na natychmiastową aktualizację jedynie zmienionych fragmentów kodu bez konieczności przeładowywania stanu całej aplikacji, co drastycznie skróciło cykl deweloperski. W ramach niniejszego projektu było to szczególnie istotne, gdyż umożliwiło wydajniejsze testowanie dynamicznych interakcji z modelem językowym Gemini oraz szybką iterację nad komponentami interfejsu użytkownika. Ponadto, Vite optymalizuje proces budowania wersji produkcyjnej oprogramowania poprzez zaawansowane mechanizmy usuwania nieużywanego kodu (ang. \textit{tree shaking}), co przekłada się na mniejszy rozmiar końcowych plików aplikacji i szybsze ładowanie systemu u użytkownika końcowego.
+
+\subsection{Stylizacja i responsywność – Tailwind CSS}
+Warstwa wizualna aplikacji opiera się na nowoczesnym frameworku \textbf{Tailwind CSS}, który wykorzystuje podejście zorientowane na klasy narzędziowe (ang. \textit{utility-first}). Rozwiązanie to umożliwiło budowanie w pełni responsywnego interfejsu użytkownika (ang. \textit{Responsive Web Design}, RWD) bezpośrednio w strukturze komponentów React, co znacząco wpłynęło na spójność kodu oraz szybkość wprowadzania modyfikacji wizualnych. Dzięki zastosowaniu wbudowanego systemu punktów przerwania (ang. \textit{breakpoints}), interfejs został precyzyjnie zoptymalizowany pod kątem pracy w specyficznych warunkach stajennych na różnorodnych urządzeniach przenośnych. Kluczowym aspektem projektowym było zapewnienie wysokiej ergonomii użytkowania, co zrealizowano poprzez implementację dużych elementów interaktywnych oraz czytelnej, wysokokontrastowej typografii, ułatwiającej obsługę aplikacji w pełnym słońcu lub przy ograniczonej precyzji ruchów. Ponadto, wykorzystanie silnika \textit{Just-in-Time} (JIT) pozwoliło na generowanie optymalnych arkuszy stylów zawierających wyłącznie faktycznie użyte klasy, co przełożyło się na minimalizację wagi plików wynikowych i przyspieszenie czasu renderowania strony na urządzeniach o słabszych parametrach technicznych.
+
+\subsection{Biblioteki pomocnicze}
+W celu uzupełnienia funkcjonalności systemu oraz poprawy doświadczeń użytkownika wykorzystano szereg bibliotek pomocniczych, wśród których kluczową rolę odgrywa zestaw \textbf{Lucide React}. Jest to biblioteka udostępniająca lekkie ikony wektorowe, które pozwoliły na wprowadzenie spójnej i czytelnej identyfikacji wizualnej poszczególnych modułów aplikacji. Zastosowanie piktogramów, takich jak ikona mikrofonu dedykowana funkcji przetwarzania mowy na tekst (ang. \textit{Speech-to-Text}, STT), znacząco ułatwia użytkownikowi szybką orientację w interfejsie i skraca czas reakcji na dostępne akcje. 
+
+Równie istotnym elementem architektury frontendu jest biblioteka \textbf{React Router}, służąca do zaawansowanego zarządzania nawigacją wewnętrzną oraz strukturą adresów URL. Dzięki jej zastosowaniu zrealizowano model nawigacji charakterystyczny dla aplikacji jednostronicowych, w którym przejścia między poszczególnymi widokami (np. Dashboardem a kartą konkretnego konia) odbywają się bez przeładowywania dokumentu HTML. Pozwoliło to na zachowanie ciągłości stanu aplikacji oraz płynności działania, co w połączeniu z asynchronicznym ładowaniem danych zapewnia wysoką responsywność całego systemu w trakcie codziennej eksploatacji.
+
+\section{Architektura frontendu i struktura danych}
+
+Struktura plików i katalogów wewnątrz modułu została zorganizowana w sposób modularny, co stanowi fundament skalowalności i łatwej konserwacji (ang. \textit{maintainability}) systemu. Architektura aplikacji opiera się na podziale odpowiedzialności (ang. \textit{Separation of Concerns}), gdzie warstwa prezentacji jest oddzielona od logiki biznesowej i komunikacyjnej. Centralnym elementem tego układu są komponenty (ang. \textit{components}), czyli małe, niezależne i reużywalne jednostki interfejsu, takie jak przyciski, pola formularzy czy karty inwentarzowe. Pozwalają one na budowanie złożonych widoków przy zachowaniu wysokiej czytelności kodu źródłowego.
+
+
+
+Wyższy poziom w hierarchii struktury zajmują widoki (ang. \textit{pages}), reprezentujące pełnowymiarowe ekrany aplikacji, takie jak pulpit sterowania (ang. \textit{Dashboard}), panel logowania czy szczegółowa karta konia. Każdy widok agreguje niezbędne komponenty i zarządza przepływem informacji pomiędzy nimi. Kluczowym aspektem inżynierskim jest mechanizm zarządzania stanem aplikacji, realizowany przy pomocy wbudowanych hooków biblioteki React. Hook \texttt{useState} służy do przechowywania lokalnych danych (np. treści wpisywanej w oknie asystenta NLP), natomiast hook \texttt{useEffect} odpowiada za synchronizację stanu frontendu z zewnętrznym interfejsem API. Dzięki temu aplikacja automatycznie odświeża widoki po otrzymaniu nowych danych z serwera, co jest niezbędne do poprawnego funkcjonowania dynamicznych alertów medycznych.
+
+
+
+Istotnym elementem struktury jest również katalog usług (ang. \textit{services}), w którym wyabstrahowano całą logikę komunikacji sieciowej. Dzięki centralizacji zapytań w jednym miejscu, zmiana punktów końcowych API lub modyfikacja struktury przesyłanych obiektów nie wymaga ingerencji w warstwę wizualną komponentów. Całość uzupełnia folder typów (ang. \textit{types}), gdzie zdefiniowano stałe interfejsy dla encji takich jak Konie, Kowale czy Wydarzenia. Tak zaprojektowana architektura zapewnia, że dane przepływają w sposób jednokierunkowy i przewidywalny, co minimalizuje ryzyko wystąpienia błędów synchronizacji pomiędzy interfejsem użytkownika a bazą danych PostgreSQL.
+
+\section{Realizacja procesu uwierzytelniania}
+
+Pierwszym etapem interakcji użytkownika z systemem jest proces logowania. Został on zrealizowany jako dedykowany widok, którego zadaniem jest weryfikacja tożsamości hodowcy.
+
+\subsection{Interfejs panelu logowania i mechanizm autoryzacji}
+
+Ekran logowania (Rysunek \ref{fig:logowanie}) stanowi punkt wejściowy do systemu, dlatego został zaprojektowany z naciskiem na minimalizm oraz intuicyjność. Warstwa wizualna oparta na gradientach w odcieniach zieleni buduje spójną identyfikację wizualną (ang. \textit{visual identity}) z tematyką hodowlaną aplikacji.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../public/logowanie.png} 
+    \caption{Widok panelu logowania do aplikacji \textit{Moje Konie}.}
+    \label{fig:logowanie}
+\end{figure}
+
+Z perspektywy inżynierii oprogramowania, widok ten realizuje złożony proces komunikacji z warstwą serwerową. Zaimplementowana walidacja pól formularza w czasie rzeczywistym zapobiega przesyłaniu niekompletnych żądań, co optymalizuje ruch sieciowy i poprawia interakcję z użytkownikiem. Po poprawnym wypełnieniu pól i kliknięciu przycisku uwierzytelniania, aplikacja wykonuje asynchroniczne żądanie typu POST do punktu końcowego API. 
+
+W przypadku pomyślnej weryfikacji poświadczeń, serwer zwraca token JWT (ang. \textit{JSON Web Token}), który jest następnie bezpiecznie utrwalany w pamięci lokalnej przeglądarki (ang. \textit{local storage}). Mechanizm ten pozwala na utrzymanie stanu sesji użytkownika (ang. \textit{session persistence}) oraz bezobsługowe dołączanie tokena do nagłówków kolejnych zapytań (ang. \textit{Authorization Bearer Header}). Rozwiązanie to zapewnia bezpieczeństwo przesyłanych danych oraz pozwala na bezprzeładowywanie strony (SPA) przy jednoczesnej pełnej kontroli dostępu do chronionych zasobów inwentarzowych stadniny.
+
+\section{Projekt i implementacja głównego pulpitu sterowania}
+
+Po pomyślnej autoryzacji użytkownik przekierowywany jest do głównego interfejsu zarządzania (Rysunek \ref{fig:dashboard}), który stanowi najbardziej rozbudowany moduł warstwy prezentacji. Projekt pulpitu sterowania oparto na paradygmacie maksymalnej ergonomii, co zrealizowano poprzez czytelny podział sekcji funkcjonalnych oraz asynchroniczny model zasilania interfejsu danymi.
+
+\subsection{Architektura paska nawigacji i identyfikacja wizualna}
+
+Pasek nawigacyjny (ang. \textit{Navbar}) został zaprojektowany jako element o pozycji stałej (ang. \textit{fixed}), co oznacza, że jest on trwale przytwierdzony do górnej krawędzi okna przeglądarki. W przeciwieństwie do standardowych elementów interfejsu, pasek ten nie ulega przewijaniu wraz z pozostałą zawartością strony, co zapewnia użytkownikowi natychmiastowy dostęp do kluczowych modułów systemu (Konie, Weterynarze, Kowale, Asystent) w dowolnym momencie pracy. Jest to rozwiązanie szczególnie istotne przy zarządzaniu rozbudowanymi zbiorami danych, gdzie manualne powracanie na początek długiej listy inwentarza byłoby nieefektywne i negatywnie wpływało na ergonomię pracy.
+
+W ramach komponentu zastosowano technikę segmentacji kolorystycznej w celu obniżenia obciążenia poznawczego użytkownika. Poszczególne kategorie otrzymały unikalne barwy — kolor zielony dla modułu koni oraz niebieski dla sekcji weterynaryjnej — co pozwala na błyskawiczną orientację w strukturze systemu bez konieczności analizy etykiet tekstowych. Szczególne znaczenie przypisano przyciskowi dedykowanemu asystentowi NLP, który wyróżniono kolorem fioletowym, sygnalizując jego zaawansowany charakter oparty na mechanizmach sztucznej inteligencji. Stała widoczność asystenta zachęca użytkownika do korzystania z interfejsu konwersacyjnego jako alternatywy dla tradycyjnej nawigacji.
+
+\begin{figure}[ht] 
+    \centering 
+    \includegraphics[width=1\textwidth]{../public/dashboard.png} 
+    \caption{Interfejs główny aplikacji z listą koni w układzie kafelkowym.} 
+    \label{fig:dashboard} 
+\end{figure}
+
+\subsection{Zarządzanie listą inwentarza i optymalizacja widoku}
+
+Centralny obszar pulpitu zajmuje dynamiczna siatka kart reprezentujących poszczególne zwierzęta. Dane o inwentarzu pobierane są asynchronicznie z bazy PostgreSQL, a następnie mapowane na wysokopoziomowe komponenty React. Każda karta pełni rolę kontenera informacyjnego, agregując dane tekstowe oraz multimedia. W celu poprawy interakcji z użytkownikiem zaimplementowano mechanizm podglądu zdjęć w formie pełnoekranowego modala (ang. \textit{lightbox}). Został on zrealizowany przy użyciu portali Reactowych (ang. \textit{React Portals}), co pozwala na renderowanie elementu poza główną strukturą drzewa DOM, unikając problemów z dziedziczeniem stylów i zarządzaniem indeksem warstw (ang. \textit{z-index}).
+
+\subsection{Mechanizmy filtrowania i responsywność interfejsu}
+
+Nad listą inwentarza umieszczono interaktywną wyszukiwarkę, działającą w oparciu o stan komponentu (ang. \textit{component state}). Zastosowanie wysokowydajnej metody \texttt{filter} bezpośrednio na tablicy obiektów w pamięci operacyjnej pozwala na natychmiastową aktualizację widoku po wpisaniu każdego znaku. Takie podejście eliminuje potrzebę wykonywania wielokrotnych zapytań do API podczas wyszukiwania, co znacząco redukuje opóźnienia sieciowe i obciążenie serwera.
+
+\subsection{Adaptacja do urządzeń mobilnych i Mobile First Design}
+
+Kluczowym aspektem inżynierskim było zapewnienie pełnej funkcjonalności aplikacji w środowisku mobilnym, co wynika ze specyfiki pracy w terenie. W procesie adaptacji interfejsu (Rysunek \ref{fig:mobile_view}) zastosowano strategię \textit{Mobile First}, wykorzystując system siatki frameworka Tailwind CSS. Dzięki modyfikatorom responsywnym, układ automatycznie transformuje się z wielokolumnowej siatki desktopowej do pojedynczej kolumny na smartfonach, zachowując optymalną wielkość celów dotykowych (ang. \textit{touch targets}). 
+
+Ograniczona przestrzeń ekranowa wymusiła zastosowanie menu typu hamburger oraz reorganizację elementów sterujących. Przyciski akcji zostały zoptymalizowane pod kątem obsługi kciukiem (ang. \textit{thumb-friendly design}) poprzez rozciągnięcie ich do pełnej szerokości kontenera. Tak zaprojektowana warstwa prezentacji nie stanowi jedynie uproszczonej wersji systemu, lecz jest pełnowartościowym narzędziem mobilnym, ściśle zintegrowanym z systemowym interfejsem mikrofonu, co umożliwia wydajną obsługę komend NLP bezpośrednio przy zwierzętach.
+
+\begin{figure}[H] 
+    \centering 
+    \includegraphics[width=0.4\textwidth]{../public/mobile.png} 
+    \caption{Widok responsywny aplikacji na urządzeniu mobilnym.} 
+    \label{fig:mobile_view} 
+\end{figure}
+
+\section{Szczegółowa karta konia i zarządzanie zdarzeniami}
+
+Po wybraniu konkretnego zwierzęcia z listy głównej, użytkownik zostaje przekierowany do widoku szczegółowego (Rysunek \ref{fig:horse_details}). Jest to najbardziej nasycony informacjami moduł aplikacji, który integruje dane paszportowe z dynamicznym harmonogramem opieki weterynaryjnej oraz zaawansowanym systemem zarządzania dokumentacją multimedialną.
+
+\begin{figure}[H] 
+    \centering 
+    \includegraphics[width=1\textwidth]{../public/widok_konia.png} 
+    \caption{Widok szczegółowy konia z podziałem na kolumny funkcyjne.} 
+    \label{fig:horse_details} 
+\end{figure}
+
+\subsection{Organizacja danych i panel boczny}
+
+W celu optymalizacji przestrzeni roboczej, widok został podzielony na trzy logiczne sekcje przy użyciu elastycznych kontenerów \textit{Flexbox}. Lewa kolumna pełni funkcję panelu informacyjno-zarządczego, prezentując kluczowe parametry konia, takie jak numery identyfikacyjne, rodowód oraz płeć. W ramach tej sekcji zaimplementowano szereg przycisków akcji administracyjnych, wśród których kluczową rolę odgrywa moduł edycji danych, umożliwiający modyfikację parametrów zwierzęcia za pomocą dynamicznego formularza. Kolejnym elementem jest funkcja podglądu zdarzeń, która zapewnia użytkownikowi błyskawiczny dostęp do historii aktywności powiązanych z danym osobnikiem. 
+
+Istotnym aspektem inżynierskim jest wdrożony mechanizm bezpiecznego usuwania zasobów. Przycisk „Usuń konia” został celowo wyposażony w dodatkowy krok potwierdzający, realizowany poprzez komponent typu modal, co ma na celu zapobieganie przypadkowej utracie danych przez użytkownika. Co więcej, w logice systemowej zastosowano technikę łagodnego usuwania (ang. \textit{soft delete}). Oznacza to, że rekord nie jest fizycznie usuwany z bazy danych PostgreSQL, lecz następuje jedynie zmiana wartości logicznej w dedykowanej kolumnie \texttt{active}. Takie rozwiązanie pozwala na wykluczenie obiektu z bieżącego wyświetlania w interfejsie użytkownika, przy jednoczesnym zachowaniu pełnej spójności relacyjnej bazy danych oraz integralności historycznej systemu.
+
+\subsection{Multimedialna kolumna środkowa i generowanie raportów}
+
+Środkowa sekcja koncentruje się na dokumentacji wizualnej zwierzęcia. Zaimplementowano w niej galerię zdjęć z mechanizmem dynamicznego podglądu, gdzie każde zdjęcie po kliknięciu aktywuje tryb pełnoekranowy (ang. \textit{modal view}), umożliwiając szczegółową inspekcję stanu konia. System zarządza plikami w sposób asynchroniczny, pozwalając na dodawanie nowych fotografii oraz ich trwałe usuwanie z serwera plików.
+
+Kluczową funkcjonalnością inżynierską w tym module jest system generowania raportów PDF. Po aktywacji przycisku „Stwórz raport”, aplikacja uruchamia proces agregacji danych, który zbiera informacje paszportowe, galerię oraz pełny harmonogram zdarzeń, generując ustrukturyzowany dokument. Rozwiązanie to znacząco ułatwia obieg dokumentacji w przypadku wizyt zewnętrznych lekarzy lub sprzedaży zwierzęcia.
+
+\subsection{System monitorowania zdarzeń i logika alertów}
+
+Prawa strona interfejsu zawiera moduł „Aktywne zdarzenia”, w którym wdrożono autorski system \textbf{warunkowego renderowania kolorystycznego}. Logika aplikacji w czasie rzeczywistym oblicza różnicę między datą bieżącą a terminem zabiegu, przypisując mu odpowiedni status wizualny:
+\begin{itemize}
+    \item \textbf{Kolor czerwony (Status krytyczny):} sygnalizuje zdarzenia przeterminowane, wymagające bezzwłocznej interwencji.
+    \item \textbf{Kolor pomarańczowy (Status ostrzegawczy):} aktywowany automatycznie, gdy do terminu pozostało 7 dni lub mniej, co pozwala na logistyczne zaplanowanie wizyty specjalisty.
+    \item \textbf{Kolor zielony (Status poprawny):} potwierdza aktualność zabiegów profilaktycznych.
+\end{itemize}
+
+Przeniesienie obliczeń matematycznych bezpośrednio do warstwy frontendu (ang. \textit{client-side processing}) zapewnia wysoką płynność interfejsu i natychmiastową reakcję wizualną na upływający czas bez konieczności ponownego odpytywania bazy danych.
+
+\subsection{Nawigacja dolna i filtrowanie kontekstowe}
+
+W dolnej części panelu głównego zaimplementowano zestaw przycisków typu \textit{pills}, służących do szybkiego filtrowania historii aktywności. Umożliwiają one użytkownikowi natychmiastowe przełączanie się między widokami dotyczącymi rozrodu, chorób, leczenia oraz usług kowalskich. Przyciski te zachowują spójność kolorystyczną z systemem nawigacji globalnej, co minimalizuje wysiłek poznawczy użytkownika podczas nawigacji po złożonej strukturze danych medycznych.
+
+\section{Projekt i implementacja modułów formularzy}
+
+Kluczowym elementem interakcji z relacyjną bazą danych stadniny są formularze systemowe, które umożliwiają zarówno wprowadzanie nowych osobników do inwentarza, jak i aktualizację informacji o już istniejących koniach. Interfejs wprowadzania danych (Rysunek \ref{fig:add_horse_form}) został zaprojektowany w formie centralnie umieszczonej karty, co zapewnia spójność wizualną z ekranem logowania i buduje jednolite doświadczenie użytkownika. Zastosowanie pionowego układu pól (ang. \textit{stacked layout}) znacząco poprawia czytelność interfejsu oraz ułatwia wypełnianie danych na urządzeniach mobilnych, co jest priorytetem w specyficznych warunkach pracy terenowej.
+
+\begin{figure}[H] 
+    \centering 
+    \includegraphics[width=0.9\textwidth]{../public/dodaj_konia.png} 
+    \caption{Widok formularza dodawania nowego konia do systemu.} 
+    \label{fig:add_horse_form} 
+\end{figure}
+
+W celu optymalizacji struktury kodu oraz ułatwienia późniejszej konserwacji systemu, zaimplementowano mechanizm komponentu współdzielonego. Dzięki tej architekturze, moduł edycji danych wykorzystuje tę samą strukturę i logikę co formularz dodawania. Różnica polega na automatycznej inicjalizacji pól (ang. \textit{pre-filling}) aktualnymi danymi pobranymi asynchronicznie z bazy danych dla konkretnego rekordu, co minimalizuje redundancję kodu źródłowego i ułatwia wprowadzanie zmian w walidacji czy układzie graficznym.
+
+\subsection{Techniczna obsługa danych wejściowych i multimediów}
+
+Implementacja formularzy opiera się na zaawansowanej koncepcji komponentów kontrolowanych (ang. \textit{controlled components}), co gwarantuje pełną kontrolę nad stanem aplikacji w każdej milisekundzie interakcji. Wykorzystanie hooka \texttt{useState} do przechowywania złożonego obiektu reprezentującego dane konia pozwala na dynamiczną aktualizację odpowiednich kluczy w stanie przy każdej zmianie w polu tekstowym lub liście rozwijanej. Interfejs wymusza zachowanie poprawnych formatów danych poprzez zastosowanie natywnych typów pól HTML5, co stanowi pierwszą warstwę walidacji i zapobiega przesyłaniu błędnych informacji do interfejsu API.
+
+Ważnym aspektem inżynierskim jest obsługa plików multimedialnych. Ostatnie pole formularza umożliwia załadowanie zdjęcia konia, przy czym system na poziomie frontendu generuje natychmiastowy podgląd wybranego pliku, podnosząc komfort pracy użytkownika. Ze względu na obecność załączników binarnych, proces przesyłania danych realizowany jest za pomocą zapytań typu \texttt{multipart/form-data}. Pozwala to na poprawne i bezpieczne przesłanie zarówno ustrukturyzowanych danych tekstowych w formacie JSON, jak i surowych danych binarnych obrazu w ramach jednego żądania HTTP. Po pomyślnym zakończeniu transakcji, system realizuje automatyczne przekierowanie do widoku szczegółowego, co zapewnia ciągłość pracy (ang. \textit{uninterrupted workflow}) i natychmiastowe potwierdzenie zapisu danych.
+
+\section{Moduły zestawień i zarządzania zdarzeniami}
+
+Dla każdej zdefiniowanej w systemie kategorii zdarzeń, obejmującej profilaktykę, leczenie, rozród, usługi kowalskie oraz ewidencję chorób, zaprojektowano dedykowane widoki zestawień (Rysunki od \ref{fig:lista_profilaktyka} do \ref{fig:lista_leczenia}). Ich wspólną cechą konstrukcyjną jest przejrzysty i responsywny układ tabelaryczny, który umożliwia kadrze zarządzającej stadniną szybką analizę historycznych oraz planowanych działań w kontekście konkretnego osobnika. Zastosowanie ujednoliconego interfejsu dla różnych typów danych redukuje obciążenie poznawcze użytkownika i minimalizuje ryzyko błędnej interpretacji wpisów.
+
+\subsection{Funkcjonalności wspólne widoków list}
+
+Interfejsy zestawień zostały zaprojektowane w sposób umożliwiający pełną kontrolę nad cyklem życia danych, realizując wzorzec \textit{Full CRUD} (ang. \textit{Create, Read, Update, Delete}). Kluczowym elementem operacyjnym jest przycisk dodawania nowego wydarzenia, umieszczony centralnie nad obszarem tabeli, który inicjuje wywołanie odpowiedniego formularza kontekstowego. Każdy wiersz zestawienia wyposażono w interaktywną ikonę edycji, która pozwala na otwarcie formularza z automatycznie wstrzykniętymi danymi bieżącego wpisu, co znacząco przyspiesza proces korekty informacji.
+W celu zapewnienia najwyższej jakości danych, system umożliwia również trwałe usuwanie rekordów wprowadzonych błędnie, co jest niezbędne dla zachowania czystości bazy danych PostgreSQL. Integralną częścią nawigacji w tych modułach jest przycisk powrotu, który pozwala na intuicyjne przejście wsteczne do widoku szczegółowego konia przy jednoczesnym zachowaniu kontekstu przeglądanego zwierzęcia, co zapewnia płynność nawigacji (ang. \textit{user flow}).
+
+\subsection{Szczegółowa charakterystyka widoków tabelarycznych}
+Poniżej przedstawiono opis pięciu kluczowych zestawień zaimplementowanych w systemie:
+
+\begin{enumerate}
+    \item \textbf{Zestawienie zdarzeń profilaktycznych (Rysunek \ref{fig:lista_profilaktyka}):} 
+    Tabela gromadzi dane o szczepieniach, odrobaczaniach i wizytach specjalistów. Podobnie jak na karcie głównej, zastosowano tu barwne wyróżnienie dat ważności (kolor czerwony dla terminów minionych, zielony dla aktualnych), co pozwala na błyskawiczną weryfikację statusu profilaktyki.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{../public/lista_profilaktyka.png}
+        \caption{Zestawienie zdarzeń profilaktycznych konia.}
+        \label{fig:lista_profilaktyka}
+    \end{figure}
+
+    \item \textbf{Historia rozrodów (Rysunek \ref{fig:lista_rozrody}):} 
+    Widok ten prezentuje chronologiczną listę działań hodowlanych. W przypadku braku danych, system wyświetla czytelny komunikat „Brak wydarzeń”, co zapobiega pomyłkom interpretacyjnym.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{../public/lista_rozrody.png}
+        \caption{Widok historii zdarzeń rozrodczych.}
+        \label{fig:lista_rozrody}
+    \end{figure}
+
+    \item \textbf{Ewidencja chorób (Rysunek \ref{fig:lista_choroby}):} 
+    W tej tabeli kluczową rolę odgrywa kolumna „Data zakończenia”. Jeśli choroba jest wciąż leczona, system wyświetla pogrubiony, czerwony komunikat „Niewyleczona”, co priorytetyzuje ten rekord w uwadze hodowcy.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{../public/lista_choroby.png}
+        \caption{Lista zarejestrowanych jednostek chorobowych.}
+        \label{fig:lista_choroby}
+    \end{figure}
+
+    \item \textbf{Rejestr podkuć (Rysunek \ref{fig:lista_podkucia}):} 
+    Tabela ta umożliwia śledzenie terminów wizyt kowala. Wyraźne zestawienie daty wykonania usługi z datą jej ważności pozwala na planowanie kolejnych zabiegów z odpowiednim wyprzedzeniem.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{../public/lista_podkucia.png}
+        \caption{Zestawienie historii usług kowalskich.}
+        \label{fig:lista_podkucia}
+    \end{figure}
+
+    \item \textbf{Dziennik leczenia (Rysunek \ref{fig:lista_leczenia}):} 
+    Widok integrujący informacje o weterynarzu, chorobie oraz szczegółowy opis zastosowanej terapii. Jest to kluczowe źródło informacji podczas wizyt kontrolnych specjalistów.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=1\textwidth]{../public/lista_leczenia.png}
+        \caption{Widok szczegółowego dziennika leczenia konia.}
+        \label{fig:lista_leczenia}
+    \end{figure}
+\end{enumerate}
+
+
+\section{Szczegółowy opis modułów rejestracji zdarzeń}
+
+W ramach widoku szczegółowego konia zaimplementowano szereg dedykowanych formularzy operacyjnych, które odpowiadają za cyfrowy zapis cyklu życia zwierzęcia w stadninie oraz kompleksową ewidencję jego opieki zdrowotnej. Projekt każdego z modułów podporządkowano kryteriom maksymalnej użyteczności (ang. \textit{usability}) oraz ergonomii pracy w specyficznym środowisku hodowlanym, przy jednoczesnym zachowaniu pełnej spójności wizualnej z pozostałymi elementami systemu.
+
+\subsection{Charakterystyka poszczególnych modułów operacyjnych}
+
+Poniżej przedstawiono analizę techniczną pięciu kluczowych formularzy zdarzeń:
+
+\begin{enumerate}
+    \item \textbf{Moduł rejestracji usług kowalskich:} 
+    Formularz (Rysunek \ref{fig:form_podkucie}) umożliwia przypisanie konkretnego specjalisty (kowala przypisanego do danej hodowli) do konia oraz określenie dwóch kluczowych dat: daty wykonania usługi oraz przewidywanej daty ważności podkucia. System posiada zaimplementowaną logikę domyślnych interwałów ważności, które są sugerowane automatycznie na podstawie rodzaju konia. Pozwala to na precyzyjne wyliczanie alertów wyświetlanych w głównym panelu zarządzania.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../public/form_podkucie.png}
+        \caption{Formularz dodawania zdarzenia podkucia.}
+        \label{fig:form_podkucie}
+    \end{figure}
+
+    \item \textbf{Moduł ewidencji chorób:} 
+    Służy do rejestrowania jednostek chorobowych (Rysunek \ref{fig:form_choroba}). Unikalną cechą tego formularza jest pole „Data Zakończenia”, które domyślnie pozostaje puste. Rozwiązanie to pozwala na równoległe prowadzenie ewidencji zarówno chorób aktywnych, jak i tych zakończonych, co jest kluczowe dla zachowania ciągłości i kompletności historii medycznej zwierzęcia.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../public/form_choroba.png}
+        \caption{Formularz rejestracji jednostki chorobowej.}
+        \label{fig:form_choroba}
+    \end{figure}
+
+    \item \textbf{Moduł zdarzeń rozrodczych:} 
+    Interfejs ten (Rysunek \ref{fig:form_rozrod}) wprowadza szczegółową kategoryzację działań hodowlanych. Użytkownik ma do wyboru predefiniowane zdarzenia, takie jak: inseminacja, sprawdzenie źrebności, wyźrebienie oraz opcję „Inne”. Dzięki integracji z listą weterynarzy, każda czynność rozrodcza jest ściśle powiązana z konkretnym specjalistą, co ułatwia późniejszą analizę skuteczności działań hodowlanych.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../public/form_rozrod.png}
+        \caption{Formularz rejestracji zdarzenia rozrodczego.}
+        \label{fig:form_rozrod}
+    \end{figure}
+
+    \item \textbf{Moduł planowania i rejestracji leczenia:} 
+    Ten komponent (Rysunek \ref{fig:form_leczenie}) stanowi łącznik między zdiagnozowaną chorobą a konkretną interwencją medyczną. Wybór zdefiniowanej wcześniej jednostki chorobowej z dynamicznej listy rozwijanej zapewnia spójność relacyjną w bazie danych i zapobiega powstawaniu błędnych wpisów.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../public/form_leczenie.png}
+        \caption{Formularz przypisania leczenia do zarejestrowanej choroby.}
+        \label{fig:form_leczenie}
+    \end{figure}
+
+    \item \textbf{Moduł zdarzeń profilaktycznych:} 
+    Służy do obsługi rutynowych zabiegów, takich jak: szczepienie, odrobaczanie, podanie suplementów, wizyta dentysty oraz inne czynności profilaktyczne (Rysunek \ref{fig:form_profilaktyka}). Podobnie jak w poprzednich modułach, zawiera on pole „Data ważności”. Pole to jest uzupełniane automatycznie po wyborze konkretnego rodzaju zdarzenia, stanowiąc fundament dla systemowego mechanizmu wizualnych alertów przypominających o konieczności powtórzenia zabiegu.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{../public/form_profilaktyka.png}
+        \caption{Formularz rejestracji zabiegu profilaktycznego.}
+        \label{fig:form_profilaktyka}
+    \end{figure}
+\end{enumerate}
+
+\subsection{Wspólne cechy implementacyjne}
+
+Wszystkie powyższe formularze charakteryzują się wysokim stopniem reużywalności kodu (ang. \textit{code reuse}). Zostały one zbudowane w oparciu o wspólny wzorzec komponentu (ang. \textit{generic component pattern}), co znacząco ułatwia skalowanie i konserwację oprogramowania. Wykorzystują one centralny mechanizm walidacji po stronie klienta, który blokuje możliwość wysłania żądania do serwera, dopóki kluczowe pola nie zostaną uzupełnione. Dane przesyłane są asynchronicznie, co pozwala na zachowanie płynności pracy z interfejsem bez konieczności przeładowywania widoku.
+
+
+\section{Zarządzanie bazą specjalistów zewnętrznych}
+
+W celu zapewnienia pełnej integracji danych medycznych oraz technicznych, w aplikacji zaimplementowano dedykowane moduły zarządzania bazą specjalistów zewnętrznych: lekarzy weterynarii oraz kowali. Z punktu widzenia inżynierii systemów informatycznych, rozwiązanie to pozwala na uniknięcie redundancji danych oraz wielokrotnego, manualnego wprowadzania tych samych informacji kontaktowych podczas rejestracji poszczególnych zdarzeń w kartotece konia. Moduły te pełnią funkcję centralnego repozytorium kontaktów (ang. \textit{directory service}) stadniny, co znacząco optymalizuje procesy administracyjne i komunikacyjne.
+
+\subsection{Ewidencja lekarzy weterynarii}
+
+Główny widok modułu zarządzania bazą weterynarzy (Rysunki od \ref{fig:lista_weterynarzy} do \ref{fig:edytuj_weterynarza}) prezentuje ustrukturyzowane zestawienie wszystkich specjalistów współpracujących z hodowlą. Interfejs oparto na dynamicznej tabeli, w której zaimplementowano dedykowane mechanizmy obsługi danych opcjonalnych. W sytuacjach braku wprowadzonego numeru telefonu, system generuje komunikat „Brak danych” w stonowanej kolorystyce, co pozwala na zachowanie estetyki interfejsu przy jednoczesnym dostarczeniu jasnej informacji użytkownikowi. Każdy rekord w tabeli zintegrowany jest z systemem akcji, gdzie za pomocą dedykowanych ikon wywoływane są formularze edycji lub procedury usuwania specjalisty z bazy danych.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../public/lista_weterynarzy.png}
+    \caption{Widok listy zarejestrowanych lekarzy weterynarii.}
+    \label{fig:lista_weterynarzy}
+\end{figure}
+
+W procesie rejestracji nowych lekarzy (Rysunek \ref{fig:dodaj_weterynarza}) oraz aktualizacji ich danych (Rysunek \ref{fig:edytuj_weterynarza}), zastosowano mechanizmy walidacji danych wejściowych, zapewniające integralność informacji przechowywanych w systemie. Formularze edycyjne posiadają również funkcję trwałego usunięcia rekordu, co umożliwia bieżące zarządzanie aktualnością kadry współpracującej.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../public/dodaj_weterynarza.png}
+    \caption{Formularz rejestracji nowego weterynarza.}
+    \label{fig:dodaj_weterynarza}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../public/edytuj_weterynarza.png}
+    \caption{Interfejs edycji danych weterynarza z funkcją usuwania.}
+    \label{fig:edytuj_weterynarza}
+\end{figure}
+
+\subsection{Ewidencja usług kowalskich}
+
+Moduł zarządzania bazą kowali (Rysunki od \ref{fig:lista_kowali} do \ref{fig:edytuj_kowala}) został zaimplementowany w sposób analogiczny do modułu weterynarzy, co stanowi praktyczną realizację zasady wysokiej reużywalności komponentów warstwy prezentacji. Z perspektywy projektowania interfejsów, zastosowanie identycznego układu tabelarycznego oraz spójnego schematu kolorystycznego dla obu grup specjalistów drastycznie zmniejsza obciążenie poznawcze użytkownika (ang. \textit{cognitive load}). Dzięki temu hodowca, operując w różnych sekcjach systemu, wykorzystuje te same wyuczone schematy poruszania się po interfejsie (ang. \textit{mental models}), co podnosi ogólną efektywność obsługi aplikacji.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{../public/lista_kowali.png}
+    \caption{Widok zestawienia współpracujących kowali.}
+    \label{fig:lista_kowali}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../public/dodaj_kowala.png}
+    \caption{Formularz dodawania nowego kowala.}
+    \label{fig:dodaj_kowala}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../public/edytuj_kowala.png}
+    \caption{Interfejs edycji danych kowala.}
+    \label{fig:edytuj_kowala}
+\end{figure}
+
+\subsection{Techniczna realizacja modułów specjalistów}
+
+Komunikacja z warstwą serwerową odbywa się w oparciu o pełną implementację metod protokołu HTTP (\texttt{GET, POST, PUT, DELETE}), co pozwala na realizację wszystkich operacji typu CRUD. Spójność doświadczenia użytkownika (ang. \textit{UX consistency}) zapewniona została poprzez wykorzystanie biblioteki \textbf{Lucide React} dla ikonografii oraz frameworka \textbf{Tailwind CSS} dla stylizacji, co gwarantuje, że modularna budowa frontendu idzie w parze z ujednoliconym wyglądem wszystkich formularzy systemowych.
+
+\section{Zaawansowane mechanizmy zbiorczego przetwarzania danych}
+
+Moduł „Wydarzenia w stajni” stanowi najbardziej złożony element warstwy prezentacji pod względem agregacji i korelacji informacji. Został on zaprojektowany, aby pełnić rolę cyfrowego dziennika operacyjnego stadniny, w którym dane pochodzące z wielu relacji bazy danych — w tym parametry koni, dane specjalistów oraz kategorie zdarzeń medycznych — zbiegają się w jeden, spójny strumień informacyjny (Rysunek \ref{fig:wydarzenia_tabela}). Z perspektywy inżynierii danych, moduł ten realizuje funkcję zunifikowanego widoku procesowego, umożliwiając nadzór nad całością działań profilaktycznych i leczniczych w gospodarstwie.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{../public/wydarzenia_stajnia.png}
+    \caption{Zbiorcze zestawienie wydarzeń dla całej hodowli z systemem dynamicznego sortowania i alertami terminów.}
+    \label{fig:wydarzenia_tabela}
+\end{figure}
+
+\subsection{Architektura panelu analitycznego i optymalizacja wydajności interfejsu}
+
+Główna tabela modułu wykracza poza ramy pasywnego arkusza danych, stanowiąc aktywne narzędzie analityczne wspierające procesy decyzyjne. W celu zapewnienia maksymalnej wydajności pracy (ang. \textit{performance efficiency}), wdrożono mechanizm dynamicznego sortowania dla każdej kolumny danych. Pozwala to na natychmiastową identyfikację priorytetowych zadań, takich jak zbliżające się terminy szczepień czy najdawniej wykonane zabiegi kowalskie.
+
+Istotnym usprawnieniem technologicznym jest implementacja wielokryterialnego wyszukiwania dynamicznego. Funkcja ta operuje bezpośrednio na lokalnym stanie komponentu (ang. \textit{local state}), przeszukując dane w czasie rzeczywistym. Dzięki przeniesieniu logiki filtrowania na stronę klienta, system eliminuje konieczność generowania kosztownych zapytań do bazy danych przy każdym wprowadzeniu znaku, co zapewnia płynność działania interfejsu. Ergonomię modułu wspiera heurystyka kolorystyczna oparta na psychologii barw; intensywna czerwień w kolumnach terminowych pełni rolę krytycznego alertu, minimalizując ryzyko błędu ludzkiego w nadzorze nad profilaktyką zdrowotną. Ponadto, w celu zachowania wysokiej sprawności renderowania (ang. \textit{render performance}) na urządzeniach mobilnych, zaimplementowano mechanizm responsywnego stronicowania (ang. \textit{pagination}), zapobiegający przeciążeniu pamięci przeglądarki przy obszernych zbiorach danych historycznych.
+
+\subsection{Implementacja logiki masowej selekcji i operacji seryjnych}
+
+Autorski projekt formularza seryjnego dodawania zdarzeń (Rysunek \ref{fig:dodaj_seryjnie}) stanowi rozwiązanie problemu wysokiej powtarzalności zadań administracyjnych w stadninie. Z punktu widzenia inżynierii oprogramowania, moduł ten gwarantuje atomowość i spójność danych podczas wykonywania operacji masowych na wielu rekordach jednocześnie. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{../public/dodaj_seryjnie.png}
+    \caption{Zaawansowany interfejs seryjnego dodawania zdarzeń z filtrami logicznymi grup zwierząt.}
+    \label{fig:dodaj_seryjnie}
+\end{figure}
+
+Proces zarządczy opiera się na dynamicznej tablicy identyfikatorów, modyfikowanej przez dwustopniowy mechanizm selekcji. Pierwszy etap obejmuje wykorzystanie filtrów makroskopowych, które poprzez iterację po obiektach w pamięci aplikacji pozwalają na błyskawiczne pogrupowanie zwierząt według kategorii, takich jak „Konie sportowe” czy „Źrebaki”. Drugi etap stanowi mikroselekcja manualna realizowana poprzez komponent \textit{Multi-select Overlay} (Rysunek \ref{fig:lista_wyboru_konie}), umożliwiająca finalną weryfikację listy docelowej. Dzięki zastosowaniu obszarów przewijanych (ang. \textit{scrollable areas}), interfejs pozostaje czytelny nawet przy obsłudze bardzo licznych stad.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{../public/lista_wyboru_konie.png}
+    \caption{Szczegółowy widok nakładki (overlay) do precyzyjnego zarządzania listą wybranych osobników.}
+    \label{fig:lista_wyboru_konie}
+\end{figure}
+
+\subsection{Wpływ na efektywność procesów biznesowych}
+
+Zastosowanie opisanych mechanizmów w praktyce hodowlanej drastycznie redukuje tzw. koszt interakcji (ang. \textit{interaction cost}). Poprzez zastąpienie wielokrotnego wypełniania identycznych formularzy sekwencją selekcji grupowej i pojedynczego zatwierdzenia, system minimalizuje czas potrzebny na administrację inwentarza. Przekłada się to bezpośrednio na realne oszczędności czasowe kadry stajennej oraz eliminację błędów wynikających z monotonii wprowadzania danych, co podnosi ogólny poziom bezpieczeństwa i jakości zarządzania stadniną.
+
+\section{Innowacyjny interfejs Asystenta NLP (Natural Language Processing)}
+
+Sercem aplikacji „Moje Konie” jest moduł inteligentnego asystenta, który rewolucjonizuje paradygmat zarządzania danymi w środowisku hodowlanym. Rozwiązanie to zastępuje tradycyjne, czasochłonne wypełnianie formularzy interfejsem konwersacyjnym, umożliwiając komunikację z systemem za pomocą języka naturalnego. Użytkownik może wydawać polecenia zarówno w formie tekstowej, jak i głosowej, co znacząco obniża barierę wejścia i przyspiesza proces cyfryzacji zdarzeń stajennych.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../public/asystent_pusty.png}
+    \caption{Interfejs czatu z Asystentem przed wprowadzeniem zapytania.}
+    \label{fig:asystent_pusty}
+\end{figure}
+
+\subsection{Architektura komunikacji z modelem Gemini}
+
+Interfejs asystenta (Rysunek \ref{fig:asystent_pusty}) charakteryzuje się minimalistycznym wzornictwem, co ma na celu skupienie uwagi użytkownika na interakcji głosowo-tekstowej. Pod warstwą wizualną moduł ten realizuje złożony, wieloetapowy proces przetwarzania informacji.
+
+\begin{itemize}
+    \item \textbf{Przetwarzanie mowy na tekst (ang. \textit{Speech-to-Text}, STT):} Dzięki integracji interfejsu z systemowym modułem mikrofonu (oznaczonym żółtą ikoną w polu wprowadzania), użytkownik ma możliwość głosowego dyktowania komend. Rozwiązanie to jest kluczowe z punktu widzenia ergonomii pracy w warunkach stajennych, gdzie bezpośrednia obsługa manualna urządzenia jest często utrudniona ze względu na konieczność jednoczesnego sprawowania opieki nad zwierzęciem.
+    \item \textbf{Wieloetapowa klasyfikacja i inżynieria podpowiedzi (ang. \textit{Prompt Engineering}):} Proces przetwarzania zapytania użytkownika rozpoczyna się od przesłania ciągu tekstowego do klasyfikatora. Jego zadaniem jest rozpoznanie intencji (ang. \textit{intent recognition}) i dopasowanie zapytania do właściwego punktu końcowego (ang. \textit{endpoint}) interfejsu API. W kolejnym etapie, przy wykorzystaniu technik inżynierii podpowiedzi, do modelu Gemini 2.5 Pro przesyłany jest dedykowany dla danego zadania prompt kontekstowy, wzbogacony o niezbędne dane systemowe (np. listy identyfikatorów koni czy dane kontaktowe specjalistów). Szczegółowy opis mechanizmu decyzyjnego oraz struktury promptów został zawarty w rozdziale poświęconym implementacji asystenta inteligentnego.
+    \item \textbf{Realizacja operacji i zwrotna informacja wizualna:} Po przetworzeniu instrukcji przez model językowy, system wykonuje zaprogramowaną logikę biznesową bezpośrednio na bazie danych (np. utrwalenie nowego rekordu lub aktualizacja statusu). Wynik operacji przesyłany jest asynchronicznie do warstwy prezentacji, gdzie komponent asystenta generuje ustrukturyzowaną odpowiedź. Łączy ona naturalny komunikat tekstowy z elementami graficznymi (ang. \textit{UI cards}), co pozwala użytkownikowi na natychmiastową weryfikację poprawności wykonanego zadania bez konieczności opuszczania widoku czatu.
+\end{itemize}
+
+\subsection{Praktyczne zastosowanie: Automatyzacja kartoteki}
+
+Asystent wykracza poza ramy prostego bota informacyjnego, pełniąc funkcję aktywnego agenta z uprawnieniami do modyfikacji stanów bazy danych. Na Rysunku \ref{fig:asystent_kowal} przedstawiono proces automatycznego dodawania specjalisty do bazy. Dzięki mechanizmowi rozpoznawania encji nazwanych (ang. \textit{Named Entity Recognition}, NER), system samodzielnie identyfikuje imię, nazwisko, profesję oraz numer telefonu wewnątrz swobodnej wypowiedzi, eliminując potrzebę ręcznego przełączania się pomiędzy widokami i wypełniania pól formularza.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../public/asystent_kowal.png}
+    \caption{Przykład komendy dodającej nowego kowala wraz z numerem telefonu.}
+    \label{fig:asystent_kowal}
+\end{figure}
+
+\subsection{Zaawansowane operacje seryjne przez AI}
+
+Największą przewagę technologiczną asystenta widać przy realizacji operacji masowych (ang. \textit{bulk operations}). Tradycyjne seryjne rejestrowanie zdarzeń wymaga złożonej nawigacji i manualnej selekcji zwierząt z listy, podczas gdy interfejs NLP pozwala na redukcję tego procesu do pojedynczej komendy (Rysunek \ref{fig:asystent_podkucie}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../public/asystent_podkucie.png}
+    \caption{Seryjne dodawanie zdarzenia podkucia dla wszystkich koni za pomocą jednej komendy.}
+    \label{fig:asystent_podkucie}
+\end{figure}
+
+Komenda: \textit{„Dziś przyjechał Marek i podkuł wszystkie konie”} jest interpretowana przez system w następujący sposób:
+
+\begin{enumerate}
+    \item \textbf{Rozpoznanie specjalisty:} System kojarzy imię „Marek” z kowalem Markiem Grechutą zapisanym w bazie.
+    \item \textbf{Identyfikacja grupy docelowej:} Fraza „wszystkie konie” powoduje pobranie listy wszystkich aktywnych identyfikatorów zwierząt w hodowli.
+    \item \textbf{Ustalenie dat:} Słowo „Dziś” automatycznie generuje datę systemową oraz wylicza datę ważności zabiegu.
+\end{enumerate}
+
+Po przetworzeniu, asystent zwraca listę koni, których dane zostały zaktualizowane. Jest to potężne narzędzie, które przekształca aplikację z pasywnej bazy danych w aktywnego partnera w zarządzaniu stadniną.
+
+\section{Moduł personalizacji i ustawień powiadomień}
+
+Ostatnim istotnym elementem warstwy prezentacji jest panel ustawień (Rysunek \ref{fig:ustawienia}), który umożliwia użytkownikowi pełną personalizację systemu powiadomień. Z punktu widzenia użyteczności, moduł ten pełni funkcję centrum konfiguracyjnego, pozwalającego na dostosowanie automatycznych przypomnień do indywidualnego harmonogramu pracy stajni.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{../public/ustawienia.png}
+    \caption{Widok panelu ustawień powiadomień i zarządzania kontem.}
+    \label{fig:ustawienia}
+\end{figure}
+
+Interfejs został zaprojektowany w formie listy kategorii zdarzeń (Podkucia, Odrobaczanie, Podanie Suplementów, Szczepienie, Dentysta), gdzie dla każdego typu operacji użytkownik może niezależnie zdefiniować parametry wyzwalania alertów. Implementacja techniczna pozwala na określenie liczby dni poprzedzających zdarzenie, precyzyjnej godziny wysyłki oraz preferowanego kanału komunikacji. System przewiduje trzy warianty powiadamiania: drogę elektroniczną (Email), powiadomienia systemowe oraz opcję „Oba”. Wybór opcji łączonej jest przygotowaniem pod planowaną rozbudowę systemu o natywne powiadomienia typu \textit{push}, co dodatkowo zwiększy responsywność aplikacji na urządzeniach mobilnych.
+
+Poza konfiguracją alertów, panel oferuje funkcje zarządzania bezpieczeństwem konta. Użytkownik ma możliwość wywołania procedury zmiany hasła poprzez dedykowany przycisk akcji, co inicjuje bezpieczny przepływ danych (ang. \textit{secure flow}) do warstwy serwerowej. Całość logiki zapisu ustawień realizowana jest asynchronicznie, a natychmiastowa informacja zwrotna o powodzeniu operacji zapewnia poczucie kontroli nad stanem konfiguracji systemu.
+
+\section{Podsumowanie rozdziału}
+
+Podsumowując, implementacja warstwy prezentacji aplikacji \textit{Moje Konie} stanowi kompleksową realizację nowoczesnego interfejsu webowego, który łączy wysoką wydajność technologiczną z zaawansowaną ergonomią użytkowania. Wykorzystanie biblioteki \textbf{React.js} w połączeniu z językiem \textbf{TypeScript} pozwoliło na stworzenie skalowalnej, modularnej architektury, która gwarantuje bezpieczeństwo typów oraz płynność renderowania danych w czasie rzeczywistym. Dzięki zastosowaniu podejścia \textit{Mobile First} oraz frameworka \textbf{Tailwind CSS}, system jest w pełni responsywny i zoptymalizowany pod kątem specyficznych warunków pracy terenowej, zapewniając czytelność i wygodę obsługi na urządzeniach przenośnych.
+
+Kluczowym osiągnięciem inżynierskim opisanym w niniejszym rozdziale jest udana integracja tradycyjnych modułów zarządzania bazodanowego z innowacyjnym interfejsem \textbf{Asystenta NLP}. Mechanizm ten, oparty na modelu językowym Gemini 2.5 Pro, transformuje interakcję z systemem z pasywnego wprowadzania danych w aktywny dialog, co drastycznie redukuje koszt interakcji i minimalizuje ryzyko błędów ludzkich przy rejestracji zdarzeń. Wdrożone zaawansowane mechanizmy zbiorczego przetwarzania informacji, automatyzacja generowania raportów PDF oraz systemy wizualnych alertów sprawiają, że warstwa prezentacji staje się inteligentnym narzędziem wydatnie wspierającym procesy decyzyjne i operacyjne w nowoczesnej stadninie.
