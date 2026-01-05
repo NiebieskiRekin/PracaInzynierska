@@ -1,0 +1,16 @@
+Design patterns (wzorce projektowe, https://refactoring.guru/design-patterns/catalog):
+- **Facade**
+  - tworzenie obiektu apiRoutes do ponownego użycia przez ApiClient w `apps/backend/src/routes/index.ts`. Korzysta z semantyki wzorca **Builder** z frameworka Hono.
+  - utworzenie funkcji do wysyłki powiadomienia email w `apps/backend/src/crons/mailer.ts`
+  - utworzenie funkcji do logowania zdarzeń `apps/backend/src/logs/logger.ts`
+- **Singleton** - tworzenie wyłącznie jednego obiektu do interakcji z bazą danych w `apps/backend/src/db/index.ts`
+- **Adapter** - dostosowanie funkcjonalności do logowania zdarzeń dot. zapytań do bazy danych z pakietu Drizzle do formatu dedykowanego rozwiązania loggera Winston w `apps/backend/src/db/logger.ts`
+- **Decorator**:
+  - zastosowanie funkcji uwierzytelniających z `apps/backend/src/middleware/auth.ts` przed endpoitami wymagającymi uwierzytelnienia korzystając z `use(authMiddleware)`
+  - zastosowanie funkcji `describeRoute` przed wszystkimi endpointami w celu wzbogacenia ich o dokumentację OpenAPI
+- **Listener** - implementacja metody detekcji awarii heartbeat korzystając z endpointa wystawionego w `apps/backend/src/routes/healthcheck.ts` i monitorowanie go za pomocą docker healthcheck i systemu monitorowania Netdata
+- **Proxy**
+  - użycie Traefik jako Reverse Proxy w celu automatycznej obsługi szyfrowania i certyfikatów TLS oraz przekształcenia żądań HTTP na podany zasób np. /api do odpowiedniego procesu (backendu w tym przypadku); odpowiedni kod w `docker-compose.lb-db.yml`
+  -  przekazywanie zapytań w języku naturalnym do LLM Gemini przez backend w celu ochrony wrażliwych tokenów uwierzytelniających, uproszczenia integracji bez konieczności dodatkowej konfiguracji po stronie użytkownika i wstrzykiwaniu odpowiednich promptów; odpowiedni kod w `apps/backend/src/routes/chat`
+- **Composite** - Tworzenie interaktywnych widoków w oparciu o współdzielone definicje komponentów w `apps/frontend/src/components/components`
+- **Strategy** + **Chain of Responsibility** - wykorzystanie lokalnego klasyfikatora lub użycie dedykowanego modelu LLM przez API w funkcjach o kompatybilnych interfejsach w zależności od złożoności zapytania / pewności lokalnej klasyfikacji
