@@ -41,19 +41,11 @@ Celem pracy jest opracowanie aplikacji webowej \textit{Moje Konie} wykorzystują
 	
 	Z punktu widzenia technologii, NLP jest ściśle powiązane z takimi dziedzinami jak lingwistyka komputerowa, uczenie maszynowe, analiza tekstu i statystyka. W ciągu ostatnich kilku lat, dzięki postępom w głębokich sieciach neuronowych i modelach językowych, NLP osiągnęło ogromny postęp, umożliwiając bardziej precyzyjne rozumienie i generowanie tekstu.
 	
-	\section{Modele osadzenia słów}
-	
-	Jednym z najważniejszych osiągnięć w dziedzinie NLP jest koncepcja \textit{osadzenia słów} (ang. word embeddings), które stanowią matematyczne reprezentacje słów w przestrzeni wektorowej. Celem osadzenia słów jest odwzorowanie słów w przestrzeni, w której słowa o podobnym znaczeniu mają podobne reprezentacje numeryczne, czyli znajdują się blisko siebie w tej przestrzeni.
+	Jednym z najważniejszych osiągnięć w dziedzinie NLP jest koncepcja \textit{osadzenia słów} (ang. word embeddings), które stanowią matematyczne reprezentacje słów w przestrzeni wektorowej. Celem osadzenia słów jest odwzorowanie słów w przestrzeni, w której słowa o~podobnym znaczeniu mają podobne reprezentacje numeryczne, czyli znajdują się blisko siebie w tej przestrzeni.
 	
 	Do najbardziej popularnych algorytmów tworzenia osadzeń słów należą modele \textit{Word2Vec}, \textit{GloVe} oraz nowsze podejścia oparte na transformatorach, takie jak \textit{BERT} czy \textit{GPT}. W tych modelach każde słowo w tekście jest reprezentowane przez wektor liczb, który odzwierciedla jego semantykę oraz kontekst użycia. Modele te bazują na analizie kontekstów słów w dużych korpusach tekstów, co pozwala na wyłapywanie zależności pomiędzy słowami.
 	
-	Szczególnie istotnym rozszerzeniem jest \textit{Sentence-BERT (SBERT)}, umożliwiający tworzenie wektorów reprezentujących całe zdania, co czyni go niezwykle użytecznym w klasyfikacji tekstu, wyszukiwaniu informacji czy dopasowaniu zapytań \cite[p.~111]{reimers2019sentencebert}.
-	
-	\section{Podobieństwo kosinusowe}
-	
-	Po utworzeniu osadzenia słów, kolejnym krokiem w NLP jest ocena podobieństwa między różnymi wektorami. Najczęściej używaną miarą w tym przypadku jest podobieństwo kosinusowe (ang. \textit{cosine similarity}), które mierzy kąt między dwoma wektorami w przestrzeni wektorowej. Miara ta jest szczególnie użyteczna, ponieważ daje wynik w zakresie od -1 do 1, gdzie wartość 1 oznacza wektory identyczne, wartość -1 oznacza wektory całkowicie przeciwne.
-
-	W kontekście klasyfikacji intencji, podobieństwo kosinusowe pozwala na ocenę, jak blisko w przestrzeni wektorowej znajdują się zapytania użytkowników względem dostępnych przykładów \cite[p.~87]{aggarwal2018textbook}. Dzięki temu możliwe jest przypisanie odpowiednich endpointów API do zapytań użytkowników w systemach sterowanych językiem naturalnym.
+	Szczególnie istotnym rozszerzeniem jest \textit{Sentence-BERT (SBERT)}, umożliwiający tworzenie wektorów reprezentujących całe zdania, co czyni go niezwykle użytecznym w klasyfikacji tekstu, wyszukiwaniu informacji czy dopasowaniu zapytań \cite{reimers2019sentencebert}.
 
 	\section{Klasyfikatory intencji}
 	
@@ -61,13 +53,17 @@ Celem pracy jest opracowanie aplikacji webowej \textit{Moje Konie} wykorzystują
 	
 	\textit{Intencje użytkowników} są zazwyczaj definiowane poprzez zestaw fraz, które mogą być używane przez użytkownika do wyrażenia swojej woli. Każda fraza przypisana jest do określonej intencji, a klasyfikator intencji jest odpowiedzialny za przypisanie zapytania użytkownika do jednej z tych intencji.
 	
-	Klasyfikacja intencji jest często realizowana przez modele oparte na głębokich sieciach neuronowych, które są trenowane na dużych zbiorach danych. Modele te uczą się rozpoznawania wzorców w tekstach, dzięki czemu mogą efektywnie klasyfikować zapytania do odpowiednich kategorii. Wykorzystanie technik takich jak word embeddings oraz dopasowanie kosinusowe pozwala na efektywne porównanie zapytań użytkowników z wcześniej zdefiniowanymi intencjami, co pozwala na przypisanie odpowiednich akcji lub odpowiedzi w systemach bazujących na NLP.
+	Klasyfikacja intencji jest realizowana przez modele oparte na głębokich sieciach neuronowych, które są trenowane na dużych zbiorach danych. Modele te uczą się rozpoznawania wzorców w tekstach, dzięki czemu mogą efektywnie klasyfikować zapytania do odpowiednich kategorii. Wykorzystanie technik takich jak osadzenia słów oraz podobieństwo kosinusowe pozwala na efektywne porównanie zapytań użytkowników z wcześniej zdefiniowanymi intencjami, co pozwala na przypisanie odpowiednich akcji lub odpowiedzi w systemach bazujących na NLP.
 
-  Współczesne podejścia coraz częściej wykorzystują modele oparte na transformatorach, które umożliwiają rozpoznawanie intencji nawet w kontekście nieznanych wcześniej sformułowań (\textit{few-shot} lub \textit{zero-shot learning}) \cite[p.~233]{brown2020language}. Takie podejście sprawia, że systemy NLP są znacznie bardziej elastyczne i odporne na wariacje językowe użytkowników.
+	Po utworzeniu osadzenia słów, kolejnym krokiem w NLP jest ocena podobieństwa między różnymi wektorami. Najczęściej używaną miarą w tym przypadku jest podobieństwo kosinusowe (ang. \textit{cosine similarity}), które mierzy kąt między dwoma wektorami w przestrzeni wektorowej. Miara ta jest szczególnie użyteczna, ponieważ daje wynik w zakresie od -1 do 1, gdzie wartość 1 oznacza wektory identyczne, wartość -1 oznacza wektory całkowicie przeciwne.
+
+	W kontekście klasyfikacji intencji, podobieństwo kosinusowe pozwala na ocenę, jak blisko w~przestrzeni wektorowej znajdują się zapytania użytkowników względem dostępnych przykładów \cite[p.~87]{aggarwal2018textbook}. Dzięki temu możliwe jest przypisanie odpowiednich endpointów API do zapytań użytkowników w systemach sterowanych językiem naturalnym.
+
+	Współczesne podejścia coraz częściej wykorzystują modele oparte na transformatorach, które umożliwiają rozpoznawanie intencji nawet w kontekście nieznanych wcześniej sformułowań (\textit{few-shot} lub \textit{zero-shot learning}) \cite[p.~233]{brown2020language}. Takie podejście sprawia, że systemy NLP są znacznie bardziej elastyczne i odporne na wariacje językowe użytkowników.
 	
 	\section{Transformatory i mechanizm uwagi}
 	
-	Transformatory to jedna z najnowszych i najbardziej przełomowych architektur w dziedzinie NLP, wprowadzona przez Vaswaniego i współpracowników w pracy \textit{Attention is All You Need} (2017). Głównym celem tej architektury było poprawienie efektywności modeli językowych poprzez wyeliminowanie rekurencyjnych warstw, które były wykorzystywane w poprzednich modelach, takich jak LSTM i GRU. Transformator jest oparty na mechanizmie \textit{self-attention}, który umożliwia modelowi analizowanie wszystkich słów w zdaniu równocześnie i decydowanie o tym, które słowa są najbardziej istotne w kontekście innych słów.
+	Transformatory to jedna z najnowszych i najbardziej przełomowych architektur w dziedzinie NLP, wprowadzona przez Vaswaniego i współpracowników w pracy \textit{Attention is All You Need} (2017). Głównym celem tej architektury było poprawienie efektywności modeli językowych poprzez wyeliminowanie rekurencyjnych warstw, które były wykorzystywane w poprzednich modelach, takich jak LSTM i GRU. Transformator jest oparty na mechanizmie (ang. \textit{self-attention}), który umożliwia modelowi analizowanie wszystkich słów w zdaniu równocześnie i decydowanie o tym, które słowa są najbardziej istotne w kontekście innych słów.
 	
 	\subsection{Mechanizm uwagi}
 	
@@ -81,18 +77,18 @@ Celem pracy jest opracowanie aplikacji webowej \textit{Moje Konie} wykorzystują
 	
 	Transformery stały się podstawą dla wielu dużych modeli językowych: \textit{BERT}, \textit{GPT-2}, \textit{GPT-3}, które osiągnęły znaczące sukcesy w zadaniach NLP, takich jak klasyfikacja tekstów, tłumaczenie maszynowe, generowanie tekstu, odpowiedzi na pytania czy analiza sentymentu.
 	
-    \subsection{Duże Modele Językowe i Model Gemini 2.5 Pro}
+    \subsection{Duże Modele Językowe i Model Gemini 2.5 Flash}
     \label{sec:llm}
     Ostatni etap rozwoju NLP to pojawienie się \textit{dużych modeli językowych} (ang. \textit{Large Language Models}, LLM), które wykorzystują miliardy parametrów do modelowania języka na podstawie ogromnych korpusów danych. Modele te, oparte na architekturze transformatora, potrafią wykonywać złożone zadania, takie jak tłumaczenie, streszczanie, generowanie kodu czy prowadzenie rozmowy \cite[p.~112]{openai2023gpt4technicalreport}.
     
-    Jednym z najnowszych osiągnięć jest seria modeli \textit{Gemini}, opracowana przez Google DeepMind. Najnowsza wersja, \textbf{Gemini 2.5 Pro}, łączy multimodalność (obsługuje tekst, obraz, dźwięk i wideo) z długim kontekstem przekraczającym milion tokenów. Model ten posiada zdolność \textit{reasoningu} — tzn. rozwiązywania problemów poprzez wieloetapowe rozumowanie i planowanie działań, co określane jest mianem „\textit{thinking model}” \cite[p.~17]{deepmind2025gemini}.  
+    Jednym z najnowszych osiągnięć jest seria modeli \textit{Gemini}, opracowana przez Google DeepMind. Najnowsza wersja, \textbf{Gemini 2.5 Flash}, łączy multimodalność (obsługuje tekst, obraz, dźwięk i wideo) z długim kontekstem przekraczającym milion tokenów. Model ten posiada zdolność \textit{reasoningu} — tzn. rozwiązywania problemów poprzez wieloetapowe rozumowanie i planowanie działań, co określane jest mianem „\textit{thinking model}” \cite[p.~17]{deepmind2025gemini}.  
     Dzięki integracji z narzędziami (\textit{tool use} / \textit{function calling}), Gemini 2.5 Pro może wykonywać rzeczywiste operacje — np. wywoływać API, generować zapytania REST czy wykonywać obliczenia. W kontekście niniejszej pracy model ten może zatem nie tylko klasyfikować intencje użytkowników, ale także automatycznie generować odpowiednie żądania HTTP, umożliwiając naturalne sterowanie aplikacją webową.  
-    Mimo wysokiej skuteczności, LLM-y takie jak Gemini 2.5 Pro nadal wymagają dużych zasobów obliczeniowych i mogą generować nieścisłości semantyczne, znane jako \textit{halucynacje} \cite[p.~42]{bommasani2021opportunities}.
+    Mimo wysokiej skuteczności, LLM-y takie jak Gemini 2.5 Flash nadal wymagają dużych zasobów obliczeniowych i mogą generować nieścisłości semantyczne, znane jako \textit{halucynacje} \cite[p.~42]{bommasani2021opportunities}.
 
 	\section{Podsumowanie}
 	
 	Przetwarzanie języka naturalnego stanowi jeden z fundamentów współczesnych systemów inteligentnych, umożliwiając komputerom interakcję z użytkownikami w sposób zbliżony do ludzkiego. Modele osadzania słów, takie jak Word2Vec, GloVe, BERT czy Sentence-BERT, stanowią podstawę nowoczesnych rozwiązań NLP, pozwalając na analizę i klasyfikację tekstów. Dopasowanie kosinusowe jest jedną z najczęściej stosowanych miar podobieństwa, umożliwiającą efektywne porównywanie zapytań użytkowników z przykładami intencji w systemach klasyfikacji. Klasyfikatory intencji, oparte na tych technologiach, umożliwiają skuteczne przypisanie zapytań do odpowiednich działań w aplikacjach, takich jak chatboty czy asystenci głosowi.
 	
 	Współczesne modele oparte na mechanizmie uwagi, takie jak transformatory, zrewolucjonizowały dziedzinę NLP, oferując wydajność i dokładność, które były niemożliwe do osiągnięcia w poprzednich modelach. Dzięki transformatorom możliwe stało się przetwarzanie długich tekstów oraz uchwycenie głębokich, globalnych zależności w tekście.
-	Od prostych modeli osadzania słów, przez transformery, aż po duże modele językowe — rozwój NLP umożliwia coraz bardziej naturalną interakcję człowieka z komputerem.Zastosowanie LLM, takich jak \textit{Gemini 2.5 Pro}, otwiera nowe możliwości dla aplikacji sterowanych językiem naturalnym, w tym systemu \textit{Moje Konie}, w którym polecenia użytkownika mogą być tłumaczone bezpośrednio na żądania REST w sposób kontekstowo poprawny i semantycznie spójny.
+	Od prostych modeli osadzania słów, przez transformery, aż po duże modele językowe — rozwój NLP umożliwia coraz bardziej naturalną interakcję człowieka z komputerem.Zastosowanie LLM, takich jak \textit{Gemini 2.5 Flash}, otwiera nowe możliwości dla aplikacji sterowanych językiem naturalnym, w tym systemu \textit{Moje Konie}, w którym polecenia użytkownika mogą być tłumaczone bezpośrednio na żądania REST w sposób kontekstowo poprawny i semantycznie spójny.
 	
