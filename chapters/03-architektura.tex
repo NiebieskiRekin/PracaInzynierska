@@ -112,25 +112,66 @@ Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-
 
 \subsection{Backend}
 
-Backend:
-- integruje różne systemy:
-    - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
-    - obsługuje zapytania do klasyfikatora i LLM
-    - wysyła okresowo powiadomienia email
-    - obsługuje generowanie linków do przesyłania zdjęć na bucket
-- obsługuje bezpośrednio:
-    - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
-        - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
-        - sesja przechowywana jest jako ciasteczko httpOnly 
-    - logikę biznesową (CRUD, obliczenia ważności, )
-    - współbieżny dostęp do danych
-    - migracje i początkowe populacje bazy danych
-- jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
-- można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
-- jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
-- napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
-- parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
+Przetwarzanie wykonywane po stronie serwera jest realizowane w znacznej części przez komponent backendu. Został on zaimplementowany jako bezstanowy interfejs programowania REST, który obsługuje komunikację za pomocją danych serializowanych do formatu JSON. Integruje on między sobą wiele komponentów, co zostało pokazane na diagramie architektury sieciowej, Rysunek \ref{rys:architektura-sieciowa}. Jego głównym zadaniem jest udostępnienie dostępu do danych zapisanych w bazie danych przez protokół HTTP interfejsu sieciowego na warstwie 7 modelu ISO/OSI. Rola serwera HTTP jest spełniana przez framework \textit{Hono}. Framework ten pozwala na bardzo modularne tworzenie silnie typowanych endpointów, warstw pośrednich przetwarzania (\english{middleware}) i elastyczne łączenie ich w poszczególne ścieżki obsługiwane współbieżnie i wydajnie przez jeden z kilku dostępnych silników dopasowań nazywanych \english{Router}. Mimo obszernego wyboru w przypadku utworzonej aplikacji wykorzystywany jest wyłącznie najprostszy \textit{LinearRouter} ze względu na brak mierzalnych opóźnień przetwarzania wynikających z wyboru teoretycznie wolniejszego algorytmu dopasowań (pomiary były wyłącznie zależne od czasu komunikacji z bazą danych i innymi zewnętrzymi usługami) i pełną przewidywalność dopasowań, co w końcowej fazie projektu okazało się być problemem ze względu na złożoność ścieżek dopasowań. Ze względu na wymóg współbieżnego, spójnego dostępu do danych o złożonych, ale stabilnych relacjach została wybrana relacyjna baza danych \textit{PostgreSQL}. Spośród dostępnych na rynku rozwiązań wyróżnia się ona brakiem opłat licencyjnych, bogatą dokumentacją, bardzo dobrą optymalizacją przetwarzania na małych i średnich zbiorach danych, obszernym zestawem funkcji, a także jest dobrze znana i lubiana przez zespół projektowy. Zapytania do bazy danych są realizowane przez bibliotekę \textit{node-postgres}, która jest głównym silnikiem do tworzenia puli połączeń do bazy danych. Biblioteka ta jest rozszerzana przez bibliotekę \textit{DrizzleORM} w celu utworzenia Obiektowo Relacyjnego Mapowania struktur obiektów utworzonych w języku TypeScript na relacje bazy danych w języku SQL, napisania zoptymalizowanych zapytań do bazy danych, utworzenia migracji pomiędzy wersjami schematu tabel w procesie tworzenia aplikacji i jej wdrożenia, a także populowania bazy danych początkowymi danymi. Biblioteka \textit{DrizzleORM} charakteryzuje się zbliżoną semantyką, co język SQL, dzięki czemu dobra znajomość tworzenia zapytań przez zespół premiowała dobrą optymalizacją przepływu danych i prostszym, wydajniejszym modelem abstrakcji - każde poprawne zapytanie utworzone z użyciem \textit{DrizzleORM} jest konwertowane na dokładnie jedno zapytanie do bazy danych, a przygotowane wcześniej zapytania można było przepisać z małymi zmianami składni. Dzięki podejściu do połączenia z bazą danych z niewielką warstwą abstrakcji możliwe było wykorzystanie bardziej zaawansowanych funkcjonalności bazy danych PostgreSQL, takich jak m.in. użycie schematów jako dynamicznego zamiennika osobnych baz danych dla różnych, odseparowanych środowisk na tym samym serwerze, reprezentacja typów wyliczeniowych z użyciem \textit{pg\_enum} (m.in. do TODO), filtrowanie powiadomień do wysłania względem różnicy czasu wyliczanej po stronie silnika PostgreSQL, grupowanie kilku zapytań w jedno dzięki składni \textit{UNION} (powszechnie wykorzystywane przy pobieraniu zdarzeń profilaktycznych) i podzapytaniom z klauzulami \textit{NOT EXISTS} (do znalezienia czy istnieje domyślne zdjęcie dla danego konia przy usuwaniu), \textit{PARTITION BY} (do znalezienia najnowszych aktywnych zdarzeń profilaktycznych z każdej kategorii dla danego konia). \textit{DrizzleORM} jednocześnie dostarcza pełne interfejsy i typy danych oczekiwane przez język TypeScript, a nawet schematy walidacji do biblioteki walidacyjnej \textit{Zod}, dzięki dodatkowi \textit{drizzle-zod}. Pozwoliło to w procesie tworzenia aplikacji na zachowanie spójności w przepływie danych oraz zaoszczędzenie czasu na pisanie złożonych definicji schematów. Wykorzystanie biblioteki \textit{Zod} stanowi istotny element pracy, gdyż ze względu na zaawansowane i ergonomiczne funkcje walidacji, a także ogromną popularność biblioteka stała się standardem w środowisku TypeScript do tworzenia modeli danych. Dzięki użyciu biblioteki \textit{@hono/zod-validator} możliwe było zdefiniowanie schematu danych przyjmowanych przez poszczególne endpointy API z automatyczną walidacją niezależnie od formatu danych (query parameters, body jako json, czy form-data) z użyciem funkcji middleware \textit{zValidator}. Dodatkowo zestaw powiązanych bibliotek \textit{hono-openapi} i \textit{@hono/zod-openapi} pozwolił na dodanie adnotacji do dokumentacji danego endpointu w formacie OpenAPI oraz zdefiniowanie schematu zwracanych danych w zależności od kodu odpowiedzi. Wygenerowana dokumentacja w formacie OpenAPI z całego backendu posłużyła jako wzorzec do tworzenia zapytań przez Gemini w procesie przetwarzania intencji użytkownika. Również dzięki interfejsowi graficznemu dostarczanemu przez bibliotekę \textit{Scalar} do obsługi dokumentacji OpenAPI niewielkim nakładem pracy utworzono zaawansowany panel administracyjny do zarządzania użytkownikami i stadninami przez administratorów. 
 
+W celu zapewnienia bezpiecznego systemu uwierzytelniającego skorzystano z zewnętrznej biblioteki/frameworka BetterAuth, który dostarczył komponenty do zarządzania użytkownikami, kontami, hodowlami koni w kontekście organizacji i przynależnościami do nich. 
+
+
+% tabele:
+% - z aplikacji:
+%     - zdjecia_koni
+%     - choroby
+%     - podkucia
+%     - konie
+%     - leczenia
+%     - rozrody
+%     - zdarzenia_profilaktycznego
+%     - weterynarze
+%     - kowale
+%     - notifications
+% - z better auth:
+%     - organization
+%     - invitation
+%     - jwks
+%     - verification
+%     - member
+%     - user
+%     - session
+%     - account
+%     - apikey
+
+
+
+
+
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{figures/schemat-bazy.png}
+\caption{Schemat bazy danych}\label{rys:schemat-bazy-danych}
+\end{figure}
+
+
+% Backend:
+% - integruje różne systemy:
+%     - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
+%     - obsługuje zapytania do klasyfikatora i LLM
+%     - wysyła okresowo powiadomienia email
+%     - obsługuje generowanie linków do przesyłania zdjęć na bucket
+% - obsługuje bezpośrednio:
+%     - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
+%         - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
+%         - sesja przechowywana jest jako ciasteczko sameSite: none,httpOnly: true, secure: true, partitioned: true, czyli niedostępne z poziomu kodu javascript po stronie klienta, następuje surowa walidacja czy nazwa domenowa nie uległa zmianie, wymusza protokół https i jest przechowywane osobno dla różnych kontekstów strony (wyłącznie dla api)
+%         - wysyłanie potwierdzeń założenia konta, 
+%     - logikę biznesową (CRUD, obliczenia ważności, generowanie raportów, przetwarzanie ustawień użytkowników)
+%     - zadania okresowe CRON (wysyłanie powiadomień email o końcu ważności)
+%     - współbieżny dostęp do danych z użyciem transakcji
+%     - migracje i początkowe populacje bazy danych
+% - jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
+% - można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
+% - jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
+% - napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
+% - parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
+% - udostępnia statyczne pliki do klasyfikatora do załadowania testsetu
+% - ma skonfigurowany jednolity logger requestów do API, zapytań do bazy danych, wydarzeń okresowych i innych operacji
 
 
 
