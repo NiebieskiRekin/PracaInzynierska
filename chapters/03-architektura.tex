@@ -143,14 +143,14 @@ Warstwa autoryzacji wykorzystuje model kontroli dostępu opartej na 2 rolach (ad
 %     - account
 %     - apikey
 
-
-Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym modelu encji związków. W celu zachowania jak najlepszej spójności zastosowano znormalizowaną postać bazy danych, a dla ułatwienia edycji głównego identyfikatora sztuczne klucze główne. Aplikacja została zaprojektowana z myślą, aby obsługiwać wiele oddzielnych hodowli na jednej instancji aplikacji w modelu architektury \english{multi-tenant}. Ze względu na to założenie wszystkie obiekty dodawane przez użytkowników muszą mieć powiązanie z daną hodowlą, której nadany identyfikator rodziela przynależność do danego klienta -- dzierżawcy. Postawową funkcjonalnością aplikacji jest zarządzanie końmi, w tym przypisanie im imion, nr paszportowych, istotnych dat, a także hodowli do której należą i innych danych charakterystycznych. Dodatkowo dla każdego konia można przypisać dowolną liczbę zdjęć, których podstawowe dane o przynależności są zapisywane w bazie danych (do którego konia, czy dane zdjęcie jest domyślne), natomiast same pliki zapisywane w oddzielnej usłudze zoptymalizowanej do przechowywania plików binarnych Google Cloud Storage w danym zasobniku. Dla każdego konia można przypisać wiele wydarzeń takich jak podkucia, choroby, leczenia, rozrody czy zdarzenia profilaktyczne. W przypadku podkuć, leczeń, rozrodów i zdarzeń profilaktycznych przypisywany jest również specjalista -- kowal lub weterynarz, powiązany z danym wydarzeniem. W przypadku specjalistów przechowywane dane są proste i ograniczają się do wskazania imienia, nazwiska, numeru telefonu i hodowli w jakiej zostali dodani. Do podkuć, chorób i zdarzeń profilaktycznych przypisane sa daty zdarzenia/rozpoczęcia oraz ważności/zakończenia, a do wszystkich wydarzeń poza podkuciami również opisy. Zdarzenia profilaktyczne posiadają również pole wyboru rodzaju zdarzenia spośród: odrobaczania, podania suplementów, szczepienia, dentysty i inne. Natomiast wydarzenia -- rozrody dzielą się na: inseminację konia, sprawdzenie źrebności, wyźrebienie i inne. Istotna jest również możliwość powiązania leczeń do danej choroby konia. Utworzona bezpośrednio została również tabela notifications, która przechowuje preferencje użytkownika dotyczące powiadamiania o zliżającym się końcu ważności danego wydarzenia z konfigurowalną liczbą dni wyprzedzenia, godziną powiadomienia i metodą wysłania. Pozostałe tabele zostały utworzone przez bibliotekę BetterAuth i służą do zarządzania użytkownikami i ich przynależnością do danej hodowli (organizacji), uwierzytelniania i kontroli dostępu. Tabela organization przechowuje informacje o hodowli, w tym dostępną liczbą zapytań do wykorzystania przez moduł asystenta. Poprzez relację N -- N member jest powiązana z tabelą user, co pozwala odszukać przynależność użytkownika do danej hodowli, a także sprawdzić rolę konta (administrator, konto zwykłe). Tabele account i apikey przechowują dane uwierzytelniające dla danego użytkownika, głównie wykorzystywane jest hasło do uwierzytelniania zwykłych kont, natomiast klucz API do dostępu administracyjnego. W tabeli session odnajdziemy informacje o aktywnych sesjach logowania użytkowników. Tabela verification przechowuje informacje o wysłanych e-mailach z potwierdzeniem po założeniu konta. Natomiast tabela invitation nie jest w praktyce wykorzystywana w projekcie i dotyczy zaproszeń użytkowników do organizacji przez innych użytkowników aplikacji (w praktyce dane konto użytkownika jest wyłącznie dla jednej organizacji).
-
-
 \begin{figure}[t]
 \centering\includegraphics[width=\textwidth]{figures/schemat-bazy.png}
 \caption{Schemat bazy danych}\label{rys:schemat-bazy-danych}
 \end{figure}
+
+Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym modelu encji związków. W celu zachowania jak najlepszej spójności zastosowano znormalizowaną postać bazy danych, a dla ułatwienia edycji głównego identyfikatora sztuczne klucze główne. Aplikacja została zaprojektowana z myślą, aby obsługiwać wiele oddzielnych hodowli na jednej instancji aplikacji w modelu architektury \english{multi-tenant}. Ze względu na to założenie wszystkie obiekty dodawane przez użytkowników muszą mieć powiązanie z daną hodowlą, której nadany identyfikator rodziela przynależność do danego klienta -- dzierżawcy. Postawową funkcjonalnością aplikacji jest zarządzanie końmi, w tym przypisanie im imion, nr paszportowych, istotnych dat, a także hodowli do której należą i innych danych charakterystycznych. Dodatkowo dla każdego konia można przypisać dowolną liczbę zdjęć, których podstawowe dane o przynależności są zapisywane w bazie danych (do którego konia, czy dane zdjęcie jest domyślne), natomiast same pliki zapisywane w oddzielnej usłudze zoptymalizowanej do przechowywania plików binarnych Google Cloud Storage w danym zasobniku. Dla każdego konia można przypisać wiele wydarzeń takich jak podkucia, choroby, leczenia, rozrody czy zdarzenia profilaktyczne. W przypadku podkuć, leczeń, rozrodów i zdarzeń profilaktycznych przypisywany jest również specjalista -- kowal lub weterynarz, powiązany z danym wydarzeniem. W przypadku specjalistów przechowywane dane są proste i ograniczają się do wskazania imienia, nazwiska, numeru telefonu i hodowli w jakiej zostali dodani. Do podkuć, chorób i zdarzeń profilaktycznych przypisane sa daty zdarzenia/rozpoczęcia oraz ważności/zakończenia, a do wszystkich wydarzeń poza podkuciami również opisy. Zdarzenia profilaktyczne posiadają również pole wyboru rodzaju zdarzenia spośród: odrobaczania, podania suplementów, szczepienia, dentysty i inne. Natomiast wydarzenia -- rozrody dzielą się na: inseminację konia, sprawdzenie źrebności, wyźrebienie i inne. Istotna jest również możliwość powiązania leczeń do danej choroby konia. Utworzona bezpośrednio została również tabela notifications, która przechowuje preferencje użytkownika dotyczące powiadamiania o zliżającym się końcu ważności danego wydarzenia z konfigurowalną liczbą dni wyprzedzenia, godziną powiadomienia i metodą wysłania. Pozostałe tabele zostały utworzone przez bibliotekę BetterAuth i służą do zarządzania użytkownikami i ich przynależnością do danej hodowli (organizacji), uwierzytelniania i kontroli dostępu. Tabela organization przechowuje informacje o hodowli, w tym dostępną liczbą zapytań do wykorzystania przez moduł asystenta. Poprzez relację N -- N member jest powiązana z tabelą user, co pozwala odszukać przynależność użytkownika do danej hodowli, a także sprawdzić rolę konta (administrator, konto zwykłe). Tabele account i apikey przechowują dane uwierzytelniające dla danego użytkownika, głównie wykorzystywane jest hasło do uwierzytelniania zwykłych kont, natomiast klucz API do dostępu administracyjnego. W tabeli session odnajdziemy informacje o aktywnych sesjach logowania użytkowników. Tabela verification przechowuje informacje o wysłanych e-mailach z potwierdzeniem po założeniu konta. Natomiast tabela invitation nie jest w praktyce wykorzystywana w projekcie i dotyczy zaproszeń użytkowników do organizacji przez innych użytkowników aplikacji (w praktyce dane konto użytkownika jest wyłącznie dla jednej organizacji).
+
+
 
 
 % Backend:
@@ -178,26 +178,37 @@ Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym mode
 
 
 
-\subsection{Mechanizmy bezpiczeństwa}
+% \subsection{Mechanizmy bezpiczeństwa}
 
-Bezpieczeństwo jest zapewniane przez protokół HTTPS poprzez wdrożenie aplikacji za reverse proxy, które jednocześnie centralizuje żądania do systemu i umożliwia niezależną skalowalność komponentów schowanych za nim. W przypadku tego projektu zdecydowano się na wybór Traefik, ze względu na wysoką wydajność przetwarzania zapytań, prostą konfigurację z dobrą integracją ze środowiskiem konteneryzacji Docker (w szczególności z Docker Compose) i zewnętrznym serwisem do wystawiania publicznie zaufanych certyfikatów TLS Let's Encrypt. 
+% Traefik
+% Docker
+% Distroless / hardened images
+% Cloudflare
+% Firewall
+% Ciasteczka?
+% Better auth?
+% 
+
+% Bezpieczeństwo jest zapewniane przez protokół HTTPS poprzez wdrożenie aplikacji za reverse proxy, które jednocześnie centralizuje żądania do systemu i umożliwia niezależną skalowalność komponentów schowanych za nim. W przypadku tego projektu zdecydowano się na wybór Traefik, ze względu na wysoką wydajność przetwarzania zapytań, prostą konfigurację z dobrą integracją ze środowiskiem konteneryzacji Docker (w szczególności z Docker Compose) i zewnętrznym serwisem do wystawiania publicznie zaufanych certyfikatów TLS Let's Encrypt. 
 
 
 \subsection{Wdrożenie i dystrybucja projektu}
+
+% W github actions uruchamiany jest tsc i vite. Pliki *.js i definicja openapi jest kopiowana do obrazu backendu ...
 
 \begin{figure}[t]
 \centering\includegraphics[width=\textwidth]{figures/repozytorium-zaleznosci-budowanie.png}
 \caption{Struktura repozytorium kodu, uproszczony diagram zależności oraz tworzenia paczki dystrybucyjnej}\label{rys:repozytorium-zaleznosci-budowanie}
 \end{figure}
 
-Cały proces tworzenia paczki do dystrybucji dla części frontend jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony, a także sztywny podział odpowiedzialności frontend - backend. Proces budowania przebiega następująco:
-\begin{enumerate}
-\item Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
-\item Kod w JavaScript i style CSS są minifikowane (krótkie arbitralne nazwy funkcji i plików, usuwanie pomijalnych białych znaków i komentarzy, przepisywanie wyrażeń na krótsze o równoważnym znaczeniu).
-\item Zawartość plików jest przenoszona do innych plików o arbitralnych, unikalnych nazwach i stałym rozmiarze
-\item Zależności są analizowane pod kątem wykorzystania funkcji, a nieużywany kod usuwany
-\item Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem HTTP Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache oraz manifestem progresywnej aplikacji internetowej.
-\end{enumerate}
+% Cały proces tworzenia paczki do dystrybucji dla części frontend jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony, a także sztywny podział odpowiedzialności frontend - backend. Proces budowania przebiega następująco:
+% \begin{enumerate}
+% \item Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
+% \item Kod w JavaScript i style CSS są minifikowane (krótkie arbitralne nazwy funkcji i plików, usuwanie pomijalnych białych znaków i komentarzy, przepisywanie wyrażeń na krótsze o równoważnym znaczeniu).
+% \item Zawartość plików jest przenoszona do innych plików o arbitralnych, unikalnych nazwach i stałym rozmiarze
+% \item Zależności są analizowane pod kątem wykorzystania funkcji, a nieużywany kod usuwany
+% \item Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem HTTP Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache oraz manifestem progresywnej aplikacji internetowej.
+% \end{enumerate}
 
 
 \begin{figure}[t]
