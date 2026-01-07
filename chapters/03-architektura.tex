@@ -2,59 +2,20 @@
 
 \section{Założenia projektowe}
 
-Zaprojektowany system spełnia następujące wymagania funkcjonalne (TODO: scalić w spójny tekst):
+System \definicja{Moje Konie} został zaprojektowany z myślą o zapewnieniu pełnej kontroli nad zarządzaniem stajnią oraz umożliwieniu użytkownikom wygodnego monitorowania stanu i historii koni w hodowli. Podstawowym mechanizmem zabezpieczającym dostęp jest proces logowania, w którym użytkownik uwierzytelnia się przy użyciu adresu e-mail oraz hasła. Po poprawnym uwierzytelnieniu użytkownik uzyskuje autoryzację do wykonywania działań na obiektach przypisanych do jego hodowli. System zapewnia możliwość zmiany hasła przez użytkownika po podaniu aktualnego hasła i dwukrotnym wprowadzeniu nowego hasła. Treść hasła jest domyślnie maskowana, a użytkownik ma możliwość wyświetlenia tekstu jawnego podczas wpisywania. W przypadku podania nieprawidłowych danych uwierzytelniających system wyświetla odpowiedni komunikat błędu.
 
-\begin{itemize}
-    \item Użytkownik może się uwierzytelnić na ekranie logowania.
-    \item Po pomyślnym uwierzytelnieniu użytkownik jest autoryzowany do podejmowania działań na obiektach należących do wskazanej hodowli.
-    \item Użytkownika ma możliwość zmiany składnika uwierzytelniającego (hasła).
-    \item Po podaniu niepoprawnych danych uwierzytelniających przez użytkownika system wyświetla komunikat błędu.
-    \item Użytkownik po zalogowaniu może zobaczyć wszystkie swoje konie (przypisane dla danej hodowli), 
-    \item Strona pokazująca listę koni udostępnia wyszukiwarkę, za pomocą której można filtrować wyświetlanie konie.
-    \item Strona z listą koni umożliwia przejście do strony z informacjami szczegółowymi danego konia.
-    \item System umożliwia podejrzenie zdjęcia konia i jego powiększenie.
-    \item System pozwala na dodanie wielu zdjęć do jednego konia, przełączanie się pomiędzy nimi, a także na wybór ulubionego zdjęcia.
-    \item Po dodaniu pierwszego zdjęcia do konia jest ono ustalane jako ulubione.
-    \item Użytkownik ma możliwość dodania, edycji oraz usunięcia koni z systemu.
-    \item System pozwala na nawigację pomiędzy modułami funkcjonalności takimi jak: Konie, Weterynarze, Kowale, Wydarzenia w stajni, Asystent, Ustawienia (TODO: czy możemy to jakoś lepiej nazwać?)
-    \item System umożliwia dodawanie wydarzeń dla wielu koni, czyli podkuć i zdarzeń profilaktycznych.
-    \item Spośród zdarzeń profilaktycznych użytkownik ma wybór pomiędzy: dentystą, podaniem witamin, szczepieniem, odrobaczaniem.
-    \item W celu dodania zdarzenia profilaktycznego użytkownik musi wybrać jego typ, uzupełnić wymagane pola, a także wybrać listę koni, do których dane zdarzenie ma zastosowanie.
-    \item W miejscach, gdzie użytkownik ma do wyboru konie z listy, dostępny jest również przycisk do zaznaczenia wszystkich.
-    \item Użytkownik ma możliwość dodania do tabeli weterynarza, z którym współpracuje.
-    \item System podpowiada użytkownikowi weterynarzy, gdy użytkownik dodaje nowe wydarzenie wymagające podania weterynarza.
-    \item Użytkownik ma możliwość dodania do tabeli kowala, z którym współpracuje.
-    \item System podpowiada użytkownikowi kowali, gdy użytkownik dodaje nowe podkucie.
-    \item Użytkownik może zobaczyć informacje takie jak: numer przyżyciowy, numer chipa, rocznik urodzenia, rodzaj, płeć, data przybycia do stajni, data odejścia ze stajni, a także najnowsze aktywne wydarzenia: podkucie, odrobaczanie, podanie suplementów, szczepienie, dentystę odnośnie wybranego konia na ekranie ze szczegółami. 
-    \item Użytkownik może przejść z ekranu szczegółów danego konia bezpośrednio do ostatnich wydarzeń z nim związanych.
-    \item Użytkownik może wygenerować raport zawierający informacje o danym koniu oraz wybrać podzbiór wydarzeń i ich zakres czasu (według daty zdarzenia).
-    \item TODO: opis zdarzeń profilaktycznych, jakie pola, co wymagane, jak obliczane
-    \item System wysyła powiadomienia o zbliżającym się upływie ważności podkucia lub zdarzenia profilaktycznego do użytkowników.
-    \item Użytkownik ma możliwość ustawić preferencje wysyłanych powiadomień (zbiorcze dla wszystkich koni) dla każdego typu wydarzenia z osobna, z jakim wyprzedzeniem ma przyjść informacja o wygaśnięciu ważności (ile dni wyprzedzenia, o której godzinie), a także sposób transportu wiadomości (email, \st{push})
-\end{itemize}
+Po zalogowaniu użytkownik otrzymuje dostęp do przeglądania pełnej listy swoich koni, zawierających zdjęcie oraz nazwę konia. Wyświetlanie listy jest responsywne: na większych ekranach stosowane są trzy kolumny, natomiast na urządzeniach mobilnych tylko jedna. Lista koni wyposażona jest w wyszukiwarkę, pozwalającą na filtrowanie po nazwie poprzez wyszukanie fragmentu tekstu. Każda karta konia umożliwia przejście do ekranu ze szczegółowymi informacjami, gdzie użytkownik może zobaczyć numer przyżyciowy, numer chipa, rocznik urodzenia, rodzaj, płeć, datę przybycia i odejścia ze stajni, a także najnowsze aktywne wydarzenia związane z danym koniem, takie jak podkucia, szczepienia, odrobaczanie, podanie suplementów czy wizyty dentystyczne.
 
+System pozwala na zarządzanie zdjęciami koni –- użytkownik może dodawać wiele zdjęć do jednego konia, a przełączanie między zdjęciami odbywa się za pomocą strzałek na ekranie szczegółów. Operacje dodawania i edycji koni odbywają się poprzez dedykowane formularze walidujące wymagane pola, natomiast usuwanie wymaga potwierdzenia ze strony użytkownika.
 
-Wymagania pozafunkcjonalne:
+Na poziomie nawigacji system udostępnia moduły funkcjonalne obejmujące: zarządzanie końmi, weterynarzami, kowalami, wydarzeniami w stajni, asystentem oraz ustawieniami. Przy dodawaniu zdarzenia użytkownik wybiera jego typ, uzupełnia wymagane pola oraz wskazuje listę koni, do których zdarzenie ma zastosowanie. W celu wygodnej selekcji dostępny jest również przycisk pozwalający zaznaczyć wszystkie konie w danej stadninie. System podpowiada użytkownikowi powiązanych weterynarzy lub kowali przy dodawaniu zdarzeń wymagających ich udziału. Pod ostatnimi wydarzeniami znajduje się panel umożliwiający szybkie dodanie nowych wydarzeń, odpowiednio pogrupowanych według kategorii.
 
-\begin{itemize}
-    \item Logowanie użytkownika odbywa się poprzez email oraz hasło.
-    \item Do zmiany hasła wymagane jest podanie starego hasła oraz dwukrotne podanie nowego hasła.
-    \item Treść hasła jest domyślnie maskowana na ekranie logowania, użytkownik może ją podejrzeć podczas wpisywania.
-    \item przechowywanie danych autoryzacji w sposób bezpieczny, wyłącznie hashe bcrypt haseł,
-    \item Lista koni jest wyświetlana jako karty ze zdjęciem (wybranym jako ulubione) i nazwą konia. W formacie przeznaczonym na większe ekrany są to 3 kolumny, natomiast na urządzeniach mobilnych jest to 1 kolumna.
-    \item Po zalogowaniu wyświetlana jest lista koni.
-    \item Filtrowanie koni na liście odbywa się po nazwie za pomocą wyszukania podciągu znaków frazy.
-    \item Ekran pokazujący zdjęcie konia jest pokazywany po kliknięciu na zdjęcie i jest powiększany do pełnego rozmiaru karty.
-    \item Dodawanie i edycja informacji dotyczących koni odbywa się poprzez dedykowany formularz walidujący podstawową poprawność pól (właściwie tylko sprawdza czy wymagane pola są uzupełnione)
-    \item Operacje usunięcia wymagają potwierdzenia.
-    \item Użytkownik po wybraniu widoku dodawania zdarzeń profilaktycznych ma do wyboru 5 kafelków, każdy odpowiada akcji dodania odpowiedniego zdarzenia.
-    \item Użytkownik przełącza się pomiędzy wieloma zdjęciami danego konia za pomocą strzałek na ekranie szczegółów.
-    \item Pod ostatnimi wydarzeniami znajduje sie panel do dodawania wydarzeń, gdzie do wybrania jest dodanie wydarzenia związanego z rozrodami/chorobami/leczeniami/zdarzeniami profilaktycznymi /podkucia
-    \item Niewielki koszt i prostota administracyjna utrzymania w dłuższej perspektywie
-    \item Obsługa 400 łącznych użytkowników, w tym 100 jednoczesnych sesji.
-    \item Wysoki poziom bezpieczeństwa, modularnośc i izolacja komponentów systemu
-    \item Intuicyjny i wygodny interfejs graficzny, działający w przeglądarce internetowej oraz jako aplikacja mobilna
-\end{itemize}
+Dodatkowo użytkownik ma możliwość generowania raportów dla poszczególnych koni, w tym wyboru podzbioru wydarzeń oraz określenia zakresu czasowego według daty zdarzenia. System wysyła powiadomienia o zbliżającym się upływie ważności podkucia lub zdarzenia profilaktycznego. Użytkownik może określić preferencje powiadomień, w tym czas wyprzedzenia (w dniach i godzinach) oraz sposób doręczenia wiadomości (np. e-mail).
+
+Projektując system, zwrócono szczególną uwagę na bezpieczeństwo, modularność oraz skalowalność. Dane autoryzacyjne przechowywane są w formie bezpiecznych hashy przy użyciu algorytmu \definicja{bcrypt}. System jest w stanie obsłużyć łącznie 400 użytkowników, w tym do 100 jednoczesnych sesji. Interfejs użytkownika został zaprojektowany w sposób intuicyjny i wygodny, działający zarówno w przeglądarce internetowej, jak i na urządzeniach mobilnych. Koszt utrzymania systemu jest minimalny, a administracja systemem prosta, co zwiększa długoterminową trwałość i niezawodność rozwiązania.
+
+Wszystkie te cechy łącznie pozwalają na zapewnienie wysokiego poziomu bezpieczeństwa danych, przejrzystej organizacji informacji oraz wygodnej obsługi codziennych czynności w hodowli koni.
+
 
 % TODO: Coś czego nie mamy (aby się nie walnąć):
 
@@ -71,13 +32,8 @@ Wymagania pozafunkcjonalne:
 
 % TODO: Błędy, które nie mogą nam umknąć:
 % \begin{itemize}
-%     \item Sesja logowania nie utrzymuje się
-%     \item Przycisk wyloguj nie działa - sesja dalej pozostaje
-%     \item Można kliknąć na zdjęcie na ekranie z listą koni, aby je powiększyć zamiast przejść do szczegółów konia
 %     \item Można powiększyć domyślne zdjęcie - jego brak
-%     \item Na mniejszym ekranie (u mnie na laptopie 13 cali) nagłówek ma dziwne odstępy
 %     \item Miejscami zdarzenia są zapisywane jako wydarzenia i na odwrót
-%     \item Dodawanie zdjęć nie działa - błąd z json payload
 %     \item Koń po dodaniu ma jakiś pusty wpis ze zdjęciem, przez co cały czas się kręci, ale nic nie pokazuje
 %     \item Przekierowanie z / do /konie nie działa
 %     \item Czerwone komunikaty błędu na ciemnozielonym gradiencie tła są słabo widoczne (mają zbyt niski kontrast)
@@ -105,12 +61,34 @@ Dla zachowania kompatybilności z technologią progresywnych aplikacji interneto
 
 \subsection{Frontend}
 
-Korzystając z technologii progresywnych aplikacji internetowych (\acronym{PWA}, \english{Progressive Web App}) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera - wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych. Interaktywna prezentacja danych jest możliwa natomiast poprzez zmianę struktury wyświetlanego dokumentu hipertekstowego wykonywaną po stronie klienta z użyciem kodu JavaScript w przeglądarce. Wymienione działanie jest wykonywane poprzez interfejs programowania Document Object Model (DOM, pl. \textit{Model Obiektowy Dokumentu}) pozwalający na częściową lub pełną modyfikację dowolnego węzła (np. paragrafu tekstu, separatora, kontrolek, obiektu multimedialnego) w hierachicznej strukturze drzewa dokumentu HTML. Interfejs ten jest w praktyce wykorzystywany przez bibliotekę React, która nieco modyfikuje model z dokumentów HTML i skryptów JavaScript na komponenty wielokrotnego użytku (zawierające wymagane fragmenty dokumentu HTML i funkcje JavaScript) budujące deklaratywne widoki (strony internetowe). Komponenty można powiązać z danymi, czyli zaprojektować ich wygląd w celu prezentacji danych zgodnie z ich schematem oraz skonfigurować ich źródło, które będzie automatycznie odświeżane dążąc do zadeklarowanego stanu. Komponenty można w sobie zagnieżdżać, odtwarzając te same aspekty hierachicznej struktury, a ich zmiany są śledzone poprzez użycie wewnętrznej dla tej biblioteki kopii Modelu Obiektowego Dokumentu nazywanego Virtual (pl. Wirtualnego) DOM.
+Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (ang. responsive web design, RWD) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera - wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych. Interaktywna prezentacja danych jest możliwa natomiast poprzez zmianę struktury wyświetlanego dokumentu hipertekstowego wykonywaną po stronie klienta z użyciem kodu JavaScript w przeglądarce. Wymienione działanie jest wykonywane poprzez interfejs programowania Document Object Model (DOM, pl. \textit{Model Obiektowy Dokumentu}) pozwalający na częściową lub pełną modyfikację dowolnego węzła (np. paragrafu tekstu, separatora, kontrolek, obiektu multimedialnego) w hierachicznej strukturze drzewa dokumentu HTML. Interfejs ten jest w praktyce wykorzystywany przez bibliotekę React, która nieco modyfikuje model z dokumentów HTML i skryptów JavaScript na komponenty wielokrotnego użytku (zawierające wymagane fragmenty dokumentu HTML i funkcje JavaScript) budujące deklaratywne widoki (strony internetowe). Komponenty można powiązać z danymi, czyli zaprojektować ich wygląd w celu prezentacji danych zgodnie z ich schematem oraz skonfigurować ich źródło, które będzie automatycznie odświeżane dążąc do zadeklarowanego stanu. Komponenty można w sobie zagnieżdżać, odtwarzając te same aspekty hierachicznej struktury, a ich zmiany są śledzone poprzez użycie wewnętrznej dla tej biblioteki kopii Modelu Obiektowego Dokumentu nazywanego Virtual DOM (pl. Wirtualny Model Obiektowy Dokumentu).
 
 Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-page application, SPA}), co wynika głównie ze sposobu aktualizowania interfejsu na podstawie zmian w danych poprzez kod po stronie klienta i przesyłania statycznych dokumentów HTML, pomijając jednocześnie aspekt użycia wielu stron. W przypadku prezentowanej pracy rama projektowa została dostarczona przez bibliotekę React Router, która dostarcza pakiet budujący do Aplikacji jednostronicowej, dostarczając ponadto zestaw narzędzi służących do przechodzenia pomiędzy osobnymi widokami w zależności od użytego adresu URL - nazwany router, a także moduły do efektywnego pobierania danych w tle za pomocą funkcji asynchronicznych.
 
 
 \subsection{Backend}
+
+Backend:
+- integruje różne systemy:
+    - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
+    - obsługuje zapytania do klasyfikatora i LLM
+    - wysyła okresowo powiadomienia email
+    - obsługuje generowanie linków do przesyłania zdjęć na bucket
+- obsługuje bezpośrednio:
+    - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
+        - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
+        - sesja przechowywana jest jako ciasteczko httpOnly 
+    - logikę biznesową (CRUD, obliczenia ważności, )
+    - współbieżny dostęp do danych
+    - migracje i początkowe populacje bazy danych
+- jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
+- można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
+- jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
+- napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
+- parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
+
+
+
 
 \subsection{Mechanizmy bezpiczeństwa}
 
