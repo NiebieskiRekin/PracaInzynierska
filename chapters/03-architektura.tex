@@ -86,6 +86,9 @@ Wymagania pozafunkcjonalne:
 %     \item Wydarzenia są pobierane WSZYSTKIE NA RAZ a następnie stronnicowane i sortowane po stronie klienta
 %     \item Walidacja w wielu miejscach odbywa się tylko po stronie klienta, np. nr telefonu
 %     \item Chat po dodaniu nie ma odświeżanego stanu bazy danych np. dodanie konia, dodania szczepienia dla tego konia
+%     \item Wydarzenia są pobierane WSZYSTKIE NA RAZ a następnie stronnicowane i sortowane po stronie klienta
+%     \item Walidacja w wielu miejscach odbywa się tylko po stronie klienta, np. nr telefonu
+%     \item Chat po dodaniu nie ma odświeżanego stanu bazy danych np. dodanie konia, dodania szczepienia dla tego konia
 % \end{itemize}
 
 
@@ -96,6 +99,7 @@ Wymagania pozafunkcjonalne:
 \caption{Architektura sieciowa aplikacji}\label{rys:architektura-sieciowa}
 \end{figure}
 
+Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, co znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych.
 Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, co znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych.
 
 Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję - nazywaną backend, od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych - frontend. Obie warstwy nie komunikują się ze sobą, lecz współdziałają w celu tworzenia pełnej funkcjonalności aplikacji. Użytkownik inicuje wszelkie interakcje z obydwoma komponentami, choć zapytania do backendu są inicjowane w przeglądarce użytkownika wchodzącego w interakcję z frontendem, a także otrzymane dane i komunikaty diagnostyczne są wyłącznie obsługiwane przez ten komponent. Komunikacja odbywa się wyłącznie na warstwie 7 modelu ISO/OSI (warstwie aplikacji) za pomocą protokołu HTTP. Frontend obługuje żądania zwracając pliki HTML, CSS i JavaScript, natomiast backend działa w bezstanowej architekturze sieciowego interfejsu programowania REST zwracającego dane w formacie serializacji JSON. 
