@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.2.2" use-changelog="false" max-obj-count="26"
+	 gen-disabled-objs-code="false" show-sys-schemas-rects="true"
+	 last-position="612,0" last-zoom="0.35" scene-rect="0,0,3531.49,2274.92"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="postgres" encoding="UTF8" lc-collate="en_US.utf8" lc-ctype="en_US.utf8" is-template="false" allow-conns="true" sql-disabled="true">
+	<role name="postgres"/>
+	<tablespace name="pg_default"/>
+	<comment> <![CDATA[default administrative connection database]]> </comment>
+</database>
+
+<schema name="public" layers="0" rect-visible="true" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
+</schema>
+
+<schema name="hodowlakoni1" layers="0" fill-color="#3ba096" name-color="#000000">
+	<role name="postgres"/>
+</schema>
+
+<usertype name="plcie" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="klacz"/>
+	<enumeration label="ogier"/>
+	<enumeration label="wałach"/>
+</usertype>
+
+<usertype name="rodzaje_koni" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="Konie hodowlane"/>
+	<enumeration label="Konie rekreacyjne"/>
+	<enumeration label="Źrebaki"/>
+	<enumeration label="Konie sportowe"/>
+</usertype>
+
+<usertype name="rodzaje_notifications" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="Podkucia"/>
+	<enumeration label="Odrobaczanie"/>
+	<enumeration label="Podanie suplementów"/>
+	<enumeration label="Szczepienie"/>
+	<enumeration label="Dentysta"/>
+	<enumeration label="Inne"/>
+</usertype>
+
+<usertype name="rodzaje_wysylania_notifications" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="Push"/>
+	<enumeration label="Email"/>
+	<enumeration label="Oba"/>
+</usertype>
+
+<usertype name="rodzaje_zdarzen_profilaktycznych" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="Odrobaczanie"/>
+	<enumeration label="Podanie suplementów"/>
+	<enumeration label="Szczepienie"/>
+	<enumeration label="Dentysta"/>
+	<enumeration label="Inne"/>
+</usertype>
+
+<usertype name="rodzaje_zdarzen_rozrodczych" configuration="enumeration">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<enumeration label="Inseminacja konia"/>
+	<enumeration label="Sprawdzenie źrebności"/>
+	<enumeration label="Wyźrebienie"/>
+	<enumeration label="Inne"/>
+</usertype>
+
+<table name="account" layers="0" collapse-mode="2" max-obj-count="15" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="1940" y="1800"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="account_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="provider_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="access_token">
+		<type name="text" length="0"/>
+	</column>
+	<column name="refresh_token">
+		<type name="text" length="0"/>
+	</column>
+	<column name="id_token">
+		<type name="text" length="0"/>
+	</column>
+	<column name="access_token_expires_at">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="refresh_token_expires_at">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="scope">
+		<type name="text" length="0"/>
+	</column>
+	<column name="password">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="account_pkey" type="pk-constr" table="hodowlakoni1.account">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="apikey" layers="0" collapse-mode="2" max-obj-count="25" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2820" y="1640"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="name">
+		<type name="text" length="0"/>
+	</column>
+	<column name="start">
+		<type name="text" length="0"/>
+	</column>
+	<column name="prefix">
+		<type name="text" length="0"/>
+	</column>
+	<column name="key" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="refill_interval">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="refill_amount">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="last_refill_at">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="enabled" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="rate_limit_enabled" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="rate_limit_time_window" default-value="86400000">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="rate_limit_max" default-value="10">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="request_count" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="remaining">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="last_request">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="expires_at">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="created_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="permissions">
+		<type name="text" length="0"/>
+	</column>
+	<column name="metadata">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="apikey_pkey" type="pk-constr" table="hodowlakoni1.apikey">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="choroby_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="choroby" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="40" y="900"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.choroby_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_rozpoczecia" not-null="true" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="data_zakonczenia">
+		<type name="date" length="0"/>
+	</column>
+	<column name="opis_zdarzenia">
+		<type name="character varying" length="0"/>
+	</column>
+	<constraint name="choroby_pkey" type="pk-constr" table="hodowlakoni1.choroby">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="invitation" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="1760" y="1320"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="organization_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="role">
+		<type name="text" length="0"/>
+	</column>
+	<column name="status" not-null="true" default-value="'pending'">
+		<type name="text" length="0"/>
+	</column>
+	<column name="expires_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="inviter_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="invitation_pkey" type="pk-constr" table="hodowlakoni1.invitation">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="konie_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="konie" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="520" y="800"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.konie_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="nazwa" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="numer_przyzyciowy">
+		<type name="character varying" length="15"/>
+	</column>
+	<column name="numer_chipa">
+		<type name="character varying" length="15"/>
+	</column>
+	<column name="rocznik_urodzenia" default-value="EXTRACT(year FROM now())">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_przybycia_do_stajni" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="data_odejscia_ze_stajni">
+		<type name="date" length="0"/>
+	</column>
+	<column name="hodowla" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="rodzaj_konia" not-null="true">
+		<type name="hodowlakoni1.rodzaje_koni" length="0"/>
+	</column>
+	<column name="plec">
+		<type name="hodowlakoni1.plcie" length="0"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="odejscie_pozniej_niz_przybycie" type="ck-constr" table="hodowlakoni1.konie">
+			<expression> <![CDATA[((data_odejscia_ze_stajni IS NULL) OR (data_przybycia_do_stajni IS NULL) OR (data_przybycia_do_stajni <= data_odejscia_ze_stajni))]]> </expression>
+	</constraint>
+	<constraint name="przybycie_nie_wczesniej_niz_rocznik_urodzenia" type="ck-constr" table="hodowlakoni1.konie">
+			<expression> <![CDATA[((data_odejscia_ze_stajni IS NULL) OR (data_przybycia_do_stajni IS NULL) OR (EXTRACT(year FROM data_przybycia_do_stajni) >= (rocznik_urodzenia)::numeric))]]> </expression>
+	</constraint>
+	<constraint name="data_przybycia_wymagana_przy_dacie_odejscia" type="ck-constr" table="hodowlakoni1.konie">
+			<expression> <![CDATA[(NOT ((data_odejscia_ze_stajni IS NOT NULL) AND (data_przybycia_do_stajni IS NULL)))]]> </expression>
+	</constraint>
+	<constraint name="konie_pkey" type="pk-constr" table="hodowlakoni1.konie">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="kowale_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="kowale" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="1140" y="400"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.kowale_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="imie_i_nazwisko" not-null="true">
+		<type name="character varying" length="0"/>
+	</column>
+	<column name="numer_telefonu">
+		<type name="character varying" length="15"/>
+	</column>
+	<column name="hodowla" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="kowale_pkey" type="pk-constr" table="hodowlakoni1.kowale">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="leczenia_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="leczenia" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="40" y="1320"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.leczenia_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="weterynarz" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_zdarzenia" not-null="true" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="opis_zdarzenia">
+		<type name="character varying" length="0"/>
+	</column>
+	<column name="choroba">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="leczenia_pkey" type="pk-constr" table="hodowlakoni1.leczenia">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="member" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2200" y="720"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="organization_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="role" not-null="true" default-value="'member'">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="member_pkey" type="pk-constr" table="hodowlakoni1.member">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="notifications_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="notifications" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2880" y="1300"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.notifications_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="rodzaje_notifications" not-null="true">
+		<type name="hodowlakoni1.rodzaje_notifications" length="0"/>
+	</column>
+	<column name="days" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="time" not-null="true">
+		<type name="time with time zone" length="0" precision="6" with-timezone="true"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="rodzaje_wysylania_notifications" not-null="true">
+		<type name="hodowlakoni1.rodzaje_wysylania_notifications" length="0"/>
+	</column>
+	<constraint name="notifications_pkey" type="pk-constr" table="hodowlakoni1.notifications">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="organization" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="1537.14" y="802.857"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="slug" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="logo">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="liczba_requestow" not-null="true" default-value="0">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="metadata">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="organization_pkey" type="pk-constr" table="hodowlakoni1.organization">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="organization_slug_unique" type="uq-constr" table="hodowlakoni1.organization">
+		<columns names="slug" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="podkucia_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="podkucia" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="560" y="400"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.podkucia_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_zdarzenia" not-null="true" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="data_waznosci">
+		<type name="date" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="kowal" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<constraint name="podkucia_pkey" type="pk-constr" table="hodowlakoni1.podkucia">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="rozrody_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="rozrody" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="480" y="1360"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.rozrody_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="weterynarz" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_zdarzenia" not-null="true" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="rodzaj_zdarzenia" not-null="true">
+		<type name="hodowlakoni1.rodzaje_zdarzen_rozrodczych" length="0"/>
+	</column>
+	<column name="opis_zdarzenia">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="rozrody_pkey" type="pk-constr" table="hodowlakoni1.rozrody">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="session" layers="0" collapse-mode="2" max-obj-count="12" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2320" y="1880"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="expires_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="token" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="ip_address">
+		<type name="text" length="0"/>
+	</column>
+	<column name="user_agent">
+		<type name="text" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active_organization_id">
+		<type name="text" length="0"/>
+	</column>
+	<column name="impersonated_by">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="session_pkey" type="pk-constr" table="hodowlakoni1.session">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="session_token_unique" type="uq-constr" table="hodowlakoni1.session">
+		<columns names="token" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="user" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2360" y="1340"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="email_verified" not-null="true" default-value="false">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="image">
+		<type name="text" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="role">
+		<type name="text" length="0"/>
+	</column>
+	<column name="banned" default-value="false">
+		<type name="boolean" length="0"/>
+	</column>
+	<column name="ban_reason">
+		<type name="text" length="0"/>
+	</column>
+	<column name="ban_expires">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="user_pkey" type="pk-constr" table="hodowlakoni1.&quot;user&quot;">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="user_email_unique" type="uq-constr" table="hodowlakoni1.&quot;user&quot;">
+		<columns names="email" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="verification" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="2705.71" y="402.857"/>
+	<column name="id" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="identifier" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="value" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="expires_at" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="created_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="updated_at" not-null="true" default-value="now()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="verification_pkey" type="pk-constr" table="hodowlakoni1.verification">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="weterynarze_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="weterynarze" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="551.429" y="1757.14"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.weterynarze_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="imie_i_nazwisko" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="numer_telefonu">
+		<type name="character varying" length="15"/>
+	</column>
+	<column name="hodowla" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active" not-null="true" default-value="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="weterynarze_pkey" type="pk-constr" table="hodowlakoni1.weterynarze">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="zdarzenia_profilaktyczne_id_seq" cycle="false" start="1" increment="1" min-value="1" max-value="2147483647" cache="1">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+</sequence>
+
+<table name="zdarzenia_profilaktyczne" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="1094.29" y="1351.43"/>
+	<column name="id" not-null="true" sequence="hodowlakoni1.zdarzenia_profilaktyczne_id_seq">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="weterynarz" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="data_zdarzenia" not-null="true" default-value="now()">
+		<type name="date" length="0"/>
+	</column>
+	<column name="data_waznosci">
+		<type name="date" length="0"/>
+	</column>
+	<column name="rodzaj_zdarzenia" not-null="true">
+		<type name="hodowlakoni1.rodzaje_zdarzen_profilaktycznych" length="0"/>
+	</column>
+	<column name="opis_zdarzenia">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="zdarzenia_profilaktyczne_pkey" type="pk-constr" table="hodowlakoni1.zdarzenia_profilaktyczne">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="zdjecia_koni" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="hodowlakoni1"/>
+	<role name="postgres"/>
+	<position x="60" y="400"/>
+	<column name="id" not-null="true" default-value="gen_random_uuid()">
+		<type name="uuid" length="0"/>
+	</column>
+	<column name="kon" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="default" not-null="true">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="zdjecia_koni_pkey" type="pk-constr" table="hodowlakoni1.zdjecia_koni">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="account_userId_idx" table="hodowlakoni1.account"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="user_id"/>
+		</idxelement>
+</index>
+
+<index name="apikey_key_idx" table="hodowlakoni1.apikey"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="key"/>
+		</idxelement>
+</index>
+
+<index name="apikey_userId_idx" table="hodowlakoni1.apikey"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="user_id"/>
+		</idxelement>
+</index>
+
+<index name="invitation_organizationId_idx" table="hodowlakoni1.invitation"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="organization_id"/>
+		</idxelement>
+</index>
+
+<index name="invitation_email_idx" table="hodowlakoni1.invitation"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="email"/>
+		</idxelement>
+</index>
+
+<index name="member_organizationId_idx" table="hodowlakoni1.member"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="organization_id"/>
+		</idxelement>
+</index>
+
+<index name="member_userId_idx" table="hodowlakoni1.member"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="user_id"/>
+		</idxelement>
+</index>
+
+<index name="organization_slug_uidx" table="hodowlakoni1.organization"
+	 concurrent="false" unique="true" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="slug"/>
+		</idxelement>
+</index>
+
+<index name="session_userId_idx" table="hodowlakoni1.session"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="user_id"/>
+		</idxelement>
+</index>
+
+<index name="verification_identifier_idx" table="hodowlakoni1.verification"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="identifier"/>
+		</idxelement>
+</index>
+
+<constraint name="account_user_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.account">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="apikey_user_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.apikey">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="choroby_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.choroby">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="invitation_organization_id_organization_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.organization" table="hodowlakoni1.invitation">
+	<columns names="organization_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="invitation_inviter_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.invitation">
+	<columns names="inviter_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="konie_hodowla_organization_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.organization" table="hodowlakoni1.konie">
+	<columns names="hodowla" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="kowale_hodowla_organization_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.organization" table="hodowlakoni1.kowale">
+	<columns names="hodowla" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="leczenia_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.leczenia">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="leczenia_weterynarz_weterynarze_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.weterynarze" table="hodowlakoni1.leczenia">
+	<columns names="weterynarz" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="leczenia_choroba_choroby_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.choroby" table="hodowlakoni1.leczenia">
+	<columns names="choroba" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="member_organization_id_organization_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.organization" table="hodowlakoni1.member">
+	<columns names="organization_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="member_user_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.member">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="notifications_user_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.notifications">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="podkucia_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.podkucia">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="podkucia_kowal_kowale_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.kowale" table="hodowlakoni1.podkucia">
+	<columns names="kowal" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="rozrody_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.rozrody">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="rozrody_weterynarz_weterynarze_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.weterynarze" table="hodowlakoni1.rozrody">
+	<columns names="weterynarz" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="session_user_id_user_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="CASCADE" ref-table="hodowlakoni1.&quot;user&quot;" table="hodowlakoni1.session">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="weterynarze_hodowla_organization_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.organization" table="hodowlakoni1.weterynarze">
+	<columns names="hodowla" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="zdarzenia_profilaktyczne_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.zdarzenia_profilaktyczne">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="zdarzenia_profilaktyczne_weterynarz_weterynarze_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.weterynarze" table="hodowlakoni1.zdarzenia_profilaktyczne">
+	<columns names="weterynarz" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="zdjecia_koni_kon_konie_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="hodowlakoni1.konie" table="hodowlakoni1.zdjecia_koni">
+	<columns names="kon" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_account_user" type="relfk" layers="0"
+	 custom-color="#c7ed1a"
+	 src-table="hodowlakoni1.account"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="account_user_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_apikey_user" type="relfk" layers="0"
+	 custom-color="#5fa453"
+	 src-table="hodowlakoni1.apikey"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="apikey_user_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_choroby_konie" type="relfk" layers="0"
+	 custom-color="#bf7131"
+	 src-table="hodowlakoni1.choroby"
+	 dst-table="hodowlakoni1.konie" reference-fk="choroby_kon_konie_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_invitation_organization" type="relfk" layers="0"
+	 custom-color="#b503d0"
+	 src-table="hodowlakoni1.invitation"
+	 dst-table="hodowlakoni1.organization" reference-fk="invitation_organization_id_organization_id_fk"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="103.199" y="-48.9244"/>
+	</label>
+</relationship>
+
+<relationship name="rel_invitation_user" type="relfk" layers="0"
+	 custom-color="#0cc663"
+	 src-table="hodowlakoni1.invitation"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="invitation_inviter_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_konie_organization" type="relfk" layers="0"
+	 custom-color="#db77fe"
+	 src-table="hodowlakoni1.konie"
+	 dst-table="hodowlakoni1.organization" reference-fk="konie_hodowla_organization_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_kowale_organization" type="relfk" layers="0"
+	 custom-color="#d406a5"
+	 src-table="hodowlakoni1.kowale"
+	 dst-table="hodowlakoni1.organization" reference-fk="kowale_hodowla_organization_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_leczenia_konie" type="relfk" layers="0"
+	 custom-color="#ad24b8"
+	 src-table="hodowlakoni1.leczenia"
+	 dst-table="hodowlakoni1.konie" reference-fk="leczenia_kon_konie_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_leczenia_weterynarze" type="relfk" layers="0"
+	 custom-color="#99aa59"
+	 src-table="hodowlakoni1.leczenia"
+	 dst-table="hodowlakoni1.weterynarze" reference-fk="leczenia_weterynarz_weterynarze_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_leczenia_choroby" type="relfk" layers="0"
+	 custom-color="#f29605"
+	 src-table="hodowlakoni1.leczenia"
+	 dst-table="hodowlakoni1.choroby" reference-fk="leczenia_choroba_choroby_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_member_organization" type="relfk" layers="0"
+	 custom-color="#81924f"
+	 src-table="hodowlakoni1.member"
+	 dst-table="hodowlakoni1.organization" reference-fk="member_organization_id_organization_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_member_user" type="relfk" layers="0"
+	 custom-color="#25a23e"
+	 src-table="hodowlakoni1.member"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="member_user_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_notifications_user" type="relfk" layers="0"
+	 custom-color="#72b478"
+	 src-table="hodowlakoni1.notifications"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="notifications_user_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_podkucia_konie" type="relfk" layers="0"
+	 custom-color="#6c9163"
+	 src-table="hodowlakoni1.podkucia"
+	 dst-table="hodowlakoni1.konie" reference-fk="podkucia_kon_konie_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_podkucia_kowale" type="relfk" layers="0"
+	 custom-color="#7bbcb8"
+	 src-table="hodowlakoni1.podkucia"
+	 dst-table="hodowlakoni1.kowale" reference-fk="podkucia_kowal_kowale_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_rozrody_konie" type="relfk" layers="0"
+	 custom-color="#ec7baa"
+	 src-table="hodowlakoni1.rozrody"
+	 dst-table="hodowlakoni1.konie" reference-fk="rozrody_kon_konie_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_rozrody_weterynarze" type="relfk" layers="0"
+	 custom-color="#0369f1"
+	 src-table="hodowlakoni1.rozrody"
+	 dst-table="hodowlakoni1.weterynarze" reference-fk="rozrody_weterynarz_weterynarze_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_session_user" type="relfk" layers="0"
+	 custom-color="#87885a"
+	 src-table="hodowlakoni1.session"
+	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="session_user_id_user_id_fk"
+	 src-required="false" dst-required="true"/>
+
+<relationship name="rel_weterynarze_organization" type="relfk" layers="0"
+	 src-table="hodowlakoni1.weterynarze"
+	 dst-table="hodowlakoni1.organization" reference-fk="weterynarze_hodowla_organization_id_fk"
+	 src-required="false" dst-required="true">
+	<line>
+		<position x="1705.71" y="1845.71"/>
+	</line>
+	<label ref-type="name-label">
+		<position x="-114.033" y="300.29"/>
+	</label>
+</relationship>
+
+<relationship name="rel_zdarzenia_profilaktyczne_konie" type="relfk" layers="0"
+	 src-table="hodowlakoni1.zdarzenia_profilaktyczne"
+	 dst-table="hodowlakoni1.konie" reference-fk="zdarzenia_profilaktyczne_kon_konie_id_fk"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="164.621" y="-12.4505"/>
+	</label>
+</relationship>
+
+<relationship name="rel_zdarzenia_profilaktyczne_weterynarze" type="relfk" layers="0"
+	 custom-color="#90b07a"
+	 src-table="hodowlakoni1.zdarzenia_profilaktyczne"
+	 dst-table="hodowlakoni1.weterynarze" reference-fk="zdarzenia_profilaktyczne_weterynarz_weterynarze_id_fk"
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="124.973" y="-1.35299"/>
+	</label>
+</relationship>
+
+<relationship name="rel_zdjecia_koni_konie" type="relfk" layers="0"
+	 custom-color="#d8fa6b"
+	 src-table="hodowlakoni1.zdjecia_koni"
+	 dst-table="hodowlakoni1.konie" reference-fk="zdjecia_koni_kon_konie_id_fk"
+	 src-required="false" dst-required="true"/>
+
+</dbmodel>
