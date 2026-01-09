@@ -72,24 +72,24 @@ Opisane podejście nazywa się Aplikacją jednostronicową (ang. \textit{Single-
 
 \subsection{Backend}
 
-Backend:
-- integruje różne systemy:
-    - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
-    - obsługuje zapytania do klasyfikatora i LLM
-    - wysyła okresowo powiadomienia email
-    - obsługuje generowanie linków do przesyłania zdjęć na bucket
-- obsługuje bezpośrednio:
-    - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
-        - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
-        - sesja przechowywana jest jako ciasteczko httpOnly 
-    - logikę biznesową (CRUD, obliczenia ważności, )
-    - współbieżny dostęp do danych
-    - migracje i początkowe populacje bazy danych
-- jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
-- można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
-- jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
-- napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
-- parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
+% Backend:
+% - integruje różne systemy:
+%     - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
+%     - obsługuje zapytania do klasyfikatora i LLM
+%     - wysyła okresowo powiadomienia email
+%     - obsługuje generowanie linków do przesyłania zdjęć na bucket
+% - obsługuje bezpośrednio:
+%     - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
+%         - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
+%         - sesja przechowywana jest jako ciasteczko httpOnly 
+%     - logikę biznesową (CRUD, obliczenia ważności, )
+%     - współbieżny dostęp do danych
+%     - migracje i początkowe populacje bazy danych
+% - jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
+% - można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
+% - jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
+% - napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
+% - parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
 
 
 
