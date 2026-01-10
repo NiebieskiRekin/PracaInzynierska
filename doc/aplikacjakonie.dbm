@@ -5,14 +5,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 -->
 <dbmodel pgmodeler-ver="1.2.2" use-changelog="false" max-obj-count="26"
 	 gen-disabled-objs-code="false" show-sys-schemas-rects="true"
-	 last-position="612,0" last-zoom="0.35" scene-rect="0,0,3531.49,2274.92"
-	 default-schema="public" default-owner="postgres"
+	 last-position="0,0" last-zoom="0.5" scene-rect="0,0,1753.58,1807.93"
+	 default-schema="hodowlakoni1" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
 	 layer-name-colors="#000000"
 	 layer-rect-colors="#b4b4b4"
 	 show-layer-names="false" show-layer-rects="false">
-<database name="postgres" encoding="UTF8" lc-collate="en_US.utf8" lc-ctype="en_US.utf8" is-template="false" allow-conns="true" sql-disabled="true">
+<database name="postgres" encoding="UTF8" connlimit="1" lc-collate="pl_PL" lc-ctype="pl_PL" is-template="false" allow-conns="true">
 	<role name="postgres"/>
 	<tablespace name="pg_default"/>
 	<comment> <![CDATA[default administrative connection database]]> </comment>
@@ -21,7 +21,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" layers="0" rect-visible="true" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
 </schema>
 
-<schema name="hodowlakoni1" layers="0" fill-color="#3ba096" name-color="#000000">
+<schema name="hodowlakoni1" layers="0" rect-visible="true" fill-color="#fafafa" name-color="#ffffff">
 	<role name="postgres"/>
 </schema>
 
@@ -80,10 +80,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<enumeration label="Inne"/>
 </usertype>
 
-<table name="account" layers="0" collapse-mode="2" max-obj-count="15" z-value="0">
+<table name="account" layers="0" collapse-mode="1" max-obj-count="15" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="1940" y="1800"/>
+	<position x="897.71" y="1358.16"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -128,10 +128,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="apikey" layers="0" collapse-mode="2" max-obj-count="25" z-value="0">
+<table name="apikey" layers="0" collapse-mode="1" max-obj-count="25" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2820" y="1640"/>
+	<position x="1468.04" y="1123.22"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -205,10 +205,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="choroby" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="choroby" layers="0" collapse-mode="1" max-obj-count="6" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="40" y="900"/>
+	<position x="72" y="702.24"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.choroby_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -229,10 +229,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="invitation" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+<table name="invitation" layers="0" collapse-mode="1" max-obj-count="9" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="1760" y="1320"/>
+	<position x="941.877" y="1015.16"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -267,10 +267,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="konie" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+<table name="konie" layers="0" collapse-mode="1" max-obj-count="13" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="520" y="800"/>
+	<position x="368" y="621.668"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.konie_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -323,10 +323,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="kowale" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="kowale" layers="0" collapse-mode="1" max-obj-count="6" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="1140" y="400"/>
+	<position x="830.281" y="340.24"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.kowale_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -352,10 +352,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="leczenia" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="leczenia" layers="0" collapse-mode="1" max-obj-count="7" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="40" y="1320"/>
+	<position x="87.7619" y="1002.38"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.leczenia_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -379,10 +379,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="member" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="member" layers="0" collapse-mode="1" max-obj-count="6" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2200" y="720"/>
+	<position x="1199.71" y="703.002"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -408,10 +408,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="notifications" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="notifications" layers="0" collapse-mode="1" max-obj-count="8" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2880" y="1300"/>
+	<position x="1423.71" y="714.165"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.notifications_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -438,10 +438,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="organization" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="organization" layers="0" collapse-mode="1" max-obj-count="8" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="1537.14" y="802.857"/>
+	<position x="829.469" y="678.43"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -476,10 +476,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="podkucia" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="podkucia" layers="0" collapse-mode="1" max-obj-count="6" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="560" y="400"/>
+	<position x="414" y="340.24"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.podkucia_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -505,10 +505,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="rozrody" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="rozrody" layers="0" collapse-mode="1" max-obj-count="7" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="480" y="1360"/>
+	<position x="358.589" y="1089.91"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.rozrody_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -532,10 +532,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="session" layers="0" collapse-mode="2" max-obj-count="12" z-value="0">
+<table name="session" layers="0" collapse-mode="1" max-obj-count="12" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2320" y="1880"/>
+	<position x="1199.71" y="1427"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -574,10 +574,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="user" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+<table name="user" layers="0" collapse-mode="1" max-obj-count="13" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2360" y="1340"/>
+	<position x="1205.71" y="972.665"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -619,10 +619,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="verification" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+<table name="verification" layers="0" collapse-mode="1" max-obj-count="7" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="2705.71" y="402.857"/>
+	<position x="1467.75" y="375.525"/>
 	<column name="id" not-null="true">
 		<type name="text" length="0"/>
 	</column>
@@ -651,10 +651,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="weterynarze" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+<table name="weterynarze" layers="0" collapse-mode="1" max-obj-count="6" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="551.429" y="1757.14"/>
+	<position x="357" y="1430.52"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.weterynarze_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -680,10 +680,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<role name="postgres"/>
 </sequence>
 
-<table name="zdarzenia_profilaktyczne" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+<table name="zdarzenia_profilaktyczne" layers="0" collapse-mode="1" max-obj-count="8" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="1094.29" y="1351.43"/>
+	<position x="592.286" y="1097.09"/>
 	<column name="id" not-null="true" sequence="hodowlakoni1.zdarzenia_profilaktyczne_id_seq">
 		<type name="integer" length="0"/>
 	</column>
@@ -710,10 +710,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="zdjecia_koni" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="zdjecia_koni" layers="0" collapse-mode="1" max-obj-count="3" z-value="0">
 	<schema name="hodowlakoni1"/>
 	<role name="postgres"/>
-	<position x="60" y="400"/>
+	<position x="97.8572" y="517.192"/>
 	<column name="id" not-null="true" default-value="gen_random_uuid()">
 		<type name="uuid" length="0"/>
 	</column>
@@ -941,7 +941,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <relationship name="rel_account_user" type="relfk" layers="0"
-	 custom-color="#c7ed1a"
+	 custom-color="#ffaa00"
 	 src-table="hodowlakoni1.account"
 	 dst-table="hodowlakoni1.&quot;user&quot;" reference-fk="account_user_id_user_id_fk"
 	 src-required="false" dst-required="true"/>
@@ -993,7 +993,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-required="false" dst-required="true"/>
 
 <relationship name="rel_leczenia_weterynarze" type="relfk" layers="0"
-	 custom-color="#99aa59"
 	 src-table="hodowlakoni1.leczenia"
 	 dst-table="hodowlakoni1.weterynarze" reference-fk="leczenia_weterynarz_weterynarze_id_fk"
 	 src-required="false" dst-required="true"/>
@@ -1008,7 +1007,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#81924f"
 	 src-table="hodowlakoni1.member"
 	 dst-table="hodowlakoni1.organization" reference-fk="member_organization_id_organization_id_fk"
-	 src-required="false" dst-required="true"/>
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <relationship name="rel_member_user" type="relfk" layers="0"
 	 custom-color="#25a23e"
@@ -1032,7 +1035,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#7bbcb8"
 	 src-table="hodowlakoni1.podkucia"
 	 dst-table="hodowlakoni1.kowale" reference-fk="podkucia_kowal_kowale_id_fk"
-	 src-required="false" dst-required="true"/>
+	 src-required="false" dst-required="true">
+	<label ref-type="name-label">
+		<position x="-0.948567" y="13.9326"/>
+	</label>
+</relationship>
 
 <relationship name="rel_rozrody_konie" type="relfk" layers="0"
 	 custom-color="#ec7baa"
@@ -1057,10 +1064,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="hodowlakoni1.organization" reference-fk="weterynarze_hodowla_organization_id_fk"
 	 src-required="false" dst-required="true">
 	<line>
-		<position x="1705.71" y="1845.71"/>
+		<position x="832" y="1524"/>
 	</line>
 	<label ref-type="name-label">
-		<position x="-114.033" y="300.29"/>
+		<position x="-154.197" y="244.573"/>
 	</label>
 </relationship>
 
@@ -1084,7 +1091,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </relationship>
 
 <relationship name="rel_zdjecia_koni_konie" type="relfk" layers="0"
-	 custom-color="#d8fa6b"
+	 custom-color="#005500"
 	 src-table="hodowlakoni1.zdjecia_koni"
 	 dst-table="hodowlakoni1.konie" reference-fk="zdjecia_koni_kon_konie_id_fk"
 	 src-required="false" dst-required="true"/>
