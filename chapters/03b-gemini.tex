@@ -1,0 +1,124 @@
+\chapter{Opracowanie i ocena eksperymentalna metody wypełniania żądań REST}
+
+\section{Ewolucja podejścia: Od Zero-Shot do Few-Shot Prompting}
+
+Proces opracowania metody automatycznego mapowania wypowiedzi użytkownika w języku naturalnym (ang. \textit{Natural Language Processing} – NLP) na strukturalne żądania formatu JSON (ang. \textit{JavaScript Object Notation}), zgodne z interfejsem programistycznym aplikacji (ang. \textit{Application Programming Interface} – API) typu REST (ang. \textit{Representational State Transfer}), przebiegał w sposób iteracyjny. Odzwierciedla on klasyczną ścieżkę optymalizacji systemów opartych na generatywnej sztucznej inteligencji (ang. \textit{Generative AI}). Kluczowym elementem badawczym była ewolucja podejścia: od prostych metod typu \textit{Zero-Shot} (wnioskowanie bez przykładów), aż po zaawansowaną technikę uczenia z małą liczbą przykładów (ang. \textit{Few-Shot Prompting}).
+
+W początkowej fazie eksperymentów skupiono się na testowaniu surowych możliwości modeli wielkojęzykowych (ang. \textit{Large Language Models} – LLM) bez wykorzystania dodatkowego klasyfikatora intencji. Przyjęto wówczas założenie, że model o wystarczająco dużej liczbie parametrów będzie w stanie samodzielnie zidentyfikować cel użytkownika, dobrać odpowiedni punkt końcowy (ang. \textit{endpoint}) oraz dokonać ekstrakcji danych (ang. \textit{entity extraction}). W tym celu opracowano pierwotny wzorzec instrukcji (ang. \textit{prompt}), który zawierał jedynie ogólny opis struktury bazy danych oraz ścisłe żądanie zwrotu odpowiedzi w formacie JSON.
+
+Pierwotna konstrukcja instrukcji charakteryzowała się znaczną objętością, co wynikało z konieczności zawarcia w jednym zapytaniu pełnej wiedzy o architekturze systemu. Na rysunku \ref{fig:pierwotny_prompt} przedstawiono strukturę tego zapytania, które składało się z kilku kluczowych sekcji:
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\textwidth]{public/prompt_structure1.png} 
+    \caption{Struktura pierwotnego promptu zawierająca pełny schemat bazy danych i liczne przykłady.}
+    \label{fig:pierwotny_prompt}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Definicja schematu danych:} Sekcja \texttt{\{schema\_prompt\}} zawierała kompletny opis struktur JSON dla wszystkich dostępnych punktów końcowych systemu. Powodowało to, że model musiał przetwarzać definicje wielu tabel i pól, które często były całkowicie niepowiązane z bieżącym zapytaniem użytkownika.
+    \item \textbf{Instrukcja zadania:} Wyraźne polecenie wygenerowania poprawnego obiektu JSON na podstawie opisu oraz autonomicznego wyboru docelowego adresu URL (ang. \textit{target endpoint selection}).
+    \item \textbf{Przykłady uczące (Few-Shot):} Iteracyjnie dołączane pary \texttt{\{train\_prompt\}} oraz \texttt{\{train\_json\}}, mające na celu ukierunkowanie modelu na specyficzne formatowanie odpowiedzi.
+\end{itemize}
+
+W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych (ang. \textit{database schema dumping}), prompt stawał się nadmiarowy pod względem liczby tokenów, co drastycznie zwiększało koszty operacyjne (ang. \textit{token usage}) oraz czas odpowiedzi systemu (ang. \textit{inference time}). 
+
+Co więcej, model był zmuszony do operowania na rozbudowanym zbiorze danych wejściowych, z których znaczna część stanowiła szum informacyjny (ang. \textit{data noise}). Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia mechanizmu uwagi (ang. \textit{attention mechanism}) modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego.
+
+Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (ang. \textit{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
+
+Testom poddano zróżnicowane jednostki obliczeniowe, w tym modele z rodziny GPT (ang. \textit{Generative Pre-trained Transformer}) od OpenAI (wersja 4o), a także modele otwartoźródłowe i azjatyckie, takie jak DeepSeek-V3. Wybór ten podyktowany był chęcią zbadania balansu między precyzją (ang. \textit{accuracy}) a latencją (ang. \textit{latency}), która w systemach konwersacyjnych czasu rzeczywistego ma znaczenie krytyczne.
+
+W celu obiektywnej oceny jakości generowanych odpowiedzi, zdefiniowano trzy kluczowe miary eksperymentalne:
+\begin{itemize}
+    \item \textbf{Skuteczność (ang. \textit{Effectiveness}):} mierzona binarnie (0 lub 1). Wartość 1 oznacza poprawną identyfikację docelowego punktu końcowego (ang. \textit{endpoint selection}), natomiast 0 wskazuje na wybór błędnego adresu URL.
+    \item \textbf{Precyzja (ang. \textit{Precision}):} mierzona w znormalizowanym zakresie od 0 do 1. Określa ona stopień zgodności wygenerowanego obiektu JSON z wzorcem oczekiwanym. Wartość 1 oznacza całkowitą zgodność wszystkich kluczy i wartości, natomiast 0 reprezentuje brak jakichkolwiek poprawnych danych w strukturze.
+    \item \textbf{Efektywność (ang. \textit{Efficiency}):} wskaźnik binarny określający, czy wygenerowane żądanie zostało pomyślnie przetworzone przez serwer (kod odpowiedzi 2xx). Wartość 1 oznacza, że \textit{request} przeszedł walidację i został zapisany w bazie danych, 0 oznacza błąd serwera lub walidacji schematu.
+\end{itemize}
+
+Zbiorcze wyniki wstępnej oceny modeli w podejściu \textit{Zero-Shot} przedstawiono w tabeli \ref{tab:llm_comparison}.
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki wstępnej oceny eksperymentalnej modeli LLM (podejście Zero-Shot)}
+\label{tab:llm_comparison}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+GPT-4o         & 0.74                 & 0.68                  & 0.79                 \\ \hline
+DeepSeek-V3    & 0.81                 & 0.64                  & 0.65                 \\ \hline
+Gemini 1.5 Flash & 0.81               & 0.84                  & 0.79                 \\ \hline
+\end{tabular}
+\end{table}
+
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje (ang. \textit{hallucinations}), szczególnie w zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność=0).
+
+Wymusiło to rozpoczęcie prac nad optymalizacją instrukcji (ang. \textit{prompt engineering}). Wprowadzono dynamiczne wstrzykiwanie kontekstu (ang. \textit{context injection}) poprzez dostarczanie modelowi aktualnego stanu bazy danych (listy koni, kowali i weterynarzy), co miało na celu zbliżenie wartości precyzji i efektywności do poziomu akceptowalnego w systemie produkcyjnym.
+
+Finalnie, w celu zapewnienia najwyższej stabilności, zastosowano mechanizm oczyszczania odpowiedzi (ang. \textit{sanitization}). Pozwala ona na odfiltrowanie zbędnych znaczników formatowania Markdown oraz komunikatów tekstowych (ang. \textit{chatter}), które modele LLM generują mimo restrykcyjnych instrukcji systemowych. 
+
+W toku prac wdrożeniowych nastąpiła konieczność migracji z modelu \textit{Gemini 1.5 Flash} na nowszą wersję \textit{Gemini 2.5 Flash}. Zmiana ta była podyktowana decyzją dostawcy (Google AI) o wyłączeniu dostępu do interfejsu programistycznego (API) starszej wersji modelu. Migracja, choć wymuszona czynnikami zewnętrznymi, pozwoliła na utrzymanie dotychczasowych wskaźników precyzji przy jednoczesnym zapewnieniu stabilności infrastrukturalnej systemu w długofalowej perspektywie eksploatacyjnej. Dzięki tak zaprojektowanej architekturze, opartej na modelu Gemini, system osiągnął wysoką deterministyczność przy zachowaniu naturalności interfejsu użytkownika.
+
+
+\section{Inżynieria promptów i wykorzystanie zbioru uczącego}
+
+Fundamentem optymalizacji procesu generowania żądań było odejście od statycznych instrukcji na rzecz dynamicznej inżynierii promptów (ang. \textit{dynamic prompt engineering}). Kluczowym elementem tej transformacji stało się wdrożenie techniki uczenia z małą liczbą przykładów (ang. \textit{Few-Shot Prompting}), która pozwoliła na ukierunkowanie modelu poprzez dostarczenie konkretnych wzorców par: wypowiedź użytkownika – oczekiwany obiekt JSON. Dane te są pobierane w czasie rzeczywistym z dedykowanego zbioru testowego, co zapewnia spójność odpowiedzi z aktualnymi wymaganiami interfejsu programistycznego.
+
+Ewolucja od pierwotnego, ogólnego wzorca do ustrukturyzowanej instrukcji systemowej pozwoliła na precyzyjne zdefiniowanie ram operacyjnych modelu. Finalna struktura zapytania składa się z trzech integralnych warstw informacyjnych:
+\begin{itemize}
+    \item \textbf{Warstwa strukturalna (Schemat danych):} Generowana dynamicznie na podstawie aktualnej specyfikacji technicznej punktu końcowego. Dzięki temu model operuje na precyzyjnych definicjach typów i kluczy, co jest krytyczne dla zachowania poprawności składniowej (ang. \textit{syntactic correctness}).
+    \item \textbf{Warstwa kontekstowa (Stan bazy danych):} Wstrzykiwane listy aktywnych obiektów, takich jak konie czy specjaliści (kowale, weterynarze). Dostarczenie tych danych bezpośrednio do zapytania eliminuje ryzyko halucynowania nieistniejących identyfikatorów, wymuszając na modelu operowanie wyłącznie na rzeczywistych rekordach.
+    \item \textbf{Warstwa behawioralna (Przykłady kontekstowe):} Wyselekcjonowane scenariusze użycia, które uczą model interpretacji intencji użytkownika w specyficznym kontekście dziedzinowym zarządzania hodowlą.
+\end{itemize}
+
+Wdrożenie interfejsu konwersacyjnego opartego na zewnętrznych usługach LLM wymagało zaimplementowania rygorystycznych mechanizmów kontroli dostępu i zarządzania zasobami. Każde żądanie wysyłane do modułu generatywnego jest uwierzytelniane przy użyciu tokenów sesyjnych (ang. \textit{session tokens}), co zapewnia pełną izolację danych pomiędzy poszczególnymi hodowlami w systemie.
+
+Kluczowym elementem ochrony infrastruktury przed nadużyciami oraz niekontrolowanym wzrostem kosztów operacyjnych jest system limitowania zapytań (ang. \textit{rate limiting}). W bazie danych systemu zdefiniowano atrybut określający dopuszczalną liczbę zapytań dla danej hodowli. Przed każdą próbą kontaktu z API modelu, system weryfikuje dostępny limit. W przypadku jego wyczerpania, proces jest przerywany przed wygenerowaniem kosztów, a użytkownik otrzymuje stosowny komunikat o braku uprawnień do wykonania dalszych operacji w danym cyklu rozliczeniowym.
+
+Największym wyzwaniem inżynierskim w tym procesie okazała się obsługa operacji dotyczących procesów leczenia. W przeciwieństwie do prostych akcji atomowych, rejestracja procedury medycznej wymaga zachowania ścisłej integralności referencyjnej (ang. \textit{referential integrity}) poprzez powiązanie zdarzenia z konkretną, istniejącą w systemie historią choroby. W podejściu jednokrokowym (ang. \textit{one-step approach}) model, nie posiadając bezpośredniego wglądu w powiązania medyczne, często przypisywał leczenia do błędnych jednostek chorobowych, co skutkowało niską efektywnością systemu i błędami logicznymi.
+
+Aby rozwiązać ten problem, zaimplementowano mechanizm orkiestracji (ang. \textit{orchestration}) oparty na wieloetapowym łańcuchu zapytań (ang. \textit{chaining}). Proces ten przebiega w następujących fazach:
+\begin{enumerate}
+    \item \textbf{Ekstrakcja podmiotu i rezolucja encji (ang. \textit{Entity Resolution}):} Model analizuje pierwotną wypowiedź użytkownika wyłącznie w celu identyfikacji obiektu nadrzędnego (konkretnego zwierzęcia). Wynikiem tego etapu jest unikalny identyfikator, wyekstrahowany na podstawie analizy dostępnego kontekstu bazy danych.
+    \item \textbf{Selektywne zasilenie kontekstu (ang. \textit{Sub-querying}):} Na podstawie uzyskanego identyfikatora, system automatycznie wykonuje zapytanie do bazy danych, pobierając listę aktywnych chorób przypisanych wyłącznie do zidentyfikowanego zwierzęcia.
+    \item \textbf{Generowanie końcowe (ang. \textit{Context-rich Generation}):} Model otrzymuje przefiltrowany zestaw danych medycznych. Dopiero w tym momencie następuje finalna synteza obiektu JSON. Dzięki temu model może poprawnie dopasować opis leczenia do konkretnego identyfikatora choroby, który faktycznie istnieje w historii medycznej, eliminując błędy przypisania.
+\end{enumerate}
+
+Zastosowanie tak skonstruowanej orkiestracji pozwoliło na obejście ograniczeń wynikających z braku trwałego stanu (ang. \textit{stateless nature}) modelu językowego. Przekształcenie procesu z naiwnego mapowania w inteligentny, wieloetapowy proces przetwarzania danych umożliwiło zachowanie pełnej integralności bazy danych przy jednoczesnym zachowaniu naturalnego, konwersacyjnego języka komunikacji z użytkownikiem.
+
+
+\section{Analiza wyników i sanitaryzacja danych}
+
+Kluczowym etapem wieńczącym proces generowania żądania jest faza przetwarzania końcowego (ang. \textit{post-processing}) oraz rygorystyczna kontrola jakości danych wyjściowych. Modele wielkojęzykowe, mimo precyzyjnych instrukcji systemowych, wykazują tendencję do dekorowania odpowiedzi elementami formatowania czytelnymi dla człowieka, lecz niemożliwymi do bezpośredniego przetworzenia przez parser programistyczny.
+
+W celu zapewnienia stabilności systemu, zaimplementowano zaawansowany mechanizm oczyszczania danych (ang. \textit{data sanitization}). Pełni on rolę warstwy ochronnej (ang. \textit{shielding layer}), która izoluje backend od surowych odpowiedzi modelu. Głównym zadaniem tego komponentu jest usuwanie artefaktów wizualnych, takich jak bloki kodu Markdown (np. \texttt{```json ... ```}) oraz zbędnych komentarzy tekstowych (ang. \textit{conversational filler}), które model może dołączyć do odpowiedzi. Proces ten jest realizowany poprzez wieloetapową analizę ciągów znaków (ang. \textit{string manipulation}), która normalizuje odpowiedź do czystej postaci obiektu JSON, gotowego do bezpośredniej deserializacji.
+
+Równolegle z rozwojem warstwy oczyszczającej, dokonano finalnej optymalizacji instrukcji sterującej. Aktualna postać promptu (zaprezentowana na rysunku \ref{fig:aktualny_prompt}) jest wynikiem licznych iteracji mających na celu maksymalizację gęstości informacyjnej przy jednoczesnym ograniczeniu szumu. W przeciwieństwie do pierwotnych wersji, obecna struktura wykorzystuje ściśle zdefiniowane separatory danych oraz logiczny podział na sekcję wiedzy o stanie bazy, sekcję instrukcji technicznych oraz sekcję przykładów kontekstowych.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.85\textwidth]{public/aktualny_prompt.png} 
+    \caption{Zoptymalizowana struktura promptu zintegrowana z kontekstem bazy danych i dynamicznym schematem.}
+    \label{fig:aktualny_prompt}
+\end{figure}
+
+Ocena eksperymentalna zaimplementowanej metody wykazała wysoką deterministyczność systemu w obszarach podlegających bezpośredniej generacji:
+
+\begin{itemize}
+    \item \textbf{Precyzja generowania danych (ang. \textit{Precision}):} mierzona jako stopień zgodności wartości w wygenerowanym obiekcie JSON względem oczekiwanego wzorca. Dla standardowych żądań system osiągnął wynik na poziomie \textbf{94\%}. Szczegółowa analiza błędów wykazała, że najczęstsze rozbieżności występowały w polach tekstowych typu „opis”. Model wykazywał tendencję do nadmiarowego włączania nazwy zwierzęcia do treści opisu lub modyfikowania szyku zdań względem wypowiedzi pierwotnej, co skutkowało obniżeniem miary precyzji mimo zachowania sensu logicznego. Wysoka precyzja w pozostałych polach wynika z zastosowania dynamicznego wstrzykiwania schematów oraz list encji, co wyeliminowało problem halucynowania identyfikatorów.
+    \item \textbf{Efektywność operacyjna (ang. \textit{Efficiency}):} definiowana jako zdolność systemu do wygenerowania żądania, które pomyślnie przechodzi walidację po stronie serwera i zostaje utrwalone w bazie danych. W przypadku złożonego modułu leczenia, dzięki zastosowaniu dwuetapowej orkiestracji i zasilania modelu danymi o konkretnych jednostkach chorobowych, efektywność wzrosła do \textbf{88\%}. Oznacza to, że zdecydowana większość żądań spełnia wymogi integralności referencyjnej bazy danych.
+\end{itemize}
+
+Dodatkowym atutem systemu jest wbudowana walidacja semantyczna oparta na schematach. Każdy obiekt, po przejściu przez warstwę sanitaryzacji, jest weryfikowany pod kątem kompletności wymaganych pól. W sytuacjach, gdy model wygeneruje strukturę niezgodną z kontraktem API, system przechwytuje wyjątek przed próbą komunikacji sieciowej, co zapobiega niespójnościom danych i pozwala na generowanie czytelnych komunikatów zwrotnych dla użytkownika. Implementacja ta potwierdza, że odciążenie modelu od roli klasyfikatora na rzecz dedykowanego modułu predykcyjnego pozwoliło na znaczną poprawę jakości strukturalnej generowanych komunikatów.
+
+Istotnym elementem interfejsu jest mechanizm prezentacji danych zwrotnych (ang. \textit{action feedback}). Po pomyślnym przetworzeniu żądania przez serwer, surowy obiekt JSON jest transformowany na czytelną dla użytkownika kartę informacyjną w oknie czatu. Zamiast technicznego kodu odpowiedzi, użytkownik otrzymuje jasne potwierdzenie (np. „Dodano podkucie:”) wraz z podsumowaniem kluczowych parametrów, takich jak lista koni, dane specjalisty oraz daty zdarzenia. Taka forma prezentacji danych znacząco podnosi użyteczność systemu, pozwalając na natychmiastową weryfikację poprawności wprowadzonego wpisu.
+
+\section{Podsumowanie i wnioski}
+
+Przeprowadzone procesy opracowania oraz oceny eksperymentalnej metody wypełniania żądań REST na podstawie wypowiedzi użytkownika pozwoliły na sformułowanie szeregu istotnych wniosków dotyczących wykorzystania modeli wielkojęzykowych w systemach o rygorystycznej strukturze danych. Kluczowym osiągnięciem inżynierskim było wykazanie, że stabilność interfejsu konwersacyjnego jest bezpośrednio uzależniona nie od samej mocy obliczeniowej modelu, lecz od precyzji dostarczanego mu kontekstu. Przejście z naiwnego podejścia \textit{Zero-Shot} na ustrukturyzowany \textit{Few-Shot Prompting} z dynamicznym wstrzykiwaniem schematów bazy danych wyeliminowało większość problemów związanych z halucynowaniem identyfikatorów, co pozwoliło na osiągnięcie wysokiej precyzji generowania danych. Wynik ten potwierdza, że ograniczenie „szumu informacyjnego” wewnątrz instrukcji sterującej poprzez selektywne ładowanie tylko niezbędnych punktów końcowych jest strategią znacznie wydajniejszą niż próba zmuszenia modelu do analizy pełnej architektury systemu przy każdym zapytaniu.
+
+Szczególne znaczenie dla sukcesu projektu miała implementacja wieloetapowej orkiestracji zapytań, która umożliwiła rozwiązanie problemu zachowania integralności referencyjnej w bezstanowych modelach LLM. Sukces w obsłudze modułu leczenia dowodzi, że dwuetapowy proces — polegający na wstępnej rezolucji encji nadrzędnej, a następnie zasileniu modelu przefiltrowaną historią chorób — jest niezbędny w przypadku relacyjnych struktur danych. Metoda ta pozwoliła na obejście ograniczeń wynikających z braku trwałej pamięci modelu, zamieniając proste mapowanie tekstu w inteligentny proces syntezy informacji opartej na rzeczywistym stanie bazy danych.
+
+Ewolucja techniczna systemu, wymuszona przez czynniki zewnętrzne, takie jak wyłączenie interfejsów API dla starszych wersji modeli i konieczność migracji na Gemini 2.5 Flash, ukazała elastyczność zaprojektowanej warstwy sanitaryzacji. Mechanizmy oczyszczania danych wyjściowych oraz walidacja semantyczna okazały się kluczowe dla zachowania ciągłości działania systemu przy zmianach silników wnioskujących. Jednocześnie, zaimplementowane mechanizmy bezpieczeństwa, w tym autoryzacja sesyjna oraz restrykcyjny system limitowania zapytań, przekształciły eksperymentalny prototyp w rozwiązanie gotowe do eksploatacji produkcyjnej, chroniąc zasoby chmurowe przed nadużyciami.
+
+Podsumowując, mimo odnotowanych drobnych rozbieżności w polach tekstowych typu „opis”, gdzie modele wykazują tendencję do modyfikowania szyku zdań użytkownika, system w pełni realizuje postawione założenia inżynierskie. Połączenie generatywnej sztucznej inteligencji z klasycznymi metodami walidacji danych i dwuetapową orkiestrą kontekstu pozwoliło na stworzenie narzędzia, które oferuje szybkość naturalnej komunikacji przy jednoczesnym zachowaniu rygoru technicznego wymaganego przez systemy bazodanowe. Zrealizowane badania dowodzą, że odciążenie modelu językowego od roli klasyfikatora na rzecz dedykowanego modułu predykcyjnego jest optymalnym wzorcem projektowym dla nowoczesnych systemów hybrydowych.
