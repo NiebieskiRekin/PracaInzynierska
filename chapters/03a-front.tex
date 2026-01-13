@@ -437,6 +437,28 @@ Interfejs został zaprojektowany w formie listy kategorii zdarzeń (Podkucia, Od
 
 Poza konfiguracją alertów, panel oferuje funkcje zarządzania bezpieczeństwem konta. Użytkownik ma możliwość wywołania procedury zmiany hasła poprzez dedykowany przycisk akcji. Całość logiki zapisu ustawień realizowana jest asynchronicznie, a natychmiastowa informacja zwrotna o powodzeniu operacji zapewnia poczucie kontroli nad stanem konfiguracji systemu.
 
+\section{Panel administracyjny} \label{sec:panel-administracyjny}
+
+Korzystając z opisu sieciowego interfejsu progamistycznego backendu w postaci schematu w specyfikacji OpenAPI do aplikacji został dodany dodatkowy interfejs graficzny, który obsługuje wszystkie udostępnione końcówki. Pełni on rolę panelu administracyjnego i umożliwia wykonanie dowolnych operacji udostępionych dla zwykłych użytkowników w ramach głównego interfejsu, a także dla administratorów dodawanie nowych użytkowników i hodowli, dodawanie nowych i resetowanie danych uwierzytelniających (haseł, tokenów programistycznych). Udostępniony interfejs posłużył również do testów backendu w izolacji od frontendu, jako praktyczna dokumentacja i do walidacji wygenerowanego opisu końcówek w specyfikacji OpenAPI. Opisywany panel administracyjny wykorzystuje gotową implementację interfejsu z biblioteki  
+\textit{Scalar}.
+
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{public/api-docs-scalar-backend-list.png}
+\caption{Widok panelu administracyjnego backendu - spis końcówek}
+\label{fig:panel-admin-list}
+\end{figure}
+
+
+W ramach aplikacji wykorzystywane są 2 główne funkcjonalności. Pierwszą z nich jest wyświelenie spisu końcówek backendu (ścieżek i metod) w postaci pasku bocznego. Po wybraniu danej końcówki możemy podejrzeć ponadto krótki opis, schemat opisujący przymowane parametry, nagłówki, ciało zapytania i mechanizmy uwierzytelniania. Dla każdego kodu odpowiedzi danej końcówki zaprezentowane zostały również możliwe warianty odpowiedzi z jawnie wskazanymi schematami modelu zwracanych danych. Przykładowo dla zaprezentowanej końcówki na Rysunku \ref{fig:panel-admin-query} dla ścieżki \texttt{/api/admin/user} i metody \texttt{GET} oczekiwane parametry przekazywane w formacie \textit{query} to \texttt{limit} i \texttt{offset} jako liczby całkowite dodatnie i służą do podziału potencjalnie długiej listy rezultatów na strony. Oczekiwane nagłówki to \texttt{Accept} zgodny z formatem serializacji JSON oraz \texttt{x-api-key} przechowujący token klucza API, a zatem wygenerowany wcześniej przez system losowy ciąg znaków pełniący rolę jednoskładnikowych danych uwierzytelniających. W odpowiedzi na nasze zapytanie w przypadku pomyślnego zapytania powinniśmy spodziewać się obiektu JSON z listą użytkowników z polami takimi jak identyfikator, nazwa, adres email, czy czasy utworzenia i modyfikacji.   
+
+\begin{figure}[t]
+\centering\includegraphics[width=\textwidth]{public/api-docs-scalar-backend-query.png}
+\caption{Modal tworzenia zapytania w panelu administracyjnym backendu}
+\label{fig:panel-admin-query}
+\end{figure}
+
+Każdą z pokazanych w panelu bocznym końcówek możemy przetestować tworząc zapytanie bezpośrednio w panelu administracyjnym. Po kliknięciu białego przycisku \textit{Test Request} otwiera się modal widoczny na Rysunku \ref{fig:panel-admin-query}. Udostępnia on od góry pola do wyboru serwera (w tym przypadku ustawiony na \texttt{http://localhost:3000} poprzez wybór z listy skonfigurowanych serwerów), po lewej panel konfiguracji ciasteczek, nagłówków (skonfigurowane \texttt{Accept} na dowolny format oraz \texttt{x-api-key} na testowy token klucza API) oraz oczekiwanych przez daną końcówkę parametrów wejściowych, w tym przypadku parametrów typu \textit{query}: \texttt{limit} i \texttt{offset}. Dzięki precyzji specyfikacji OpenAPI możliwe jest automatyczne wygenerowanie skrawka kodu do utworzenia skonfigurowanego zapytania w jednej z wielu dostępnych bibliotek, narzędzi i języków programowania (przykładowo został pokazany fragment kodu do zapytania z użyciem programu linii poleceń \textit{cURL}). Nasze zapytania możemy również wysłać bezpośrednio z poziomu przeglądarki, tak jak w tym przypadku pokazanym na omawianym rysunku poprzez kliknięcie na przycisk \textit{Send} u góry modala. Następnie po prawej stronie otrzymamy treść wiadomości zwrotnej od serwera w liście rozwijanej o tytule \textit{Body}. W tym przypadku zapytanie było pomyślne i zawiera listę użytkowników zarejestrowanych w systemie zgodnie z przyjętymi założeniami długości i przesunięcia listy w porządku alfabetycznym względem nazwy. Dodatkowo możemy podejrzeć ustawione ciasteczka, nagłówki żądania i odpowiedzi serwera.  
+
 \section{Podsumowanie rozdziału}
 
 Podsumowując, implementacja warstwy prezentacji aplikacji \textit{Moje Konie} stanowi kompleksową realizację nowoczesnego interfejsu webowego, który łączy wysoką wydajność technologiczną z zaawansowaną ergonomią użytkowania. Wykorzystanie biblioteki \textbf{React.js} w połączeniu z językiem \textbf{TypeScript} pozwoliło na stworzenie skalowalnej, modularnej architektury, która gwarantuje bezpieczeństwo typów oraz płynność renderowania danych w czasie rzeczywistym. Dzięki zastosowaniu podejścia \textit{Mobile First} oraz frameworka \textbf{Tailwind CSS}, system jest w pełni responsywny i zoptymalizowany pod kątem specyficznych warunków pracy terenowej, zapewniając czytelność i wygodę obsługi na urządzeniach przenośnych.
