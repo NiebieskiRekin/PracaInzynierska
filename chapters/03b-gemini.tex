@@ -26,7 +26,7 @@ TODO - Akapit, dlaczego zero-shot nie działał.
 
 TODO - Akapit, przejście na Few-shot
 
-TODO - Akapit, porównianie wyników (EDIT: w kolejnym section jest też coś o few-shot, więc tutaj chyba powinien być tylko zero-shot)
+TODO - Akapit, porównanie wyników (EDIT: w kolejnym section jest też coś o few-shot, więc tutaj chyba powinien być tylko zero-shot)
 
 W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych (\english{database schema dumping}), prompt stawał się nadmiarowy pod względem liczby tokenów, co drastycznie zwiększało koszty operacyjne (\english{token usage}) oraz czas odpowiedzi systemu (\english{inference time}) \cite{bommasani2021opportunities}. 
 
@@ -36,7 +36,7 @@ Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla ws
 
 Testom eksperymentalnym poddano różnorodne jednostki obliczeniowe, obejmujące zarówno modele komercyjne, jak i otwartoźródłowe, pochodzące z różnych regionów. Wśród nich znalazły się: GPT-4o (\english{Generative Pre-trained Transformer}) od OpenAI –- model komercyjny o szerokim zastosowaniu w języku naturalnym, DeepSeek‑V3 –- model otwartoźródłowy opracowany w Azji, oraz Gemini 1.5 Flash –- model komercyjny rozwijany w ramach projektów międzynarodowych. Dobór tych modeli pozwolił na analizę kompromisu między precyzją (\english{accuracy}) a czasem odpowiedzi (\english{latency}), co jest kluczowe w systemach konwersacyjnych działających w czasie rzeczywistym.
 
-W celu obiektywnej oceny jakości generowanych odpowiedzi, zdefiniowano trzy kluczowe miary eksperymentalne:
+W celu obiektywnej oceny jakości generowanych odpowiedzi zdefiniowano trzy kluczowe miary eksperymentalne:
 \begin{itemize}
     \item \textbf{Skuteczność (\english{Effectiveness}):} mierzona binarnie (0 lub 1). Wartość 1 oznacza poprawną identyfikację docelowego punktu końcowego (\english{endpoint selection}), natomiast 0 wskazuje na wybór błędnego adresu URL.
     \item \textbf{Precyzja (\english{Precision}):} mierzona w znormalizowanym zakresie od 0 do 1. Określa ona stopień zgodności wygenerowanego obiektu JSON z wzorcem oczekiwanym. Wartość 1 oznacza całkowitą zgodność wszystkich kluczy i wartości, natomiast 0 reprezentuje brak jakichkolwiek poprawnych danych w strukturze.
@@ -52,13 +52,13 @@ Zbiorcze wyniki wstępnej oceny modeli w podejściu \textit{Zero-Shot} przedstaw
 \begin{tabular}{|l|c|c|c|c|}
 \hline
 \textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
-GPT-4o         & 0.74                 & 0.68                  & 0.79                 \\ \hline
-DeepSeek-V3    & 0.81                 & 0.64                  & 0.65                 \\ \hline
-Gemini 1.5 Flash & 0.81               & 0.84                  & 0.79                 \\ \hline
+GPT-4o         & 0,74                 & 0,68                  & 0,79                 \\ \hline
+DeepSeek-V3    & 0,81                 & 0,64                  & 0,65                 \\ \hline
+Gemini 1.5 Flash & 0,81               & 0,84                  & 0,79                 \\ \hline
 \end{tabular}
 \end{table}
 
-Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje (\english{hallucinations}), szczególnie w zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność=0).
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje (\english{hallucinations}), szczególnie w zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
 
 Wymusiło to rozpoczęcie prac nad optymalizacją instrukcji (\english{prompt engineering}). Wprowadzono dynamiczne wstrzykiwanie kontekstu (\english{context injection}) poprzez dostarczanie modelowi aktualnego stanu bazy danych (listy koni, kowali i weterynarzy), co miało na celu zbliżenie wartości precyzji i efektywności do poziomu akceptowalnego w systemie produkcyjnym.
 
@@ -82,7 +82,7 @@ Wdrożenie interfejsu konwersacyjnego opartego na zewnętrznych usługach LLM wy
 
 Kluczowym elementem ochrony infrastruktury przed nadużyciami oraz niekontrolowanym wzrostem kosztów operacyjnych jest system limitowania zapytań (ang. \textit{rate limiting}). W bazie danych systemu zdefiniowano atrybut określający dopuszczalną liczbę zapytań dla danej hodowli. Przed każdą próbą kontaktu z API modelu, system weryfikuje dostępny limit. W przypadku jego wyczerpania, proces jest przerywany przed wygenerowaniem kosztów, a użytkownik otrzymuje stosowny komunikat o braku uprawnień do wykonania dalszych operacji w danym cyklu rozliczeniowym.
 
-Największym wyzwaniem inżynierskim w tym procesie okazała się obsługa operacji dotyczących procesów leczenia. W przeciwieństwie do prostych akcji atomowych, rejestracja procedury medycznej wymaga zachowania ścisłej integralności referencyjnej (ang. \textit{referential integrity}) poprzez powiązanie zdarzenia z konkretną, istniejącą w systemie historią choroby. W podejściu jednokrokowym (ang. \textit{one-step approach}) model, nie posiadając bezpośredniego wglądu w powiązania medyczne, często przypisywał leczenia do błędnych jednostek chorobowych, co skutkowało niską efektywnością systemu i błędami logicznymi.
+Największym wyzwaniem inżynierskim w tym procesie okazała się obsługa operacji dotyczących procesów leczenia. W przeciwieństwie do prostych akcji atomowych rejestracja procedury medycznej wymaga zachowania ścisłej integralności referencyjnej (ang. \textit{referential integrity}) poprzez powiązanie zdarzenia z konkretną, istniejącą w systemie historią choroby. W podejściu jednokrokowym (ang. \textit{one-step approach}) model, nie posiadając bezpośredniego wglądu w powiązania medyczne, często przypisywał leczenia do błędnych jednostek chorobowych, co skutkowało niską efektywnością systemu i błędami logicznymi.
 
 Aby rozwiązać ten problem, zaimplementowano mechanizm orkiestracji (ang. \textit{orchestration}) oparty na wieloetapowym łańcuchu zapytań (ang. \textit{chaining}). Proces ten przebiega w następujących fazach:
 \begin{enumerate}
@@ -98,9 +98,9 @@ Zastosowanie tak skonstruowanej orkiestracji pozwoliło na obejście ograniczeń
 
 Kluczowym etapem wieńczącym proces generowania żądania jest faza przetwarzania końcowego (ang. \textit{post-processing}) oraz rygorystyczna kontrola jakości danych wyjściowych. Modele wielkojęzykowe, mimo precyzyjnych instrukcji systemowych, wykazują tendencję do dekorowania odpowiedzi elementami formatowania czytelnymi dla człowieka, lecz niemożliwymi do bezpośredniego przetworzenia przez parser programistyczny.
 
-W celu zapewnienia stabilności systemu, zaimplementowano zaawansowany mechanizm oczyszczania danych (ang. \textit{data sanitization}). Pełni on rolę warstwy ochronnej (ang. \textit{shielding layer}), która izoluje backend od surowych odpowiedzi modelu. Głównym zadaniem tego komponentu jest usuwanie artefaktów wizualnych, takich jak bloki kodu Markdown (np. \texttt{```json ... ```}) oraz zbędnych komentarzy tekstowych (ang. \textit{conversational filler}), które model może dołączyć do odpowiedzi. Proces ten jest realizowany poprzez wieloetapową analizę ciągów znaków (ang. \textit{string manipulation}), która normalizuje odpowiedź do czystej postaci obiektu JSON, gotowego do bezpośredniej deserializacji.
+W celu zapewnienia stabilności systemu zaimplementowano zaawansowany mechanizm oczyszczania danych (ang. \textit{data sanitization}). Pełni on funkcję warstwy ochronnej (ang. \textit{shielding layer}), która izoluje backend od surowych odpowiedzi modelu. Głównym zadaniem tego komponentu jest usuwanie artefaktów wizualnych, takich jak bloki kodu Markdown (np. \texttt{```json ... ```}) oraz zbędnych komentarzy tekstowych (ang. \textit{conversational filler}), które model może dołączyć do odpowiedzi. Proces ten jest realizowany poprzez wieloetapową analizę ciągów znaków (ang. \textit{string manipulation}), która normalizuje odpowiedź do czystej postaci obiektu JSON, gotowego do bezpośredniej deserializacji.
 
-Równolegle z rozwojem warstwy oczyszczającej, dokonano finalnej optymalizacji instrukcji sterującej. Aktualna postać promptu (zaprezentowana na rysunku \ref{fig:aktualny_prompt}) jest wynikiem licznych iteracji mających na celu maksymalizację gęstości informacyjnej przy jednoczesnym ograniczeniu szumu. W przeciwieństwie do pierwotnych wersji, obecna struktura wykorzystuje ściśle zdefiniowane separatory danych oraz logiczny podział na sekcję wiedzy o stanie bazy, sekcję instrukcji technicznych oraz sekcję przykładów kontekstowych.
+Równolegle z rozwojem warstwy oczyszczającej, dokonano finalnej optymalizacji instrukcji sterującej. Aktualna postać promptu (zaprezentowana na rysunku \ref{fig:aktualny_prompt}) jest wynikiem licznych iteracji mających na celu maksymalizację gęstości informacyjnej przy jednoczesnym ograniczeniu szumu. W przeciwieństwie do pierwotnych wersji obecna struktura wykorzystuje ściśle zdefiniowane separatory danych oraz logiczny podział na sekcję wiedzy o stanie bazy, sekcję instrukcji technicznych oraz sekcję przykładów kontekstowych.
 
 \begin{figure}[t]
     \centering
