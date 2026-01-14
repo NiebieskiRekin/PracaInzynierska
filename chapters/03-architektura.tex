@@ -46,28 +46,6 @@ Opisane podejście nazywa się Aplikacją jednostronicową (\english{Single-page
 
 \section{Backend}
 
-% Backend:
-% - integruje różne systemy:
-%     - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
-%     - obsługuje zapytania do klasyfikatora i LLM
-%     - wysyła okresowo powiadomienia email
-%     - obsługuje generowanie linków do przesyłania zdjęć na bucket
-% - obsługuje bezpośrednio:
-%     - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
-%         - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
-%         - sesja przechowywana jest jako ciasteczko httpOnly 
-%     - logikę biznesową (CRUD, obliczenia ważności, )
-%     - współbieżny dostęp do danych
-%     - migracje i początkowe populacje bazy danych
-% - jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
-% - można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
-% - jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
-% - napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
-% - parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
-
-
-
-
 Przetwarzanie wykonywane po stronie serwera jest realizowane w znacznej części przez komponent backendu. Został on zaimplementowany jako bezstanowy interfejs programowania REST, który obsługuje komunikację za pomocją danych serializowanych do formatu JSON. Integruje on między sobą wiele komponentów, co zostało pokazane na diagramie architektury sieciowej, przedstawionym na Rysunku \ref{rys:architektura-sieciowa}. Jego głównym zadaniem jest udostępnienie dostępu do danych zapisanych w bazie danych przez protokół HTTP interfejsu sieciowego na warstwie 7 modelu ISO/OSI.
 
 \begin{figure}[t]
@@ -116,8 +94,7 @@ Warstwa autoryzacji wykorzystuje model kontroli dostępu opartej na 2 rolach (ad
 
 \subsection{Baza danych}
 
-Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym modelu encji związków przedstawionym na Rysunku \ref{rys:schemat-bazy-danych}. W celu zachowania jak najlepszej spójności zastosowano znormalizowaną postać bazy danych, a dla ułatwienia edycji głównego identyfikatora sztuczne klucze główne. Aplikacja została zaprojektowana z myślą, aby obsługiwać wiele oddzielnych hodowli na jednej instancji aplikacji w modelu architektury \english{multi-tenant}. Ze względu na to założenie wszystkie obiekty dodawane przez użytkowników muszą mieć powiązanie z daną hodowlą, której nadany identyfikator rodziela przynależność do danego klienta -- dzierżawcy. Postawową funkcjonalnością aplikacji jest zarządzanie końmi, w tym przypisanie im imion, nr paszportowych, istotnych dat, a także hodowli do której należą i innych danych charakterystycznych. Dodatkowo dla każdego konia można przypisać dowolną liczbę zdjęć, których podstawowe dane o przynależności są zapisywane w bazie danych (do którego konia, czy dane zdjęcie jest domyślne), natomiast same pliki zapisywane w oddzielnej usłudze zoptymalizowanej do przechowywania plików binarnych \emph{Google Cloud Storage} w danym zasobniku.
-% TODO: opisz buckety
+Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym modelu encji związków przedstawionym na Rysunku \ref{rys:schemat-bazy-danych}. W celu zachowania jak najlepszej spójności zastosowano znormalizowaną postać bazy danych, a dla ułatwienia edycji głównego identyfikatora sztuczne klucze główne. Aplikacja została zaprojektowana z myślą, aby obsługiwać wiele oddzielnych hodowli na jednej instancji aplikacji w modelu architektury \english{multi-tenant}. Ze względu na to założenie wszystkie obiekty dodawane przez użytkowników muszą mieć powiązanie z daną hodowlą, której nadany identyfikator rodziela przynależność do danego klienta -- dzierżawcy. Postawową funkcjonalnością aplikacji jest zarządzanie końmi, w tym przypisanie im imion, nr paszportowych, istotnych dat, a także hodowli do której należą i innych danych charakterystycznych. Dodatkowo dla każdego konia można przypisać dowolną liczbę zdjęć, których podstawowe dane o przynależności są zapisywane w bazie danych (do którego konia, czy dane zdjęcie jest domyślne), natomiast same pliki są zapisywane w oddzielnej usłudze zoptymalizowanej do przechowywania plików binarnych \emph{Google Cloud Storage} w danym zasobniku co zostało opisane dokładniej w Sekcji \ref{sec:gcs}: \nameref{sec:gcs}.
 
 \begin{figure}[t]
 \centering\includegraphics[width=\textwidth]{figures/schemat-bazy.png}
@@ -154,6 +131,18 @@ Pozostałe tabele zostały utworzone przez bibliotekę BetterAuth i służą do 
 % - udostępnia statyczne pliki do klasyfikatora do załadowania testsetu
 % - ma skonfigurowany jednolity logger requestów do API, zapytań do bazy danych, wydarzeń okresowych i innych operacji
 
+\section{Google Cloud Storage} \label{sec:gcs}
+
+\textit{Google Cloud Storage} jest usługą oferowaną i zarządzaną przez firmę \textit{Google}, w ramach której otrzymujemy dostęp do magazynu obiektowego (\english{Object Storage}), który różni się od tradycyjnego systemu plików (jak dysk twardy z drzewem folderów). Dane istnieją w płaskiej strukturze wewnątrz danego \textit{zasobnika}, który jest wydzieloną częścią usługi przydzieloną do danego projektu i funkcjonuje podobnie jak katalog bez dalszej hierarchii. Zasobiki mają globalnie unikalne nazwy, są przypisane do określonego regionu geograficznego centra danych, a także definiują polityki dostępu. Dane zapisywane do zasobnika są reprezentowane jako \textit{obiekty} i odpowiadają plikom, takim jak zdjęcia, czy dokumenty tekstowe, bez ograniczeń dotyczących struktury danych -- każdy format jest akceptowalny. O ile usługa wyświetla przesłane katalogi w podobnej formie, co w tradycyjnych systemach plików, to w rzeczywistości struktura plików jest płaska, a foldery są odtwarzana na żądanie poprzez ścieżki zapisane w nazwie pliku. Dodatkowo obiekty w ramach magazynu nie są edytowalne fragmentami, a są jedynie napisywalne w całości, co pozwala na ich automatyczne wersjonowanie.
+
+W aplikacji \textit{Moje Konie} usługa magazynu obiektowego jest wykorzystywana do przechowywania zdjęć koni i udostępniania ich użytkownikom w ramach hodowli. W tym celu zaimplementowano wzorzec bezpośredniego dostepu autoryzowanego. Dodatkowo w celu optymalizacji wydajności i redukcji ruchu siecowego zamiast przesyłać dane zdjęcia przez serwer (backend), odpowiednie operacje zostały oddelegowane bezpośrednio do infrastruktury \textit{Google} korzystajac z mechanizmu \textit{podpisanego odnośnika} (\english{Signed URL}). Aplikacja korzysta z biblioteki \texttt{@google-cloud/storage}, która znacząco upraszcza wiele aspektów implementacji. Mechanizm przesłania zdjęcia do systemu działa w 3 krokach:
+
+\begin{enumerate}
+    \item \textbf{Ustalenie kluczy asymetrycznych}: Uwierzytelenienie odbywa z użyciem pary kluczy asymetrycznych, które są przygotowane z wyprzedzeniem. Backend posiada klucz prywatny oraz identyfikator konta, które tworzą tożsamość i zostają załadowane podczas uruchamiania backendu. Odpowiednie konto usługi posiada uprawnienia do zarządzania zasobnikiem. Operacja weryfikacji tożsamości backendu nie występuje przed każdym żądaniem, lecz posiadane przez nią oddelegowane uprawnienia są weryfikowane w 3. kroku przy pobieraniu zasobu przez klienta.
+    \item \textbf{Generowanie podpisanego żądania zasobu}: Gdy użytkownik operuje na obiektach zasobnika backend nie łączy się bezpośrednio z usługą \textit{Google Cloud Storage}. Zamiast tego oddelegowuje uwierzytelnienie zgodnie ze standardem \textit{GOOG4-RSA-SHA256} poprzez zamianę parametrów żądania HTTP (metody, ścieżki do zasobu, parametrów zapytania, nagłówków) służącego do wykonania operacji na obiekcie w ciąg znaków. Następnie powyższy ciąg znaków przekształca się w skrót \textit{SHA-256}, a następnie ten skrót szyfruje kluczem prywanym konta usługi należącym do backendu. Proces szyfrowania skrótu kluczem prywatnym rozumiany jest jako kryptograficzny podpis, a pełne żądanie służy do utworzenia podpisanego odnośnika. Utworzony odnośnik posiada ograniczony czas poprawności, po którym staje się bezużyteczny. To zabezpieczenie minimalizuje ryzyko w przypadku wycieku linku. % TODO: czy strzałka backend->bucket ma sens?
+    \item \textbf{Wysłanie żądania, weryfikacja tożsamości i uprawnień}: Gdy klient -- frontend przy interakcji z użytkownikiem otrzyma \textit{podpisany odnośnik}, to tworzy żądanie do serwerów usługi \textit{Google Cloud Storage} zgodnie z jego zawartością. Po odebraniu żądania przez serwery magazynu obiektowego następuje weryfikacja podpisu z użyciem klucza publicznego konta usługi i kontrola dostępu. Zmiany w treści odnośnika spowodują niezgodność z podpisem i spowodują odrzucenie żądania. Po pomyślnym uwierzytelnieniu i autoryzacji może nastąpić faktyczny transfer danych, który zupełnie pomija backend zwalniając zasoby serwera.
+
+\end{enumerate}
 
 
 % \subsection{Mechanizmy bezpiczeństwa}
