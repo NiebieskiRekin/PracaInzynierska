@@ -46,3 +46,5 @@ Linki
 - better auth cookie cache: https://www.better-auth.com/docs/concepts/session-management#cookie-cache
 - better auth performance: https://www.better-auth.com/docs/guides/optimizing-for-performance
 - scalar: https://scalar.com/
+- google cloud storage: https://cloud.google.com/storage
+- pełny opis podpisów do bucketów: https://docs.cloud.google.com/storage/docs/access-control/signing-urls-manually https://docs.cloud.google.com/storage/docs/authentication/signatures
