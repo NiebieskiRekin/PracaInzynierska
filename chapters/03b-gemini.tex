@@ -8,33 +8,22 @@ W początkowej fazie eksperymentów skoncentrowano się na testowaniu surowych m
 
 Pierwotna konstrukcja zapytania charakteryzowała się znaczną objętością, co wynikało z konieczności zawarcia w jednym zapytaniu pełnej wiedzy o architekturze systemu. Na rysunku \ref{fig:pierwotny_prompt} przedstawiono strukturę tego zapytania, które składało się z kilku kluczowych sekcji:
 
-TODO - zmienić screen na zero-shot, a dopiero potem dodać dla Few-shot
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.8\textwidth]{public/prompt_structure1.png} 
-    \caption{Struktura pierwotnego promptu zawierająca pełny schemat bazy danych i liczne przykłady.}
+    \includegraphics[width=0.8\textwidth]{public/prompt_structure2.png} 
+    \caption{Struktura pierwotnego promptu zawierająca pełny schemat bazy danych.}
     \label{fig:pierwotny_prompt}
 \end{figure}
 
 \begin{itemize}
-    \item \textbf{Definicja schematu danych:} Sekcja \texttt{\{schema\_prompt\}} zawierała kompletny opis struktur JSON dla wszystkich dostępnych punktów końcowych systemu, co wymuszało przetwarzanie przez model wielu tabel i pól, często niezwiązanych z bieżącym zapytaniem użytkownika.
-    \item \textbf{Instrukcja zadania:} Wyraźne polecenie wygenerowania poprawnego obiektu JSON na podstawie opisu oraz autonomicznego wyboru docelowego adresu URL (ang. \textit{target endpoint selection}).
+    \item \textbf{Definicja schematu danych:} sekcja \texttt{\{schema\_prompt\}} zawierała kompletny opis struktur JSON dla wszystkich dostępnych punktów końcowych systemu, co wymuszało przetwarzanie przez model wielu tabel i pól, często niezwiązanych z bieżącym zapytaniem użytkownika.
+    \item \textbf{Instrukcja zadania:} wyraźne polecenie wygenerowania poprawnego obiektu JSON na podstawie opisu oraz autonomicznego wyboru docelowego adresu URL (ang. \textit{target endpoint selection}).
     % \item \textbf{Przykłady uczące (Few-Shot):} Iteracyjnie dołączane pary \texttt{\{train\_prompt\}} oraz \texttt{\{train\_json\}}, mające na celu ukierunkowanie modelu na specyficzne formatowanie odpowiedzi.
 \end{itemize}
 
-TODO - Akapit, dlaczego zero-shot nie działał. 
+Zbiorcze wyniki tej fazy testów przedstawia tabela \ref{tab:llm_comparison}. Analiza danych wskazuje na niską skuteczność podejścia \english{Zero-Shot}, wynikającą głównie z~rozproszenia mechanizmu uwagi modelu (\english{attention mechanism}) na zbyt rozbudowanym opisie schematu.
 
-TODO - Akapit, przejście na Few-shot
-
-TODO - Akapit, porównanie wyników (EDIT: w kolejnym section jest też coś o few-shot, więc tutaj chyba powinien być tylko zero-shot)
-
-W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych (\english{database schema dumping}), prompt stawał się nadmiarowy pod względem liczby tokenów, co drastycznie zwiększało koszty operacyjne (\english{token usage}) oraz czas odpowiedzi systemu (\english{inference time}) \cite{bommasani2021opportunities}. 
-
-Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny (\english{data noise}). Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia mechanizmu uwagi (ang. \english{attention mechanism}) modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego \cite{vaswani2017attention}.
-
-Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
-
-Testom eksperymentalnym poddano różnorodne jednostki obliczeniowe, obejmujące zarówno modele komercyjne, jak i otwartoźródłowe, pochodzące z różnych regionów. Wśród nich znalazły się: GPT-4o (\english{Generative Pre-trained Transformer}) od OpenAI –- model komercyjny o szerokim zastosowaniu w języku naturalnym, DeepSeek‑V3 –- model otwartoźródłowy opracowany w Azji, oraz Gemini 1.5 Flash –- model komercyjny rozwijany w ramach projektów międzynarodowych. Dobór tych modeli pozwolił na analizę kompromisu między precyzją (\english{accuracy}) a czasem odpowiedzi (\english{latency}), co jest kluczowe w systemach konwersacyjnych działających w czasie rzeczywistym.
+Testom eksperymentalnym poddano różnorodne jednostki obliczeniowe, obejmujące zarówno modele komercyjne, jak i otwartoźródłowe, pochodzące z różnych regionów. Wśród nich znalazły się: GPT-4o (\english{Generative Pre-trained Transformer}) od OpenAI -- model komercyjny o szerokim zastosowaniu w języku naturalnym, DeepSeek-V3 -- model otwartoźródłowy opracowany w Azji, oraz Gemini 1.5 Flash -- model komercyjny rozwijany w ramach projektów międzynarodowych. Dobór tych modeli pozwolił na analizę kompromisu między precyzją (\english{accuracy}) a czasem odpowiedzi (\english{latency}), co jest kluczowe w systemach konwersacyjnych działających w czasie rzeczywistym.
 
 W celu obiektywnej oceny jakości generowanych odpowiedzi zdefiniowano trzy kluczowe miary eksperymentalne:
 \begin{itemize}
@@ -43,11 +32,59 @@ W celu obiektywnej oceny jakości generowanych odpowiedzi zdefiniowano trzy kluc
     \item \textbf{Efektywność (ang. \textit{Efficiency}):} wskaźnik binarny określający, czy wygenerowane żądanie zostało pomyślnie przetworzone przez serwer (kod odpowiedzi 2xx). Wartość 1 oznacza, że \textit{request} przeszedł walidację i został zapisany w bazie danych, 0 oznacza błąd serwera lub walidacji schematu.
 \end{itemize}
 
-Zbiorcze wyniki wstępnej oceny modeli w podejściu \textit{Zero-Shot} przedstawiono w tabeli \ref{tab:llm_comparison}.
-
 \begin{table}[h!]
 \centering
 \caption{Wyniki wstępnej oceny eksperymentalnej modeli LLM (podejście Zero-Shot)}
+\label{tab:llm_comparison}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+GPT-4o         & 0,34                 & 0,28                  & 0,41                 \\ \hline
+DeepSeek-V3    & 0,45                 & 0,34                  & 0,45                 \\ \hline
+Gemini 1.5 Flash & 0,41               & 0,39                  & 0,44                 \\ \hline
+\end{tabular}
+\end{table}
+
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje (\english{hallucinations}), szczególnie w zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
+
+W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych (\english{database schema dumping}), prompt stawał się nadmiarowy pod względem liczby tokenów, co drastycznie zwiększało koszty operacyjne (\english{token usage}) oraz czas odpowiedzi systemu (\english{inference time}) \cite{bommasani2021opportunities}. 
+
+Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny (\english{data noise}). Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia mechanizmu uwagi (ang. \english{attention mechanism}) modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego \cite{vaswani2017attention}.
+
+
+% TODO - Akapit, dlaczego zero-shot nie działał. - done
+
+% TODO - Akapit, przejście na Few-shot - done
+
+% TODO - Akapit, porównanie wyników (EDIT: w kolejnym section jest też coś o few-shot, więc tutaj chyba powinien być tylko zero-shot)
+
+
+Doświadczenia z~podejściem bazowym stały się bezpośrednim impulsem do wdrożenia strategii \textbf{Few-Shot Prompting}. Nowa architektura zapytania (Rysunek \ref{fig:zoptymalizowany_prompt}) została wzbogacona o~sekwencję par przykładów uczących, co pozwoliło modelowi na dekonstrukcję intencji użytkownika na podstawie konkretnych wzorców, a~nie tylko abstrakcyjnego opisu technicznego. Dzięki temu \definicja{duży model językowy} zyskał punkt odniesienia w~zakresie oczekiwanej struktury obiektu \textsf{JSON} oraz sposobu mapowania potocznych sformułowań na parametry funkcji \akronim{API}.
+
+Kluczowym etapem optymalizacji instrukcji (\english{prompt engineering}) było wprowadzenie mechanizmu \textbf{dynamicznego wstrzykiwania kontekstu} (\english{context injection}). W~miejsce statycznej dokumentacji, system w~czasie rzeczywistym dostarcza modelowi aktualne fragmenty bazy danych (np. listy identyfikatorów koni, kowali i~lekarzy weterynarii). Rozwiązanie to wyeliminowało problem generowania nieistniejących kluczy obcych (ang. \textit{hallucinated IDs}), drastycznie podnosząc wartość precyzji i~efektywności do poziomu akceptowalnego w~systemie produkcyjnym. Model przestał „zgadywać” dane relacyjne, a~zaczął operować na faktycznym inwentarzu użytkownika.
+
+Finalnie, w~celu zapewnienia najwyższej stabilności systemu, zastosowano mechanizm oczyszczania odpowiedzi (\english{sanitization}). Funkcja ta pełni rolę filtra wyjściowego, który metodami wyrażeń regularnych (\english{regex}) odizolowuje surowy obiekt danych od zbędnych znaczników formatowania \textit{Markdown} oraz komunikatów tekstowych (\english{chatter}), często generowanych przez modele \akronim{LLM} mimo restrykcyjnych instrukcji systemowych. Zapewnia to pełną kompatybilność z~parserem po stronie warstwy serwerowej.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.8\textwidth]{public/prompt_structure1.png} 
+    \caption{Struktura pierwotnego promptu zawierająca pełny schemat bazy danych.}
+    \label{fig:pierwotny_prompt}
+\end{figure}
+
+Struktura zoptymalizowanego zapytania w~podejściu \textit{Few-Shot} zachowała kluczowe sekcje z~poprzedniej iteracji, wzbogacając je o~moduł demonstracyjny dla modelu. Elementy takie jak definicja schematu danych oraz ogólna instrukcja zadania pozostały identyczne jak w~przypadku metody \textit{Zero-Shot}, co pozwoliło na rzetelne porównanie wpływu samych przykładów na jakość generowanych odpowiedzi:
+
+\begin{itemize}
+    \item \textbf{Definicja schematu danych:} sekcja \texttt{\{schema\_prompt\}} zawierała kompletny opis struktur \textsf{JSON} dla wszystkich dostępnych punktów końcowych systemu, co wymuszało przetwarzanie przez model wielu tabel i~pól, często niezwiązanych z~bieżącym zapytaniem użytkownika.
+    \item \textbf{Instrukcja zadania:} wyraźne polecenie wygenerowania poprawnego obiektu \textsf{JSON} na podstawie opisu oraz autonomicznego wyboru docelowego adresu \akronim{URL} (ang. \textit{target endpoint selection}).
+    \item \textbf{Przykłady uczące (Few-Shot):} nowo dodana sekcja obejmująca iteracyjnie dołączane pary \texttt{\{train\_prompt\}} oraz \texttt{\{train\_json\}}, mające na celu ukierunkowanie modelu na specyficzne formatowanie odpowiedzi oraz redukcję błędów logicznych.
+\end{itemize}
+
+Zbiorcze wyniki oceny modeli w~podejściu \textit{Few-Shot} (Tabela \ref{tab:llm_few_shot}) potwierdziły przewagę tego rozwiązania. Szczególną uwagę zwraca wynik modelu \textbf{Gemini 1.5 Flash}, który osiągnął najwyższą precyzję (0,84), co w~połączeniu z~niskimi opóźnieniami (ang. \textit{latency}), czyni go optymalnym silnikiem dla Asystenta NLP.
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki wstępnej oceny eksperymentalnej modeli LLM (podejście Few-Shot)}
 \label{tab:llm_comparison}
 \begin{tabular}{|l|c|c|c|c|}
 \hline
@@ -58,18 +95,14 @@ Gemini 1.5 Flash & 0,81               & 0,84                  & 0,79            
 \end{tabular}
 \end{table}
 
-Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje (\english{hallucinations}), szczególnie w zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
-
-Wymusiło to rozpoczęcie prac nad optymalizacją instrukcji (\english{prompt engineering}). Wprowadzono dynamiczne wstrzykiwanie kontekstu (\english{context injection}) poprzez dostarczanie modelowi aktualnego stanu bazy danych (listy koni, kowali i weterynarzy), co miało na celu zbliżenie wartości precyzji i efektywności do poziomu akceptowalnego w systemie produkcyjnym.
-
-Finalnie, w celu zapewnienia najwyższej stabilności, zastosowano mechanizm oczyszczania odpowiedzi (\english{sanitization}). Pozwala ona na odfiltrowanie zbędnych znaczników formatowania Markdown oraz komunikatów tekstowych (\english{chatter}), które modele LLM generują mimo restrykcyjnych instrukcji systemowych. 
+Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
 
 W toku prac wdrożeniowych nastąpiła konieczność migracji z modelu \textit{Gemini 1.5 Flash} na nowszą wersję \textit{Gemini 2.5 Flash}. Zmiana ta była podyktowana decyzją dostawcy (Google AI) o wyłączeniu dostępu do interfejsu programistycznego (API) starszej wersji modelu. Migracja, choć wymuszona czynnikami zewnętrznymi, pozwoliła na utrzymanie dotychczasowych wskaźników precyzji przy jednoczesnym zapewnieniu stabilności infrastrukturalnej systemu w długofalowej perspektywie eksploatacyjnej. Dzięki tak zaprojektowanej architekturze, opartej na modelu Gemini, system osiągnął wysoką deterministyczność przy zachowaniu naturalności interfejsu użytkownika.
 
 
 \section{Inżynieria promptów i wykorzystanie zbioru uczącego}
 
-Fundamentem optymalizacji procesu generowania żądań było odejście od statycznych instrukcji na rzecz dynamicznej inżynierii promptów (\english{dynamic prompt engineering}). Kluczowym elementem tej transformacji stało się wdrożenie techniki uczenia z małą liczbą przykładów (\english{Few-Shot Prompting}), która pozwoliła na ukierunkowanie modelu poprzez dostarczenie konkretnych wzorców par: wypowiedź użytkownika –- oczekiwany obiekt JSON. Dane te są pobierane w czasie rzeczywistym z dedykowanego zbioru testowego, co zapewnia spójność odpowiedzi z aktualnymi wymaganiami interfejsu programistycznego.
+Fundamentem optymalizacji procesu generowania żądań było odejście od statycznych instrukcji na rzecz dynamicznej inżynierii promptów (\english{dynamic prompt engineering}). Kluczowym elementem tej transformacji stało się wdrożenie techniki uczenia z małą liczbą przykładów (\english{Few-Shot Prompting}), która pozwoliła na ukierunkowanie modelu poprzez dostarczenie konkretnych wzorców par: wypowiedź użytkownika -- oczekiwany obiekt JSON. Dane te są pobierane w czasie rzeczywistym z dedykowanego zbioru testowego, co zapewnia spójność odpowiedzi z aktualnymi wymaganiami interfejsu programistycznego.
 
 Ewolucja od pierwotnego, ogólnego wzorca do ustrukturyzowanej instrukcji systemowej pozwoliła na precyzyjne zdefiniowanie ram operacyjnych modelu. Finalna struktura zapytania składa się z trzech integralnych warstw informacyjnych:
 \begin{itemize}
