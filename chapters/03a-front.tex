@@ -19,14 +19,14 @@ Głównym fundamentem interfejsu użytkownika jest biblioteka \textbf{React.js},
 % TODO: opis asystenta NLP - DONE 
 % TODO: czym jest stan w aplikacji - DONE
 
-Jako nowoczesne narzędzie budowania (ang. \textit{build tool}) oraz serwer deweloperski wykorzystano środowisko \textbf{Vite}. Wybór ten podyktowany był koniecznością zapewnienia maksymalnej wydajności podczas procesu wytwarzania oprogramowania. Dzięki pełnemu wykorzystaniu natywnych modułów ECMAScript (ang. \textit{ES Modules}), Vite oferuje znacznie szybsze odświeżanie aplikacji w czasie rzeczywistym (ang. \textit{Hot Module Replacement}, HMR) w porównaniu do tradycyjnych narzędzi. Tradycyjne podejście opierało się na procesie kompleksowego bundlowania, czyli scalania wszystkich plików źródłowych i~ich zależności w~jeden lub kilka dużych plików wynikowych przed ich uruchomieniem w~przeglądarce. Proces ten stawał się wąskim gardłem wraz ze wzrostem objętości kodu źródłowego. Vite rozwiązuje ten problem, serwując moduły bezpośrednio na żądanie przeglądarki, co drastycznie skróciło cykl deweloperski. Mechanizm ten pozwala na natychmiastową aktualizację jedynie zmienionych fragmentów kodu bez konieczności przeładowywania stanu całej aplikacji, co drastycznie skróciło cykl deweloperski. W ramach niniejszego projektu było to szczególnie istotne, gdyż umożliwiło wydajniejsze testowanie dynamicznych interakcji z modelem językowym Gemini oraz szybką iterację nad komponentami interfejsu użytkownika. Ponadto, Vite optymalizuje proces budowania wersji produkcyjnej oprogramowania poprzez zaawansowane mechanizmy usuwania nieużywanego kodu (ang. \textit{tree shaking}), co przekłada się na mniejszy rozmiar końcowych plików aplikacji i szybsze ładowanie systemu u użytkownika końcowego.
+Jako nowoczesne narzędzie budowania (ang. \textit{build tool}) oraz serwer deweloperski wykorzystano środowisko \textbf{Vite}. Wybór ten podyktowany był koniecznością zapewnienia maksymalnej wydajności podczas procesu wytwarzania oprogramowania. Dzięki pełnemu wykorzystaniu natywnych modułów ECMAScript (ang. \textit{ES Modules}), Vite oferuje znacznie szybsze odświeżanie aplikacji w czasie rzeczywistym (ang. \textit{Hot Module Replacement}, HMR) w porównaniu do tradycyjnych narzędzi. Tradycyjne podejście opierało się na procesie kompleksowego bundlowania, czyli scalania wszystkich plików źródłowych i~ich zależności w~jeden lub kilka dużych plików wynikowych przed ich uruchomieniem w~przeglądarce. Proces ten stawał się wąskim gardłem wraz ze wzrostem rozmiaru kodu źródłowego. Vite rozwiązuje ten problem, serwując moduły bezpośrednio na żądanie przeglądarki, co drastycznie skróciło cykl deweloperski. Mechanizm ten pozwala na natychmiastową aktualizację jedynie zmienionych fragmentów kodu bez konieczności przeładowywania stanu całej aplikacji, co drastycznie skróciło cykl deweloperski. W ramach niniejszego projektu było to szczególnie istotne, gdyż umożliwiło wydajniejsze testowanie dynamicznych interakcji z modelem językowym Gemini oraz szybką iterację nad komponentami interfejsu użytkownika. Ponadto, Vite optymalizuje proces budowania wersji produkcyjnej oprogramowania poprzez zaawansowane mechanizmy usuwania nieużywanego kodu (ang. \textit{tree shaking}), co przekłada się na mniejszy rozmiar końcowych plików aplikacji i szybsze ładowanie systemu u użytkownika końcowego.
 % TODO: opisać bundlowanie - done
 
 Warstwa wizualna aplikacji opiera się na nowoczesnym frameworku \textbf{Tailwind CSS}, który wykorzystuje podejście zorientowane na klasy narzędziowe (ang. \textit{utility-first}). Rozwiązanie to umożliwiło budowanie w pełni responsywnego interfejsu użytkownika (ang. \textit{Responsive Web Design}, RWD) bezpośrednio w strukturze komponentów React, co znacząco wpłynęło na spójność kodu oraz szybkość wprowadzania modyfikacji wizualnych. Dzięki zastosowaniu wbudowanego systemu punktów przerwania (ang. \textit{breakpoints}), interfejs został precyzyjnie zoptymalizowany pod kątem pracy w specyficznych warunkach stajennych na różnorodnych urządzeniach przenośnych. Kluczowym aspektem projektowym było zapewnienie wysokiej ergonomii użytkowania, co zrealizowano poprzez implementację dużych elementów interaktywnych oraz czytelnej, wysokokontrastowej typografii, ułatwiającej obsługę aplikacji w pełnym słońcu lub przy ograniczonej precyzji ruchów. Ponadto, wykorzystanie silnika \textit{Just-in-Time} (JIT) pozwoliło na generowanie optymalnych arkuszy stylów zawierających wyłącznie faktycznie użyte klasy, co przełożyło się na minimalizację rozmiaru plików wynikowych i przyspieszenie czasu renderowania strony na urządzeniach o słabszych parametrach technicznych.
 
-W celu uzupełnienia funkcjonalności systemu oraz poprawy doświadczeń użytkownika wykorzystano szereg bibliotek pomocniczych, wśród których kluczową rolę odgrywa zestaw \textbf{Lucide React}. Jest to biblioteka udostępniająca lekkie ikony wektorowe, które pozwoliły na wprowadzenie spójnej i czytelnej identyfikacji wizualnej poszczególnych modułów aplikacji. Zastosowanie piktogramów, takich jak ikona mikrofonu dedykowana funkcji przetwarzania mowy na tekst (ang. \textit{Speech-to-Text}, STT), znacząco ułatwia użytkownikowi szybką orientację w interfejsie i skraca czas reakcji na dostępne akcje. 
+W celu uzupełnienia funkcjonalności systemu oraz poprawy doświadczeń użytkownika wykorzystano szereg bibliotek pomocniczych, wśród których kluczową rolę odgrywa zestaw \textbf{Lucide React}. Jest to biblioteka udostępniająca minimalistyczne i wydajne ikony wektorowe, które pozwoliły na wprowadzenie spójnej i czytelnej identyfikacji wizualnej poszczególnych modułów aplikacji. Zastosowanie piktogramów, takich jak ikona mikrofonu dedykowana funkcji przetwarzania mowy na tekst (ang. \textit{Speech-to-Text}, STT), znacząco ułatwia użytkownikowi szybką orientację w interfejsie i skraca czas reakcji na dostępne akcje.
 
-Równie istotnym elementem architektury frontendu jest biblioteka \textbf{React Router}, służąca do zaawansowanego zarządzania nawigacją wewnętrzną oraz strukturą adresów URL. Dzięki jej zastosowaniu zrealizowano model nawigacji charakterystyczny dla aplikacji jednostronicowych, w którym przejścia między poszczególnymi widokami (np. Dashboardem a kartą konkretnego konia) odbywają się bez przeładowywania dokumentu HTML. Pozwoliło to na zachowanie ciągłości stanu aplikacji oraz płynności działania, co w połączeniu z asynchronicznym ładowaniem danych zapewnia wysoką responsywność całego systemu w trakcie codziennej eksploatacji.
+Równie istotnym elementem architektury frontendu jest biblioteka \textbf{React Router}, służąca do zaawansowanego zarządzania nawigacją wewnętrzną oraz strukturą adresów URL. Dzięki jej zastosowaniu zrealizowano model nawigacji charakterystyczny dla aplikacji jednostronicowych, w którym przejścia między poszczególnymi widokami (np. pulpitem sterowania a kartą konkretnego konia) odbywają się bez przeładowywania dokumentu HTML. Pozwoliło to na zachowanie ciągłości stanu aplikacji oraz płynności działania, co w połączeniu z asynchronicznym ładowaniem danych zapewnia wysoką responsywność całego systemu w trakcie codziennej eksploatacji.
 
 \section{Architektura frontendu}
 
@@ -261,7 +261,7 @@ Poniżej przedstawiono analizę techniczną pięciu kluczowych formularzy zdarze
     \item \textbf{Moduł planowania i rejestracji leczenia:} 
     Ten komponent (Rysunek \ref{fig:form_leczenie}) stanowi łącznik między zdiagnozowaną chorobą a konkretną interwencją medyczną. Wybór zdefiniowanej wcześniej jednostki chorobowej z dynamicznej listy rozwijanej zapewnia spójność relacyjną w bazie danych i zapobiega powstawaniu błędnych wpisów.
 
-    \begin{figure}[H]
+    \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.5\textwidth]{public/form_leczenie.png}
         \caption{Formularz przypisania leczenia do zarejestrowanej choroby.}
@@ -271,7 +271,7 @@ Poniżej przedstawiono analizę techniczną pięciu kluczowych formularzy zdarze
     \item \textbf{Moduł zdarzeń profilaktycznych:} 
     Służy do obsługi rutynowych zabiegów, takich jak: szczepienie, odrobaczanie, podanie suplementów, wizyta dentysty oraz inne czynności profilaktyczne (Rysunek \ref{fig:form_profilaktyka}). Podobnie jak w poprzednich modułach, zawiera on pole „Data ważności”. Pole to jest uzupełniane automatycznie po wyborze konkretnego rodzaju zdarzenia, stanowiąc fundament dla systemowego mechanizmu wizualnych alertów przypominających o konieczności powtórzenia zabiegu.
 
-    \begin{figure}[H]
+    \begin{figure}[htbp]
         \centering
         \includegraphics[width=0.5\textwidth]{public/form_profilaktyka.png}
         \caption{Formularz rejestracji zabiegu profilaktycznego.}
@@ -297,16 +297,18 @@ Główny widok modułu zarządzania bazą weterynarzy (Rysunki od \ref{fig:lista
     \label{fig:lista_weterynarzy}
 \end{figure}
 
-W procesie rejestracji nowych lekarzy (Rysunek \ref{fig:dodaj_weterynarza}) oraz aktualizacji ich danych (Rysunek \ref{fig:edytuj_weterynarza}), zastosowano mechanizmy walidacji danych wejściowych, zapewniające integralność informacji przechowywanych w systemie. Formularze edycyjne posiadają również funkcję trwałego usunięcia rekordu, co umożliwia bieżące zarządzanie aktualnością kadry współpracującej.
-
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{public/dodaj_weterynarza.png}
     \caption{Formularz rejestracji nowego weterynarza.}
     \label{fig:dodaj_weterynarza}
 \end{figure}
 
-\begin{figure}[H]
+W procesie rejestracji nowych lekarzy (Rysunek \ref{fig:dodaj_weterynarza}) oraz aktualizacji ich danych (Rysunek \ref{fig:edytuj_weterynarza}), zastosowano mechanizmy walidacji danych wejściowych, zapewniające integralność informacji przechowywanych w systemie. Formularze edycyjne posiadają również funkcję trwałego usunięcia rekordu, co umożliwia bieżące zarządzanie aktualnością kadry współpracującej.
+
+
+
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.6\textwidth]{public/edytuj_weterynarza.png}
     \caption{Interfejs edycji danych weterynarza z funkcją usuwania.}
@@ -342,6 +344,10 @@ Moduł zarządzania bazą kowali (Rysunki od \ref{fig:lista_kowali} do \ref{fig:
 
 Moduł „Wydarzenia w stajni” stanowi najbardziej złożony element warstwy prezentacji pod względem agregacji i korelacji informacji. Został on zaprojektowany, aby pełnić rolę cyfrowego dziennika operacyjnego stadniny, w którym dane pochodzące z wielu relacji bazy danych -- zawierają się w tym parametry koni, dane specjalistów oraz kategorie zdarzeń medycznych -- zbiegają się w jeden, spójny strumień informacyjny (Rysunek \ref{fig:wydarzenia_tabela}). Z perspektywy inżynierii danych, moduł ten realizuje funkcję zunifikowanego widoku procesowego, umożliwiając nadzór nad całością działań profilaktycznych i leczniczych w gospodarstwie.
 
+Główna tabela modułu wykracza poza ramy pasywnego arkusza danych, stanowiąc aktywne narzędzie analityczne wspierające procesy decyzyjne. W celu zapewnienia maksymalnej wydajności pracy (ang. \textit{performance efficiency}), wdrożono mechanizm dynamicznego sortowania dla każdej kolumny danych. Pozwala to na natychmiastową identyfikację priorytetowych zadań, takich jak zbliżające się terminy szczepień czy najdawniej wykonane zabiegi kowalskie.
+
+Istotnym usprawnieniem technologicznym jest implementacja wielokryterialnego wyszukiwania dynamicznego. Funkcja ta operuje bezpośrednio na lokalnym stanie komponentu (ang. \textit{local state}), przeszukując dane w czasie rzeczywistym. Dzięki przeniesieniu logiki filtrowania na stronę klienta, system eliminuje konieczność generowania kosztownych zapytań do bazy danych przy każdym wprowadzeniu znaku, co zapewnia płynność działania interfejsu. Ergonomię modułu wspiera heurystyka kolorystyczna oparta na psychologii barw; intensywna czerwień w kolumnach terminowych pełni rolę krytycznego alertu, minimalizując ryzyko błędu ludzkiego w nadzorze nad profilaktyką zdrowotną. Ponadto, w celu zachowania wysokiej sprawności renderowania (ang. \textit{render performance}) na urządzeniach mobilnych, zaimplementowano mechanizm responsywnego stronicowania (ang. \textit{pagination}), zapobiegający przeciążeniu pamięci przeglądarki przy obszernych zbiorach danych historycznych.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{public/wydarzenia_stajnia.png}
@@ -349,13 +355,9 @@ Moduł „Wydarzenia w stajni” stanowi najbardziej złożony element warstwy p
     \label{fig:wydarzenia_tabela}
 \end{figure}
 
-Główna tabela modułu wykracza poza ramy pasywnego arkusza danych, stanowiąc aktywne narzędzie analityczne wspierające procesy decyzyjne. W celu zapewnienia maksymalnej wydajności pracy (ang. \textit{performance efficiency}), wdrożono mechanizm dynamicznego sortowania dla każdej kolumny danych. Pozwala to na natychmiastową identyfikację priorytetowych zadań, takich jak zbliżające się terminy szczepień czy najdawniej wykonane zabiegi kowalskie.
-
-Istotnym usprawnieniem technologicznym jest implementacja wielokryterialnego wyszukiwania dynamicznego. Funkcja ta operuje bezpośrednio na lokalnym stanie komponentu (ang. \textit{local state}), przeszukując dane w czasie rzeczywistym. Dzięki przeniesieniu logiki filtrowania na stronę klienta, system eliminuje konieczność generowania kosztownych zapytań do bazy danych przy każdym wprowadzeniu znaku, co zapewnia płynność działania interfejsu. Ergonomię modułu wspiera heurystyka kolorystyczna oparta na psychologii barw; intensywna czerwień w kolumnach terminowych pełni rolę krytycznego alertu, minimalizując ryzyko błędu ludzkiego w nadzorze nad profilaktyką zdrowotną. Ponadto, w celu zachowania wysokiej sprawności renderowania (ang. \textit{render performance}) na urządzeniach mobilnych, zaimplementowano mechanizm responsywnego stronicowania (ang. \textit{pagination}), zapobiegający przeciążeniu pamięci przeglądarki przy obszernych zbiorach danych historycznych.
-
 Autorski projekt formularza seryjnego dodawania zdarzeń (Rysunek \ref{fig:dodaj_seryjnie}) stanowi rozwiązanie problemu wysokiej powtarzalności zadań administracyjnych w stadninie. Z punktu widzenia inżynierii oprogramowania, moduł ten gwarantuje atomowość i spójność danych podczas wykonywania operacji masowych na wielu rekordach jednocześnie. 
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.7\textwidth]{public/dodaj_seryjnie.png}
     \caption{Zaawansowany interfejs seryjnego dodawania zdarzeń z filtrami logicznymi grup zwierząt.}
