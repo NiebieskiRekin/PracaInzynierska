@@ -2,7 +2,7 @@
 
 \section{Wyzwania interpretacji semantycznej poleceń użytkownika}
 
-Głównym celem projektowanego modułu asystenta AI w systemie ,,Moje Konie'' jest umożliwienie użytkownikowi – najczęściej hodowcy koni lub pracownikowi stajni – interakcji z systemem za pomocą języka naturalnego. 
+Głównym celem projektowanego modułu asystenta AI w systemie \definicja{Moje Konie} jest umożliwienie użytkownikowi – najczęściej hodowcy koni lub pracownikowi stajni – interakcji z systemem za pomocą języka naturalnego. 
 
 Jak wskazuje w swoich pracach Christopher Manning \cite{manning2008}, współczesne wyzwanie w przetwarzaniu języka naturalnego (NLP) przesunęło się z prostego rozpoznawania słów w stronę głębokiego rozumienia intencji i kontekstu, co jest kluczowe dla budowy systemów zdolnych do realnej pomocy człowiekowi w konkretnych dziedzinach życia.
 
@@ -117,7 +117,7 @@ Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej
 
 Kluczowym aspektem strojenia modelu opartego na paradygmacie \textit{Instance-Based Learning} jest dobór odpowiedniej wielkości sąsiedztwa $k$, która determinuje strefę wpływu lokalnego na decyzję klasyfikacyjną \cite{manning2008}.
 
-W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu ,,Moje Konie'', przeprowadzono serię testów ewaluacyjnych. Do eksperymentu przyjęto zbiór danych podzielony na:
+W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu \definicja{Moje Konie}, przeprowadzono serię testów ewaluacyjnych. Do eksperymentu przyjęto zbiór danych podzielony na:
 \begin{itemize}
     \item \textbf{Bazę wiedzy (Anchors):} 60 reprezentatywnych przykładów.
     \item \textbf{Zbiór testowy:} 40 unikalnych, nieznanych modelowi przykładów.
@@ -153,7 +153,7 @@ W uczeniu maszynowym regularyzacja jest procesem wprowadzania dodatkowych inform
     \item Dla dużych wartości $k$, następuje wzrost obciążenia (\textit{bias}) i zjawisko niedouczenia (\textit{underfitting}).
 \end{itemize}
 
-Aby zbalansować kompromis między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w systemie ,,Moje Konie'' zrezygnowano z wyboru jednej, statycznej wartości $k$ na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny składa się z komitetu klasyfikatorów k-NN operujących na różnych hiperparametrach $k$ (w implementacji przyjęto zbiór $k \in \{3, 4, 6, 12, \text{Centroid}\}$). Ostateczna decyzja podejmowana jest w procesie głosowania ważonego.
+Aby zbalansować kompromis między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w systemie \definicja{Moje Konie} zrezygnowano z wyboru jednej, statycznej wartości $k$ na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny składa się z komitetu klasyfikatorów k-NN operujących na różnych hiperparametrach $k$ (w implementacji przyjęto zbiór $k \in \{3, 4, 6, 12, \text{Centroid}\}$). Ostateczna decyzja podejmowana jest w procesie głosowania ważonego.
 
 Jak wskazują badania nad metodami zespołowymi \cite{dietterich2000}, uśrednianie decyzji modeli o relatywnie niskiej korelacji błędów prowadzi do stabilniejszej i bardziej wiarygodnej granicy decyzyjnej.
 
