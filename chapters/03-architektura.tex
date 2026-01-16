@@ -177,16 +177,15 @@ Kluczowym aspektem wdrożonego potoku jest jego optymalizacja pod kątem czasu w
 
 Cała infrastruktura, poza warstwą aplikacji, jest definiowana w kodzie (\english{Infrastructure as Code}, IaC) z wykorzystaniem narzędzi Terraform (do powoływania zasobów chmurowych) oraz Ansible (do konfiguracji serwera), co przedstawiono na Rysunku \ref{rys:diagram-wdrozenia}.
 
-% TODO: (opisz proces dokładniej)
-% - terraform wdraża infrastrukurę, jakie zasoby dokładnie z plików .tf, wykonywany na maszynie dev
-% - jaką konfigurację dostarcza ansible wykonywane na github actions?
-%   - workflow deploy-ansible.yml na on build success: uruchamia deploy-using-docker.yml kopiowanie docker-compose i zmiennych środowiskowych (wstrzykiwanych do .env z wartości secrets) do odpowiednich katalogów
-%   - analogiczny workflow do klasyfikatora, tyle że przekopiowany do innego repozytorium
-%   - workflow wdrożenia bazy danych i traefik
-% - jaką konfigurację dostarcza ansible uruchamiane na maszynie dev ad-hoc
-%   - konfiguracja środowiska uruchomieniowego docker
-%   - montowanie zewnętrznych dysków do danych bazy danych i do kopii zapasowej (używanych dla zabezpieczenia wolnego miejsca i oddzielnego quota IOPS) 
-%   - konfiguracja programu borgmatic do tworzenia automatycznych kopii zapasowych bazy danych
+Proces wdrażania zmian w infrastrukturze i aplikacji podzielony jest na trzy uzupełniające się warstwy:
+
+\begin{enumerate}
+    \item \textbf{Infrastruktura chmurowa (Terraform)}: Warstwa ta definiuje zasoby w chmurze \textit{Google Cloud Platform}. Skrypty \textit{Terraform} uruchamiane z lokalnej maszyny deweloperskiej odpowiadają za powołanie instancji maszyny wirtualnej i zewnętrznych partycji dysków trwałych, rezerwację statycznych adresów IP, konfigurację zapory sieciowej, otwierając jedynie niezbędne porty dla ruchu przychodzącego i zasobników magazynu obiektowego do zdjęć wraz z regułami dostępu oraz kontem usługi.
+    
+    \item \textbf{Konfiguracja systemu operacyjnego (Ansible)}: Po powołaniu infrastruktury, narzędzie \textit{Ansible} jest wykorzystywane do wstępnej konfiguracji serwera. Skrypty te, również uruchamiane doraźnie (podczas pierwszej konfiguracji systemu), instalują środowisko uruchomieniowe \textit{Docker}, konfigurują zewnętrzne dyski trwałe (dedykowane osobno dla danych bazy danych i osobno dla kopii zapasowych w celu zapewnienia odpowiedniej wydajności i separacji awarii) oraz konfigurują narzędzie \textit{Borgmatic} do automatycznego tworzenia szyfrowanych kopii zapasowych bazy danych (działające poza środowiskiem Docker ze względu na ograniczenia tej technologii do uruchamiania zadań okresowych).
+    
+    \item \textbf{Wdrażanie aplikacji (Ansible w CI/CD)}: Bieżące aktualizacje kodu aplikacji są obsługiwane przez automatyczne przepływy pracy w \textit{GitHub Actions}. Przepływ pracy po wypchnięciu zmian do repozytorium kontroli wersji uruchamia zestaw zadań, który bezpiecznie kopiuje pliki konfiguracyjne \textit{Docker Compose} definiujące uruchomienie kontenerów na serwer oraz zmienne środowiskowe (takie jak hasła do bazy danych czy klucze API) pobrane z bezpiecznego magazynu sekretów \textit{GitHub Secrets} bezpośrednio do pliku \texttt{.env} na serwerze. Następnie \textit{Ansible} wykonuje polecenia restartu kontenerów, co powoduje pobranie najnowszych obrazów i uruchomienie zaktualizowanej wersji aplikacji. Proces ten jest rozdzielony na niezależne przepływy dla głównej aplikacji, klasyfikatora NLP oraz warstwy bazy danych i proxy, co pozwala na niezależne aktualizacje komponentów. Dodatkowo, wszystkie kontenery aplikacyjne, w tym klasyfikator, działają w trybie automatycznego restartu, co przywraca dostępność usług w przypadku przejściowych awarii.
+\end{enumerate}
 
 \section{Mechanizmy bezpieczeństwa}
 
