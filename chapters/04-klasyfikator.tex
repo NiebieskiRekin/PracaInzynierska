@@ -47,7 +47,7 @@ Wstępne testy wykazały, że mimo wysokiej elastyczności modeli LLM, takie roz
 
 \subsection{Przejście na model hybrydowy}
 
-Zdecydowano się na zmianę architektury na model hybrydowy, w którym proces przetwarzania zapytania został rozdzielony na dwa etapy. Pierwszym krokiem jest wykorzystanie dedykowanego, ,,lekkiego'' klasyfikatora opartego na osadzeniach wektorowych (ang. \textit{word/sentence embeddings}), którego jedynym zadaniem jest identyfikacja intencji użytkownika.
+Zdecydowano się na zmianę architektury na model hybrydowy, w którym proces przetwarzania zapytania został rozdzielony na dwa etapy. Pierwszym krokiem jest wykorzystanie dedykowanego, ,,lekkiego'' klasyfikatora opartego na osadzeniach wektorowych (\english{word/sentence embeddings}), którego jedynym zadaniem jest identyfikacja intencji użytkownika.
 
 Głównym założeniem tej zmiany było przeniesienie ciężaru klasyfikacji na lokalny lub tańszy w eksploatacji model wektorowy, co pozwoliło na:
 
@@ -104,7 +104,7 @@ Celem tej modyfikacji było stworzenie stabilnego ,,środka ciężkości'' dla k
 
 \subsection*{Logika decyzyjna i progi pewności}
 
-Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej poprzez rezygnację z pierwotnie planowanych progów pewności (ang. \textit{confidence thresholds}). Doświadczenia wykazały, że model osiąga skrajnie niskie wartości podobieństwa niemal wyłącznie w sytuacjach, gdy wprowadzony tekst jest zupełnie pozbawiony informacji semantycznych. W sytuacjach, gdy użytkownik formułuje jakąkolwiek intencję związaną z domeną systemu, model z dużą precyzją wskazuje właściwy kierunek semantyczny.
+Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej poprzez rezygnację z pierwotnie planowanych progów pewności (\english{confidence thresholds}). Doświadczenia wykazały, że model osiąga skrajnie niskie wartości podobieństwa niemal wyłącznie w sytuacjach, gdy wprowadzony tekst jest zupełnie pozbawiony informacji semantycznych. W sytuacjach, gdy użytkownik formułuje jakąkolwiek intencję związaną z domeną systemu, model z dużą precyzją wskazuje właściwy kierunek semantyczny.
 
 \section{Benchmarking i optymalizacja}
 
