@@ -1,0 +1,45 @@
+\newtcolorbox{mojwykaz}[1]{
+    colback=gray!5,
+    colframe=gray!50,
+    arc=0mm,
+    boxrule=0.5pt,
+    left=10pt, right=10pt, top=10pt, bottom=10pt,
+    title=#1,
+    fonttitle=\bfseries
+}
+
+\newcommand{\wykazname}{WYKAZ}
+\newfloat{wykaz}{lo}{\wykazname}
+\newlistentry{wykaz}{lo}{0}
+\counterwithin{wykaz}{chapter}
+\makeatletter
+\expandafter\def\csname fname@wykaz\endcsname{\wykazname}
+\makeatother
+
+\definecolor{lightbg}{RGB}{252, 252, 252}
+\definecolor{grayframe}{RGB}{200, 200, 200}
+\definecolor{jskeyword}{RGB}{0, 0, 255}      % Niebieski dla let, for, if
+\definecolor{jsstring}{RGB}{163, 21, 21}     % Ciemnoczerwony dla napisów
+\definecolor{jscomment}{RGB}{0, 128, 0}      % Zielony dla komentarzy
+
+\lstdefinelanguage{JSCustomLight}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with, let, const},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  morestring=[b]`
+}
+
+\lstset{
+    language=JSCustomLight,
+    backgroundcolor=\color{lightbg},
+    basicstyle=\ttfamily\small\color{black},
+    breaklines=true,
+    commentstyle=\color{jscomment},
+    keywordstyle=\color{jskeyword}\bfseries,
+    stringstyle=\color{jsstring},
+    showstringspaces=false,
+    extendedchars=true,
+    literate={ą}{{\k{a}}}1 {ć}{{\'c}}1 {ę}{{\k{e}}}1 {ł}{{\l}}1 {ń}{{\'n}}1 {ó}{{\'o}}1 {ś}{{\'s}}1 {ź}{{\'z}}1 {ż}{{\.z}}1
+}
