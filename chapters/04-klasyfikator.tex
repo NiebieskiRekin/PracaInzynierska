@@ -24,7 +24,7 @@ System musi być zdolny do poprawnej interpretacji i przekierowania zapytania do
 Zrozumienie intencji użytkownika w tym konkretnym przypadku napotyka na bariery, które w literaturze przedmiotu uznaje się za kluczowe problemy NLU (\textit{Natural Language Understanding}) \cite{jurafsky2023}:
 
 \begin{description}
-    \item[Zróżnicowanie lingwistyczne i semantyczne:] Użytkownicy używają różnych konstrukcji dla tej samej czynności (np. ,,Kasztanka została zaszczepiona'' vs ,,Dodaj szczepienie dla Kasztanki''). Zgodnie z tezą Manninga \cite{manning2008}, system musi tu wykazać się zdolnością do inferencji, by odwzorować oba sformułowania na właściwą końcówkę profilaktyki.
+    \item[Zróżnicowanie lingwistyczne i semantyczne:] Użytkownicy używają różnych konstrukcji dla tej samej czynności (np. ,,Kasztanka została zaszczepiona'' vs ,,Dodaj szczepienie dla Kasztanki''). Zgodnie z tezą Manninga \cite{manning2008}, system musi tu wykazać się zdolnością rozumeinia, by odwzorować oba sformułowania na właściwą końcówkę profilaktyki.
     
     \item[Specjalistyczna terminologia:] Branża jeździecka operuje słownictwem (np. ,,werkowanie'', ,,źrebność''), które rzadko występuje w korpusach języka ogólnego, co wymaga od modelu wysokiej jakości reprezentacji wektorowych (\english{embeddings}) zdolnych do uchwycenia relacji między tymi terminami a ich medycznym znaczeniem.
 \end{description}
@@ -38,7 +38,7 @@ W początkowej fazie projektowania systemu asystenta, proces interpretacji zapyt
 Wstępne testy wykazały, że mimo wysokiej elastyczności modeli LLM, takie rozwiązanie posiada istotne wady z punktu widzenia wydajności systemu:
 
 \begin{description}
-    \item \textbf{Nadmiarowość kontekstu:} Dołączanie pełnego schematu API (wszystkich ośmiu endpointów) do każdego zapytania drastycznie zwiększało liczbę tokenów wejściowych. Generuje to nieuzasadnione koszty operacyjne, zwłaszcza przy częstym korzystaniu z płatnych API, oraz zwiększa czas oczekiwania na odpowiedź \cite{liu2023}.
+    \item \textbf{Nadmiarowość kontekstu:} Dołączanie pełnego schematu API (wszystkich ośmiu endpointów) do każdego zapytania drastycznie zwiększało liczbę tokenów wejściowych. Generuje to nieuzasadnione koszty operacyjne, zwłaszcza przy częstym korzystaniu z płatnych API, oraz zwiększa czas oczekiwania na odpowiedź \cite{liu2023}, takie rozwiązanie nie jest skalowane dla większych systemów.
     
     \item \textbf{Szum informacyjny:} Przekazywanie modelu informacji o endpointach niezwiązanych z danym zapytaniem (np. schemat rozrodu przy pytaniu o kowala) zwiększa ryzyko halucynacji. Model, mając zbyt szeroki kontekst, może próbować mapować dane do niewłaściwych pól, co obniża ogólną precyzję requestu.
     
@@ -56,17 +56,18 @@ Głównym założeniem tej zmiany było przeniesienie ciężaru klasyfikacji na 
     
     \item \textbf{Większą precyzję mapowania:} Model LLM, otrzymując instrukcję dotyczącą tylko jednego, konkretnego endpointu, rzadziej popełnia błędy w mapowaniu pól technicznych i lepiej radzi sobie z ekstrakcją parametrów z tekstu.
     
-    \item \textbf{Separację logiki:} Wyodrębnienie klasyfikatora pozwoliło na precyzyjne dostrajanie procesu wykrywania intencji (np. poprzez wykorzystanie algorytmu k-NN czy progu pewności) niezależnie od warstwy generatywnej.
+    \item \textbf{Separację logiki:} Wyodrębnienie klasyfikatora pozwoliło na precyzyjne dostrajanie procesu wykrywania intencji (np. poprzez wykorzystanie algorytmu k-NN i doborze jego hiperparemetrów) niezależnie od warstwy generatywnej.
 \end{itemize}
 
-Wdrożenie tej separacji umożliwiło nam zbadanie, jak klasyczne metody uczenia maszynowego operujące na wektorach semantycznych radzą sobie z branżowym słownictwem w porównaniu do kosztownych modeli LLM.
+Wdrożenie tej separacji umożliwiło nam zbadanie, jak klasyczne metody uczenia maszynowego operujące na wektorach semantycznych radzą sobie z branżowym słownictwem.
+Nasz problem jednak wciąż wiązał się z:
 
 \begin{description}
     \item[Niejasność i skrótowość:] Krótkie komunikaty wysyłane w pośpiechu (np. ,,kowal u Gwiazdy'') wymuszają na systemie automatyczne rozpoznanie, że chodzi o wizytę kowala i przypisanie jej do konkretnego konia, co bez zrozumienia kontekstu branżowego byłoby niemożliwe.
     \item[Ekstrakcja encji:] Poza samą intencją, system musi ,,wyłowić'' z tekstu kluczowe parametry (imię konia, datę, nazwę leku), by stworzyć poprawne żądanie POST do API.
 \end{description}
 
-W związku z powyższym, proste dopasowanie słów kluczowych okazało się niewystarczające. Wymusiło to poszukiwanie architektury, która połączy elastyczność dużych modeli językowych (LLM) z precyzją i wydajnością klasyfikatorów wektorowych.
+W związku z powyższym, proste dopasowanie słów kluczowych okazało się niewystarczające. Zdecydowaliśmy się stworzyć architekturę, która połączy elastyczność dużych modeli językowych (LLM) z precyzją i wydajnością klasyfikatorów wektorowych. Klasyfikator Wektorowy został przeznaczony do rozwiązania problemu klasyfikacji intencji, a na LLM została zrzucona cała odpowiedzialność wypełnienia rządzania mająć już informacje o endpoincie.
 
 \section{Metodyka i implementacja klasyfikatora intencji}
 
@@ -104,15 +105,11 @@ Celem tej modyfikacji było stworzenie stabilnego ,,środka ciężkości'' dla k
 
 \subsection*{Logika decyzyjna i progi pewności}
 
-Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej poprzez rezygnację z pierwotnie planowanych progów pewności (ang. \textit{confidence thresholds}). Doświadczenia wykazały, że model osiąga skrajnie niskie wartości podobieństwa niemal wyłącznie w sytuacjach, gdy wprowadzony tekst jest zupełnie pozbawiony informacji semantycznych. W sytuacjach, gdy użytkownik formułuje jakąkolwiek intencję związaną z domeną systemu, model z dużą precyzją wskazuje właściwy kierunek semantyczny.
+Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej poprzez rezygnację z pierwotnie planowanych progów pewności (ang. \textit{confidence thresholds}), które zmuszały klasyfiakator do analizowania słów kluczowych. Doświadczenia wykazały jednak, że model osiąga skrajnie niskie wartości podobieństwa niemal wyłącznie w sytuacjach, gdy wprowadzony tekst jest zupełnie pozbawiony informacji semantycznych co przekłada się na niemożnośc właściwego zmapowania zapytania REST w póżniejszym etapie. W sytuacjach, gdy użytkownik formułuje jakąkolwiek intencję związaną z domeną systemu, model z dużą precyzją wskazuje właściwy kierunek semantyczny.
 
 \section{Benchmarking i optymalizacja}
 
-\subsection{Metodyka benchmarkingu hiperparametru sąsiedztwa}
-
-Kluczowym aspektem strojenia modelu opartego na paradygmacie \textit{Instance-Based Learning} jest dobór odpowiedniej wielkości sąsiedztwa $k$, która determinuje strefę wpływu lokalnego na decyzję klasyfikacyjną \cite{manning2008}.
-
-%TODO - uwaga: Co to za paradygmat, dlaczego nie jest opisany, dlaczego nie ma polskiego terminu oraz jakieś inne możliwości.
+\subsection{Dane użyte w eksperymencie}
 
 W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu \definicja{Moje Konie}, przeprowadzono serię testów ewaluacyjnych. Do eksperymentu przyjęto zbiór danych podzielony na:
 \begin{itemize}
@@ -120,17 +117,33 @@ W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu \definicja{M
     \item \textbf{Zbiór testowy:} 40 unikalnych, nieznanych modelowi przykładów.
 \end{itemize}
 
-Ewaluację przeprowadzono dla zmiennych wartości $k$, mierząc skuteczność za pomocą metryk: dokładność całkowita (\english{accuracy}) oraz F1-makro. Wybór F1-makro był podyktowany koniecznością równoprawnego traktowania wszystkich intencji.
+Dane były generowane ręcznie przez uczestników projektów, którzy na podstawie swojego doświadczenia z hodowcami koni próbowali odtworzyć ich sposób mówienia jednocześnie zapewniając, że przykłady spełniają podstawowe wymagania systemu. Zależalo nam, że nasz zbiór danych pokrywał różny poziom formalności przekazywanai informacji stąd np. w endpoincie api/wydarzenia/rozrody znajdują się przykłady takie jak:
+
+\begin{itemize}
+    \item "Dino miał dzisiaj sprawdzanie źrebności. Alicja powiedziała, że wszystko było ok",
+    \item "Dodaj proszę informację, że klacz Bella była dziś inseminowana przez dr Kowalską",
+    \item "Wczoraj Tomek inseminował mi Lasera"
+\end{itemize}
+
+Dane zostały przygotowane w formacie JSON gdzie każdy endpoint zawiera liste zdań.
+
+\subsection{Metodyka benchmarkingu hiperparametru sąsiedztwa}
+
+Kluczowym aspektem strojenia modelu opartego na algorytmie K-NN  jest dobór odpowiedniej wielkości sąsiedztwa $k$, która determinuje strefę wpływu lokalnego na decyzję klasyfikacyjną \cite{manning2008}.
+
+Ewaluację przeprowadzono dla zmiennych wartości $k$, mierząc skuteczność za pomocą metryk: dokładność (\english{accuracy}) oraz F1-makro. Wybór F1-makro był podyktowany koniecznością równoprawnego traktowania wszystkich intencji.
 
 \subsection*{Strategia rozstrzygania remisów}
 
-W klasycznym algorytmie k-NN dochodzi do sytuacji spornych, gdzie dwie lub więcej klas otrzymują identyczną liczbę głosów. W badanej implementacji zastosowano zaawansowaną heurystykę opartą na gęstości semantycznej. W przypadku remisu głosów, ostateczna predykcja $y_{pred}$ jest wybierana na podstawie sumy podobieństw cosinusowych sąsiadów należących do danej klasy:
+W klasycznym algorytmie k-NN dochodzi do sytuacji spornych, gdzie dwie lub więcej klas otrzymują identyczną liczbę głosów. W badanej implementacji zastosowano heurystykę opartą na gęstości semantycznej. W przypadku remisu głosów, ostateczna predykcja $y_{pred}$ jest wybierana na podstawie sumy podobieństw cosinusowych sąsiadów należących do danej klasy:
 
 \begin{equation}
     y_{pred} = \arg \max_{c \in C_{tied}} \left( \sum_{i \in N_c} \cos(\vec{x}, \vec{x}_i) \right)
 \end{equation}
 
 gdzie $N_c$ to zbiór sąsiadów należących do spornej klasy $c$, a $\vec{x}$ to wektor zapytania. Takie podejście premiuje klasę, której przykłady znajdują się ,,semantycznie bliżej'' zapytania użytkownika.
+W ramach eksperymentu przeprowadzono ewaluację algorytmu k-NN dla wartości parametru $k$ w zakresie od 1 do 20 dla pełnego zbioru danych. Wyniki uzyskane dla zbioru testowego przedstawiono na Rysunku~\ref{fig:knn_eval}.
+% Sprawdzic formatowanie/ odniesienie od rysunku
 
 % MIEJSCE NA WYKRES
 \begin{figure}[H]
@@ -144,6 +157,37 @@ gdzie $N_c$ to zbiór sąsiadów należących do spornej klasy $c$, a $\vec{x}$ 
 % TODO - wykres jako wykres + odwołania i opis
 % TODO - tabelka jako tabelka
 
+Eksperyment wykazał, że najwyższą skuteczność uzyskano dla parametru $k \in \{4, 5, 6, 8, 12\}$. Należy jednak zaznaczyć, że rozpiętość wyników precyzji wyniosła ok. $0.05$, co przy ograniczonej liczebności zbioru testowego ($40$ przykładów na endpoint) nakazuje zachować ostrożność w interpretacji istotności tych różnic. 
+
+% Tekst główny
+Dodatkowo, dla tego samego zbioru danych, zweryfikowano podejście oparte na centroidach. Metoda ta niespodziewanie osiągnęła najwyższe wyniki zarówno pod względem dokładności (Accuracy), jak i miary F1, co przedstawiono w Tabeli~\ref{tab:top_configurations}.
+
+% Tabela
+\begin{table}[H]
+    \centering
+    \caption{6 najlepszych konfiguracji (wg Accuracy)}
+    \label{tab:top_configurations}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{K} & \textbf{Accuracy} & \textbf{F1 Macro} \\ 
+        \hline
+        Centroid & 0.8735 & 0.8736 \\ 
+        \hline
+        4 & 0.8580 & 0.8579 \\ 
+        \hline
+        5 & 0.8488 & 0.8490 \\ 
+        \hline
+        8 & 0.8457 & 0.8453 \\ 
+        \hline
+        12 & 0.8457 & 0.8449 \\ 
+        \hline
+        6 & 0.8395 & 0.8396 \\ 
+        \hline
+    \end{tabular}
+\end{table}
+
+% Sprawdzic czy tabelka sie dobrze zrobiła
+
 \subsection{Regularyzacja modelu poprzez zespołowe głosowanie}
 
 W uczeniu maszynowym regularyzacja jest procesem wprowadzania dodatkowych informacji lub ograniczeń w celu zapobiegania przeuczeniu (\english{overfitting}) i poprawy zdolności modelu do generalizacji \cite{goodfellow2016}. W kontekście modeli opartych na sąsiedztwie ryzyko to objawia się dwojako:
@@ -153,20 +197,63 @@ W uczeniu maszynowym regularyzacja jest procesem wprowadzania dodatkowych inform
     \item Dla dużych wartości $k$, następuje wzrost obciążenia (\textit{bias}) i zjawisko niedouczenia (\textit{underfitting}).
 \end{itemize}
 
-Aby zbalansować kompromis między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w systemie \definicja{Moje Konie} zrezygnowano z wyboru jednej, statycznej wartości $k$ na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny składa się z komitetu klasyfikatorów k-NN operujących na różnych hiperparametrach $k$ (w implementacji przyjęto zbiór $k \in \{3, 4, 6, 12, \text{Centroid}\}$). Ostateczna decyzja podejmowana jest w procesie głosowania ważonego.
+
+W celu optymalizacji kompromisu między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w architekturze systemu ,,Moje Konie'' zrezygnowano z deterministycznego wyboru pojedynczej wartości parametru $k$ na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny funkcjonuje jako komitet klasyfikatorów $k$-NN, operujących na zróżnicowanych hiperparametrach, wyselekcjonowanych na podstawie wyników eksperymentalnych (opisanych w poprzedniej sekcji).
+
+Ostateczna decyzja klasyfikacyjna podejmowana jest w procedurze głosowania. System agreguje predykcje wszystkich estymatorów składowych, przypisując użytkownikowi intencję o najwyższej liczbie wskazań. W sytuacjach spornych (remis), algorytm aplikuje heurystykę rozstrzygającą opartą na sumie podobieństw cosinusowych, co premiuje klasę o najwyższej lokalnej gęstości semantycznej względem wektora zapytania.
+
+Zastosowana strategia znajduje uzasadnienie w teorii uczenia zespołowego. Jak wskazuje Dietterich \cite{dietterich2000}, uśrednianie wyników wielu modeli pozwala zredukować ryzyko wyboru błędnej hipotezy, wynikające ze stochastycznej natury danych treningowych . W projektowanym systemie głosowanie między modelami o zróżnicowanej ,,ziarnistości'' (różne wartości $k$) pełni rolę niejawnej regularyzacji, stabilizując predykcję w obszarach niejednoznacznych semantycznie.
+
+Ewaluacja końcowa modelu zintegrowanego (Ensemble) wykazała wyniki przedstawione w Tabeli~\ref{tab:final_results}. Choć są one marginalnie niższe w porównaniu do najlepszych konfiguracji pojedynczych (Tabela~\ref{tab:top_configurations}), spadek ten uznano za pomijalny koszt regularyzacji. Zwiększona stabilność predykcji daje bowiem silniejsze podstawy do prognozowania wysokiej skuteczności systemu w środowisku produkcyjnym.
+
+% Tabela
+\begin{table}[H]
+    \centering
+    \caption{Wyniki końcowe modelu zespołowego (Ensemble) po regularyzacji}
+    \label{tab:final_results}
+    \begin{tabular}{|l|c|}
+        \hline
+        \textbf{Metryka} & \textbf{Wynik} \\ 
+        \hline
+        Dokładność (Accuracy) & 0.854 \\ 
+        \hline
+        F1-Macro & 0.855 \\ 
+        \hline
+    \end{tabular}
+\end{table}
 % TODO - dokładniej opisać
 % uwaga: Centroid - jakoś trzeba byłoby to opisać
 % uwaga: ważonego - procesie głosowania ważonego - czym? jak dokładnie wygląda ta procedura
 
-Jak wskazują badania nad metodami zespołowymi \cite{dietterich2000}, uśrednianie decyzji modeli o relatywnie niskiej korelacji błędów prowadzi do stabilniejszej i bardziej wiarygodnej granicy decyzyjnej.
 
-\subsection{Analiza wyników eksperymentalnych}
+\subsection{Analiza błędów i kierunki rozwoju architektury}
 
-Przeprowadzone benchmarki pozwoliły na sformułowanie wniosków kluczowych:
+Ostateczną weryfikację skuteczności wdrożonego rozwiązania stanowi analiza macierzy pomyłek (ang. \textit{confusion matrix}), przedstawiona na Rysunku~\ref{fig:macierz_pomylek}. Pozwala ona nie tylko na ocenę globalnej precyzji, ale przede wszystkim na zidentyfikowanie semantycznych ,,obszarów ryzyka'', w których model ma trudności z poprawną separacją klas.
 
-\begin{description}
-    \item \textbf{Optimum dla pojedynczego k:} Najwyższy wynik F1-macro dla pojedynczego klasyfikatora odnotowano w przedziale $k \in [3, 7]$. Wartości skrajne potwierdziły teorię o wpływie szumu i zacierania granic.
-    \item \textbf{Skuteczność strategii rozstrzygania remisów:} Zastosowanie sumy podobieństw cosinusowych przy remisach pozwoliło na poprawne zaklasyfikowanie ok. 4-6\% trudnych przypadków (\textit{edge cases}).
-    \item \textbf{Przewaga podejścia wykorzystującego zespołowe głosowanie:} Model oparty na głosowaniu wielu klasyfikatorów wykazał największą odporność na niejednoznaczne zapytania. Choć maksymalna dokładność była zbliżona do najlepszego pojedynczego $k=5$, to wariancja wyników była mniejsza, co czyni to rozwiązanie bezpieczniejszym do wdrożenia.
-\end{description}
+% MIEJSCE NA macierz
+\begin{figure}[H]
+    \centering
+    % Upewnij się, że ścieżka do pliku jest poprawna
+    \includegraphics[width=0.9\textwidth]{public/macierz_pomylek.png} 
+    \caption{Macierz pomyłek dla finalnego modelu w środowisku produkcyjnym.}
+    \label{fig:macierz_pomylek}
+\end{figure}
 
+Szczegółowa inspekcja wyników prowadzi do następujących wniosków:
+
+\begin{itemize}
+    \item \textbf{Wysoka precyzja dla encji rzadkich:} Intencja \texttt{kowale} została rozpoznana bezbłędnie (40/40 przypadków). Sugeruje to, że słownictwo związane z tą profesją jest silnie dystynktywne w przestrzeni wektorowej. Jednakże, zauważalna jest pewna asymetria – intencja \texttt{konie} była mylona z intencją \texttt{kowale} aż w 6 przypadkach. Może to wynikać z konstrukcji zdaniowych, gdzie imię konia występuje w bliskim sąsiedztwie słowa kluczowego oznaczającego specjalistę.
+    
+    \item \textbf{Nakładanie się kontekstów medycznych:} Największe rozproszenie błędów widoczne jest w klastrze intencji weterynaryjnych: \texttt{choroby}, \texttt{leczenia} oraz \texttt{zdarzenia\_profilaktyczne}. Jest to zjawisko oczekiwane, wynikające z naturalnego podobieństwa semantycznego (np. szczepienie jest zarówno procedurą medyczną, jak i elementem profilaktyki).
+    
+    \item \textbf{Interferencja profilaktyki i rozrodu:} Istotnym błędem jest mylenie intencji \texttt{zdarzenia\_profilaktyczne} z \texttt{rozrodami} (5 pomyłek). Wskazuje to na konieczność doprecyzowania bazy wiedzy (anchors) o frazy rozróżniające opiekę nad źrebięciem (profilaktyka) od procesów hodowlanych w kolejnych etapach rozwoju proejktu.
+\end{itemize}
+
+\textbf{Rekomendacje dla rozwoju systemu:} \\
+Analiza powyższych błędów wyznacza jasny kierunek dalszej optymalizacji. Przyszłe prace nad modułem NLU powinny skupić się na:
+\begin{enumerate}
+    \item \textbf{Wzbogaceniu bazy wzorców o trudne przypadki:} Dodaniu do zbioru referencyjnego (kotwic) tych specyficznych sformułowań, które model obecnie myli. Pozwoli to systemowi lepiej nauczyć się subtelnych różnic między podobnymi klasami (np. skuteczniej odróżniać opisy koni od zapytań o kowala).
+    \item \textbf{Klasyfikacji hierarchicznej:} Rozważeniu architektury dwuetapowej, gdzie model najpierw rozróżnia szerokie domeny (np. \textit{Operacje Cykliczne} vs \textit{Zdrowie}), a dopiero w drugim kroku precyzuje konkretny endpoint. Pozwoliłoby to na zredukowanie szumu informacyjnego wewnątrz gęstego klastra intencji medycznych.
+\end{enumerate}
+
+Podsumowując, mimo wskazanych obszarów do poprawy, model osiąga stabilność operacyjną wystarczającą do wdrożenia w ramach sytemu \definicja{Moje Konie} i jego części \definicja{Asystenta NLP} 
