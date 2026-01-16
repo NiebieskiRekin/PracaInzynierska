@@ -34,6 +34,8 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 
 	% TODO: Dobrze by było to powiązać z fragmentami pracy dyplomowej. Np. T.P. opracował architekturę systemu, opisaną w rozdziale 3.14 oraz był odpowiedzialny za implementację części serwerowej aplikacji, opisaną w rozdziale 2.72.
 	
+	% TODO: rozdzielić do osobnego pliku
+	% TODO: poprawić wcięcia
 	\chapter{Przetwarzanie języka naturalnego i klasyfikacja intencji}
 	
 	\section{Wprowadzenie do przetwarzania języka naturalnego}
@@ -49,8 +51,8 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 	Szczególnie istotnym rozszerzeniem jest \definicja{Sentence-BERT (SBERT)}, umożliwiający tworzenie wektorów reprezentujących całe zdania, co czyni go niezwykle użytecznym w klasyfikacji tekstu, wyszukiwaniu informacji czy dopasowaniu zapytań \cite{reimers2019sentencebert}.
 
 	\section{Klasyfikatory intencji}
-
-	Klasyfikator intencji jest mechanizmem, który ma na celu przypisanie zapytania użytkownika do odpowiedniej  \cite{aggarwal2018textbook}. W kontekście NLP klasyfikatory intencji najczęściej wykorzystują embeddings słów oraz różne techniki dopasowania, takie jak podobieństwo kosinusowe, do porównania zapytań z wcześniej zdefiniowanymi przykładami. Celem tych systemów jest przypisanie odpowiedniego kontekstu do zapytania, co pozwala na efektywne sterowanie aplikacjami lub systemami, jak np. asystenci głosowi, chatboty czy systemy rekomendacji.
+	% TODO: odpowiedniej czego
+	Klasyfikator intencji jest mechanizmem, który ma na celu przypisanie zapytania użytkownika do odpowiedniej  \cite{aggarwal2018textbook}. W kontekście NLP klasyfikatory intencji najczęściej wykorzystują osadzenia słów oraz różne techniki dopasowania, takie jak podobieństwo kosinusowe, do porównania zapytań z wcześniej zdefiniowanymi przykładami. Celem tych systemów jest przypisanie odpowiedniego kontekstu do zapytania, co pozwala na efektywne sterowanie aplikacjami lub systemami, jak np. asystenci głosowi, chatboty czy systemy rekomendacji.
 	
 	\definicja{Intencje użytkowników} są zazwyczaj definiowane poprzez zestaw fraz, które mogą być używane przez użytkownika do wyrażenia swojej woli. Każda fraza przypisana jest do określonej intencji, a klasyfikator intencji jest odpowiedzialny za przypisanie zapytania użytkownika do jednej z tych intencji.
 	
@@ -58,7 +60,7 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 
 	Po utworzeniu osadzenia słów, kolejnym krokiem w NLP jest ocena podobieństwa między różnymi wektorami. Najczęściej używaną miarą w tym przypadku jest podobieństwo kosinusowe (\english{cosine similarity}), które mierzy kąt między dwoma wektorami w przestrzeni wektorowej. Miara ta jest szczególnie użyteczna, ponieważ daje wynik w zakresie od -1 do 1, gdzie wartość 1 oznacza wektory identyczne, wartość -1 oznacza wektory całkowicie przeciwne.
 
-	Matematyczna ocena pokrewieństwa semantycznego między zapytaniem a bazą wzorców opiera się na analizie geometrii wektorów, a nie na bezpośrednim dopasowywaniu znaków. Kluczowym narzędziem wykorzystywanym w tym procesie jest podobieństwo kosinusowe (ang. \textit{cosine similarity}), które mierzy cosinus kąta między dwoma wektorami w przestrzeni 1024-wymiarowej. Wybór tej metryki, opisanej wzorem (\ref{eq:cosine}), wynika z jej odporności na różnice w długości tekstów; w systemach NLP istotny jest kierunek wektora, reprezentujący temat wypowiedzi, a nie jego norma (długość), która często zależy jedynie od liczby użytych słów.
+	Matematyczna ocena pokrewieństwa semantycznego między zapytaniem a bazą wzorców opiera się na analizie geometrii wektorów, a nie na bezpośrednim dopasowywaniu znaków. Kluczowym narzędziem wykorzystywanym w tym procesie jest podobieństwo kosinusowe (\english{cosine similarity}), które mierzy cosinus kąta między dwoma wektorami w przestrzeni 1024-wymiarowej. Wybór tej metryki, opisanej wzorem (\ref{eq:cosine}), wynika z jej odporności na różnice w długości tekstów; w systemach NLP istotny jest kierunek wektora, reprezentujący temat wypowiedzi, a nie jego norma (długość), która często zależy jedynie od liczby użytych słów.
 
 	\begin{equation}
 		\text{similarity}(A, B) = \cos(\theta) = \frac{A \cdot B}{\|A\| \|B\|} = \frac{\sum_{i=1}^{n} A_i B_i}{\sqrt{\sum_{i=1}^{n} A_i^2} \sqrt{\sum_{i=1}^{n} B_i^2}} 
@@ -81,7 +83,7 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 	
 	Największą zaletą transformatorów w porównaniu do wcześniejszych modeli rekurencyjnych, takich jak LSTM\cite{hochreiter1997lstm} czy GRU\cite{cho2014gru}, jest ich zdolność do równoczesnego przetwarzania wszystkich słów w zdaniu (równoległość), co znacznie przyspiesza proces trenowania. Ponadto, dzięki mechanizmowi uwagi, modele transformatorów są w stanie uchwycić długoterminowe zależności w tekście, co jest trudne do osiągnięcia w modelach sekwencyjnych.
 	
-	Transformery stały się podstawą dla wielu dużych modeli językowych: \definicja{BERT} \cite{devlin2018bert}, \definicja{GPT-2} \cite{radford2019gpt2}, \definicja{GPT-3} \cite{brown2020language}, które osiągnęły znaczące sukcesy w zadaniach NLP, takich jak klasyfikacja tekstów \cite{devlin2018bert}, tłumaczenie maszynowe \cite{vaswani2017attention}, generowanie tekstu \cite{brown2020language}, odpowiedzi na pytania \cite{devlin2018bert} czy analiza sentymentu \cite{devlin2018bert}.
+	Transformatory stały się podstawą dla wielu dużych modeli językowych: \definicja{BERT} \cite{devlin2018bert}, \definicja{GPT-2} \cite{radford2019gpt2}, \definicja{GPT-3} \cite{brown2020language}, które osiągnęły znaczące sukcesy w zadaniach NLP, takich jak klasyfikacja tekstów \cite{devlin2018bert}, tłumaczenie maszynowe \cite{vaswani2017attention}, generowanie tekstu \cite{brown2020language}, odpowiedzi na pytania \cite{devlin2018bert} czy analiza sentymentu \cite{devlin2018bert}.
 
     Ostatni etap rozwoju NLP to pojawienie się \definicja{dużych modeli językowych} (\akronim{LLM}, \english{Large Language Models}), które wykorzystują miliardy parametrów do modelowania języka na podstawie ogromnych korpusów danych. Modele te, oparte na architekturze transformatora, potrafią wykonywać złożone zadania, takie jak tłumaczenie, streszczanie, generowanie kodu czy prowadzenie rozmowy \cite{openai2023gpt4technicalreport}.
     
@@ -94,5 +96,5 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 	Przetwarzanie języka naturalnego stanowi jeden z fundamentów współczesnych systemów inteligentnych, umożliwiając komputerom interakcję z użytkownikami w sposób zbliżony do ludzkiego. Modele osadzania słów, takie jak Word2Vec, GloVe, BERT czy Sentence-BERT, stanowią podstawę nowoczesnych rozwiązań NLP, pozwalając na analizę i klasyfikację tekstów. Dopasowanie kosinusowe jest jedną z najczęściej stosowanych miar podobieństwa, umożliwiającą efektywne porównywanie zapytań użytkowników z przykładami intencji w systemach klasyfikacji. Klasyfikatory intencji, oparte na tych technologiach, umożliwiają skuteczne przypisanie zapytań do odpowiednich działań w aplikacjach, takich jak chatboty czy asystenci głosowi.
 	
 	Współczesne modele oparte na mechanizmie uwagi, takie jak transformatory, zrewolucjonizowały dziedzinę NLP, oferując wydajność i dokładność, które były niemożliwe do osiągnięcia w poprzednich modelach. Dzięki transformatorom możliwe stało się przetwarzanie długich tekstów oraz uchwycenie głębokich, globalnych zależności w tekście.
-	Od prostych modeli osadzania słów, przez transformery, aż po duże modele językowe -- rozwój NLP umożliwia coraz bardziej naturalną interakcję człowieka z komputerem.Zastosowanie LLM, takich jak \definicja{Gemini 2.5 Flash}, otwiera nowe możliwości dla aplikacji sterowanych językiem naturalnym, w tym systemu \definicja{Moje Konie}, w którym polecenia użytkownika mogą być tłumaczone bezpośrednio na żądania REST w sposób kontekstowo poprawny i semantycznie spójny.
+	Od prostych modeli osadzania słów, przez transformery, aż po duże modele językowe -- rozwój NLP umożliwia coraz bardziej naturalną interakcję człowieka z komputerem. Zastosowanie LLM, takich jak \definicja{Gemini 2.5 Flash}, otwiera nowe możliwości dla aplikacji sterowanych językiem naturalnym, w tym systemu \definicja{Moje Konie}, w którym polecenia użytkownika mogą być tłumaczone bezpośrednio na żądania REST w sposób kontekstowo poprawny i semantycznie spójny.
 	
