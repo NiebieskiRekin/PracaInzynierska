@@ -128,8 +128,11 @@ O ile \textit{Terraform} służy głównie do powoływania zasobów (tworzenia s
 
 Istotną cechą \textit{Ansible} jest idempotentność operacji. Oznacza to, że wielokrotne wykonanie tego samego scenariusza konfiguracji nie spowoduje błędów ani niepożądanych zmian, jeśli system znajduje się już w oczekiwanym stanie. Gwarantuje to stabilność i przewidywalność procesu wdrożenia aplikacji.
 
-% \subsection{Github Actions}
-% TODO: uzupełnij wprowadzenie technologii - opisz czym jest github actions i jak działa
+\subsection{GitHub Actions -- automatyzacja procesów}
+
+\textit{GitHub Actions} to platforma do ciągłej integracji i ciągłego dostarczania (\english{Continuous Integration / Continuous Delivery}, \akronim{CI/CD}), zintegrowana bezpośrednio z systemem kontroli wersji \textit{GitHub}. Umożliwia ona definiowanie przepływów pracy w formacie YAML, które są automatycznie uruchamiane w odpowiedzi na określone zdarzenia w repozytorium, takie jak wypchnięcie kodu, otwarcie zgłoszenia czy utworzenie nowego wydania.
+
+Architektura \textit{GitHub Actions} opiera się na koncepcji wykonawców (\english{runner}) -- maszyn wirtualnych lub kontenerów, na których wykonywane są zdefiniowane zadania. W projekcie wykorzystano udostępniane przez \textit{GitHub} współdzielone maszyny z systemem operacyjnym \textit{Ubuntu}, co eliminuje konieczność utrzymywania własnej infrastruktury do budowania aplikacji. Platforma ta oferuje bogaty ekosystem gotowych akcji (\english{actions}), które można wykorzystać jako modularne bloki budulcowe do tworzenia złożonych potoków wdrażania, obejmujących kompilację kodu, testowanie, budowanie obrazów kontenerowych oraz interakcję z chmurą obliczeniową.
 
 \section{Konteneryzacja i proces budowania}
 
