@@ -6,7 +6,7 @@ System \definicja{Moje Konie} został zaprojektowany z myślą o zapewnieniu pe�
 
 Po zalogowaniu użytkownik otrzymuje dostęp do przeglądania pełnej listy swoich koni, zawierających zdjęcie oraz nazwę konia. Wyświetlanie listy jest responsywne: na większych ekranach stosowane są trzy kolumny, natomiast na urządzeniach mobilnych tylko jedna. Lista koni wyposażona jest w wyszukiwarkę, pozwalającą na filtrowanie po nazwie poprzez wyszukanie fragmentu tekstu. Każda karta konia umożliwia przejście do ekranu ze szczegółowymi informacjami, gdzie użytkownik może zobaczyć numer przyżyciowy, numer chipa, rocznik urodzenia, rodzaj, płeć, datę przybycia i odejścia ze stajni, a także najnowsze aktywne wydarzenia związane z danym koniem, takie jak podkucia, szczepienia, odrobaczanie, podanie suplementów czy wizyty dentystyczne. Wymieniony numer przyżyciowy to unikalny kod nadawany koniowi, zapisany w jego paszporcie, który wraz z numerem transpondera (chipa) i danymi właściciela służy do jego pełnej identyfikacji, zapobiegając nielegalnemu obrotowi, a także umożliwia śledzenie zdrowia, szczepień i pochodzenia.
 
-System pozwala na zarządzanie zdjęciami koni –- użytkownik może dodawać wiele zdjęć do jednego konia, a przełączanie między zdjęciami odbywa się za pomocą strzałek na ekranie szczegółów. Operacje dodawania i edycji koni odbywają się poprzez dedykowane formularze walidujące wymagane pola, natomiast usuwanie wymaga potwierdzenia ze strony użytkownika.
+System pozwala na zarządzanie zdjęciami koni -- użytkownik może dodawać wiele zdjęć do jednego konia, a przełączanie między zdjęciami odbywa się za pomocą strzałek na ekranie szczegółów. Operacje dodawania i edycji koni odbywają się poprzez dedykowane formularze walidujące wymagane pola, natomiast usuwanie wymaga potwierdzenia ze strony użytkownika.
 
 Na poziomie nawigacji system udostępnia moduły funkcjonalne obejmujące: zarządzanie końmi, weterynarzami, kowalami, wydarzeniami w stajni, asystentem oraz ustawieniami. Przy dodawaniu zdarzenia użytkownik wybiera jego typ, uzupełnia wymagane pola oraz wskazuje listę koni, do których zdarzenie ma zastosowanie. W celu wygodnej selekcji dostępny jest również przycisk pozwalający zaznaczyć wszystkie konie w danej stadninie. System podpowiada użytkownikowi powiązanych weterynarzy lub kowali przy dodawaniu zdarzeń wymagających ich udziału. Pod ostatnimi wydarzeniami znajduje się panel umożliwiający szybkie dodanie nowych wydarzeń, odpowiednio pogrupowanych według kategorii.
 
@@ -16,28 +16,23 @@ Projektując system, zwrócono szczególną uwagę na bezpieczeństwo, modularno
 
 Wszystkie te cechy łącznie pozwalają na zapewnienie wysokiego poziomu bezpieczeństwa danych, przejrzystej organizacji informacji oraz wygodnej obsługi codziennych czynności w hodowli koni.
 
-
-% Coś czego nie mamy (aby się nie walnąć):
-%  resetowanie hasła przez użytkownika, tylko poprzez admina
-%  rejestracja użytkowników przez użytkownika, j.w.
-%  rejestracja hodowli przez użytkownika, j.w.
-%  ustawienie złożoności hasła,
-%  integracja z zewnętrznymi systemami uwierzytelniającymi
-%  wysyłanie powiadomień push (próbowałem dodać, nie udało mi się)
-
-
 \section{Opis architektury aplikacji}
 
 Ze względu na specyfikę aplikacji umożliwiającą edycję danych dotyczących danej hodowli koni wielu użytkownikom, w szczególności korzystających w większości z urządzeń mobilnych oraz sporadycznie z komputerów osobistych, zdecydowano się na formę systemu webowego z przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, co znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych.
 
 Dla zachowania kompatybilności z technologią progresywnych aplikacji internetowych oraz modularności zdecydowano się na rozdzielenie warstwy przetwarzania logiki biznesowej z dostępem do danych, z którą użytkownik nie wchodzi w bezpośrednią interakcję -- nazywaną backend, od warstwy bezpośrednio obsługującej interfejs użytkownika i wizualną prezentację danych -- frontend. Użytkownik inicjuje wszelkie interakcje z obydwoma komponentami, choć zapytania do backendu są inicjowane w przeglądarce użytkownika wchodzącego w interakcję z frontendem, a także otrzymane dane i komunikaty diagnostyczne są wyłącznie obsługiwane przez ten komponent. Zapytania sieciowe służące pobraniu i aktualizacji danych inicjowane są poprzez moduł frontendu wykonywany w przeglądarce użytkownika odbywają się na warstwie 7 modelu ISO/OSI (warstwie aplikacji) za pomocą protokołu HTTPS. Z perspektywy działania serwera frontend obsługuje żądania zwracając pliki HTML, CSS i JavaScript, natomiast backend działa w bezstanowej architekturze sieciowego interfejsu programowania REST zwracającego dane w formacie serializacji JSON. 
 
+% Architektura sieciowa i routing (Network & Routing)
+% Opis przepływu ruchu na podstawie diagramu 2 (Architektura sieciowa).
+%     Reverse Proxy i Edge: Rola Traefik jako punktu wejścia (Ingress). Automatyczne zarządzanie certyfikatami TLS (Let's Encrypt).
+%     DNS i ochrona brzegowa: Wykorzystanie Cloudflare jako pierwszej linii obrony (WAF, maskowanie IP serwera, DNS).
+%     Komunikacja wewnętrzna: Jak kontenery rozmawiają ze sobą wewnątrz prywatnej sieci Dockera, bez wystawiania ich bezpośrednio do Internetu.
 
-
+% Model wdrożenia: Wykorzystanie Google Cloud Platform (GCP) – instancja Compute Engine.
 
 \section{Frontend}
 
-Korzystając z technologii progresywnych aplikacji internetowych (ang. Progressive Web App, PWA) oraz praktyki responsywnego projektowania stron internetowych (\english{responsive web design}, \akronim{RWD}) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera -- wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych.
+Korzystając z technologii progresywnych aplikacji internetowych (\english{Progressive Web App}, \akronim{PWA}) oraz praktyki responsywnego projektowania stron internetowych (\english{responsive web design}, \akronim{RWD}) zaimplementowano spójny interfejs użytkownika dla platform mobilnych. Do implementacji technologii progresywnych aplikacji internetowych wymagane jest, aby interfejs graficzny użytkownika był skomponowany w zdecydowanej większości ze statycznych dokumentów hipertekstowych HTML (HyperText Markup Language), arkuszy stylów CSS (Cascading Style Sheets) oraz kodu w języku programowania JavaScript. Statyczne pliki w podanym kontekście oznaczają podleganie nieczęstym zmianom poprzez pobranie zaktualizowanej wersji z serwera -- wyłącznie między oddzielnymi wydaniami aplikacji i nigdy w celu wyświetlenia nowych danych.
 
 Interaktywna prezentacja danych jest możliwa natomiast poprzez zmianę struktury wyświetlanego dokumentu hipertekstowego wykonywaną po stronie klienta z użyciem kodu JavaScript w przeglądarce. Wymienione działanie jest wykonywane poprzez interfejs programowania Document Object Model (DOM, pl. \textit{Model Obiektowy Dokumentu}) pozwalający na częściową lub pełną modyfikację dowolnego węzła (np. akapitu tekstu, separatora, kontrolek, obiektu multimedialnego) w hierarchicznej strukturze drzewa dokumentu HTML. Interfejs ten jest w praktyce wykorzystywany przez bibliotekę React, która nieco modyfikuje model z dokumentów HTML i skryptów JavaScript na komponenty wielokrotnego użytku (zawierające wymagane fragmenty dokumentu HTML i funkcje JavaScript) budujące deklaratywne widoki (strony internetowe). Komponenty można powiązać z danymi, czyli zaprojektować ich wygląd w celu prezentacji danych zgodnie z ich schematem oraz skonfigurować ich źródło, które będzie automatycznie odświeżane, dążąc do zadeklarowanego stanu. Komponenty można w sobie zagnieżdżać, odtwarzając te same aspekty hierarchicznej struktury, a ich zmiany są śledzone poprzez użycie wewnętrznej dla tej biblioteki kopii Modelu Obiektowego Dokumentu nazywanego Virtual DOM (pl. Wirtualny Model Obiektowy Dokumentu).
 
@@ -53,7 +48,7 @@ Przetwarzanie wykonywane po stronie serwera jest realizowane w znacznej części
 \caption{Architektura sieciowa aplikacji}\label{rys:architektura-sieciowa}
 \end{figure}
 
-Rola serwera HTTP jest spełniana przez framework \textit{Hono}. Framework ten pozwala na bardzo modularne tworzenie silnie typowanych endpointów, warstw pośrednich przetwarzania (\english{middleware}) i elastyczne łączenie ich w poszczególne ścieżki obsługiwane współbieżnie i wydajnie przez jeden z kilku dostępnych silników dopasowań (\english{router}). % Usunąłem tekst o LinearRouter, bo znalazłem błąd w kodzie i złożyłem bug report do Hono - bardziej odpowiednie miejsce
+Rola serwera HTTP jest spełniana przez framework \textit{Hono}. Framework ten pozwala na bardzo modularne tworzenie silnie typowanych endpointów, warstw pośrednich przetwarzania (\english{middleware}) i elastyczne łączenie ich w poszczególne ścieżki obsługiwane współbieżnie i wydajnie przez jeden z kilku dostępnych silników dopasowań (\english{router}).
 
 Ze względu na wymóg współbieżnego, spójnego dostępu do danych o złożonych, ale stabilnych relacjach został wybrany system zarządzania relacyjną bazą danych \textit{PostgreSQL}. Spośród dostępnych na rynku rozwiązań wyróżnia się on brakiem opłat licencyjnych, bogatą dokumentacją, bardzo dobrą optymalizacją przetwarzania na małych i średnich zbiorach danych, obszernym zestawem funkcji, a także jest dobrze znana i lubiana przez zespół projektowy.
 
@@ -67,30 +62,6 @@ Aplikacja \definicja{Moje Konie} korzysta ze scentralizowanego, zintegrowanego z
 Zarządzanie sesjami realizowane jest poprzez mechanizm ciasteczek i zapisanie aktywnych sesji w bazie danych. W celu optymalizacji wydajności i redukcji obciążenia bazy danych przy sekwencyjnych żądaniach wykorzystano mechanizm pamięci podręcznej ciasteczek wynoszący 5 minut. Dzięki temu backend zamiast wypytywać bazę danych dla każdego przychodzącego żądania wymagającego uwierzytelnienia może potwierdzić daną sesję z ciasteczka podpisanego kryptograficznie. Takie ciasteczko trafia następnie do przeglądarki użytkownika. Podpisy i potwierdzenia są realizowane przez backend z użyciem tajnego symetrycznego klucza (wyłącznie po stronie serwera) z użyciem funkcji skrótu \emph{HMAC-SHA256}. Po upłynięciu ustalonego czasu wygaśnięcia pamięci podręcznej kolejne żądanie wymagające uwierzytelnienia będzie powodowało utworzenia zapytania do bazy danych o potwierdzenie sesji użytkownika i generowało nowe podpisane ciasteczko. Sesje użytkowników mają długi czas wygasania wynoszący 30 dni, w którego trakcie ważność sesji jest automatycznie odświeżana przy aktywności użytkownika raz na 24 godziny. Ma to na celu utrzymywanie poprawnej sesji (stanu bycia zalogowanym do strony) na czas dostatecznie długi, aby nie stanowił problemu dla aktywnych i powracających po niedługich odstępach czasu użytkowników, a jego długość jest podyktowana zarządzaniem danymi o nieczęstej zmienności i niską potrzebą codziennego pobierania danych przez użytkowników. Pozostałe aspekty ciasteczek sesyjnych skonfigurowano z naciskiem na bezpieczeństwo. Flaga \emph{SameSite} ustawiona na \emph{Strict} wymusza pełną zgodność nazwy domenowej serwera, z którym następuje połączenie w odniesieniu do serwera, który ustawił dane ciasteczko, co pomaga zapobiegać atakom polegającym na wymuszaniu nieautoryzowanej akcji w przeglądarce ofiary takim jak \emph{Cross Site Request Forgery} (\akronim{CSRF}). Atrybut \emph{HttpOnly} zabrania dostępu do wartości danego ciasteczka sesji przez kod JavaScript w przeglądarce klienta, co ponownie zawęża możliwe ataki z użyciem złośliwych skryptów takie jak \emph{Cross Site Scripting} (\akronim{XSS}). Finalnie flagi \emph{Secure} oraz \emph{Partitioned} są skonfigurowane zgodnie z zaleceniami przeglądarek i wymuszają odpowiednio poufność przez konieczność stosowania protokołu HTTPS, oraz izolację sesji użytkownika zgodnie z wytycznymi prywatności.
 
 Warstwa autoryzacji wykorzystuje model kontroli dostępu opartej na 2 rolach (admin, user) oraz strukturę wielodostępową (\english{multi-tenancy}) poprzez tworzenie organizacji do zarządzania odrębnymi hodowlami. Domyślna rola użytkownika pozwala na zarządzanie cyklem życia (dodawanie, usuwanie, edycja) wszystkich zwykłych obiektów takich jak: konie, wydarzenia z nimi związane, zapisani specjaliści, a także ustawienia użytkownika. Rola administratora jest przeznaczona dla osób posiadających odpowiednie kompetencje do zarządzania całą instancją serwera, a zatem pozwala na dodawanie nowych i edycję istniejących kont użytkowników, hodowli, danych uwierzytelniających i wszystkie uprawnienia nadane podstawowej roli użytkownika. Dodatkowo włączono obsługę kluczy API, są to jednoskładnikowe dane uwierzytelniające służące do obsługi żądań do API poprzez interfejsy programistyczne i może być wykorzystywane do automatyzacji części procesów aplikacji z zewnętrznymi usługami, a także posłużyć jako składnik uwierzytelniający w panelu administracyjnym. Pełen zestaw funkcji jest zawarty w dokumentacji w specyfikacji OpenAPI \cite{TODO}. Warstwa autoryzacji integruje się z serwerem utworzonym przez framework \textit{Hono} poprzez udostępnienie końcówek autoryzacyjnych pod ścieżką \texttt{/api/auth}. Dzięki wykorzystaniu gotowego zestawu tłumaczeń komunikaty błędów funkcji \textit{BetterAuth} zostały przetłumaczone na język polski. W celu poprawy widoczności informacji diagnostycznych o incydentach kluczowe zdarzenia bezpieczeństwa są rejestrowane.
-
-% tabele:
-% - z aplikacji:
-%     - zdjecia_koni
-%     - choroby
-%     - podkucia
-%     - konie
-%     - leczenia
-%     - rozrody
-%     - zdarzenia_profilaktycznego
-%     - weterynarze
-%     - kowale
-%     - notifications
-% - z better auth:
-%     - organization
-%     - invitation
-%     - jwks
-%     - verification
-%     - member
-%     - user
-%     - session
-%     - account
-%     - apikey
-
 \subsection{Baza danych}
 
 Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym modelu encji związków przedstawionym na Rysunku \ref{rys:schemat-bazy-danych}. W celu zachowania jak najlepszej spójności zastosowano znormalizowaną postać bazy danych, a dla ułatwienia edycji głównego identyfikatora sztuczne klucze główne. Aplikacja została zaprojektowana z myślą, aby obsługiwać wiele oddzielnych hodowli na jednej instancji aplikacji w modelu architektury wielodostępowej (\english{multi-tenant}). Ze względu na to założenie wszystkie obiekty dodawane przez użytkowników muszą mieć powiązanie z daną hodowlą, której nadany identyfikator rozdziela przynależność do danego klienta -- dzierżawcy. Podstawową funkcjonalnością aplikacji jest zarządzanie końmi, w tym przypisanie im imion, nr paszportowych, istotnych dat, a także hodowli, do której należą i innych danych charakterystycznych. Dodatkowo dla każdego konia można przypisać dowolną liczbę zdjęć, których podstawowe dane o przynależności są zapisywane w bazie danych (do którego konia, czy dane zdjęcie jest domyślne), natomiast same pliki są zapisywane w oddzielnej usłudze zoptymalizowanej do przechowywania plików binarnych \emph{Google Cloud Storage} w danym zasobniku co zostało opisane dokładniej w rozdziale \ref{sec:gcs}: \nameref{sec:gcs}.
@@ -104,31 +75,6 @@ Aplikacja posiada bogaty model danych, co ma swoje odniesienie w złożonym mode
 Dla każdego konia można przypisać wiele wydarzeń takich jak podkucia, choroby, leczenia, rozrody czy zdarzenia profilaktyczne. W przypadku podkuć, leczeń, rozrodów i zdarzeń profilaktycznych przypisywany jest również specjalista -- kowal lub weterynarz, powiązany z danym wydarzeniem. W przypadku specjalistów przechowywane dane są proste i ograniczają się do wskazania imienia, nazwiska, numeru telefonu i hodowli, w jakiej zostali dodani. Do podkuć, chorób i zdarzeń profilaktycznych przypisane są daty zdarzenia/rozpoczęcia oraz ważności/zakończenia, a do wszystkich wydarzeń poza podkuciami również opisy. Zdarzenia profilaktyczne posiadają również pole wyboru rodzaju zdarzenia spośród: odrobaczania, podania suplementów, szczepienia, dentysty i inne. Natomiast wydarzenia -- rozrody dzielą się na: inseminację konia, sprawdzenie źrebności, wyźrebienie i inne. Istotna jest również możliwość powiązania leczeń do danej choroby konia. Utworzona bezpośrednio została również tabela \emph{notifications}, która przechowuje preferencje użytkownika dotyczące powiadamiania o zbliżającym się końcu ważności danego wydarzenia z konfigurowalną liczbą dni wyprzedzenia, godziną powiadomienia i metodą wysłania.
 
 Pozostałe tabele zostały utworzone przez bibliotekę BetterAuth i służą do zarządzania użytkownikami i ich przynależnością do danej hodowli (organizacji), uwierzytelniania i kontroli dostępu. Tabela \emph{organization} przechowuje informacje o hodowli, w tym dostępną liczbą zapytań do wykorzystania przez moduł /definicja{Asystenta NLP}. Tabela \emph{member} reprezentuje relację wiele do wielu pomiędzy tabelami \emph{organization} a \emph{user}, co pozwala odszukać przynależność użytkownika do danej hodowli, a także sprawdzić rolę konta (administrator, konto zwykłe). Tabele \emph{account} i \emph{apikey} przechowują dane uwierzytelniające dla danego użytkownika, głównie wykorzystywane jest hasło do uwierzytelniania zwykłych kont, natomiast klucz API do dostępu administracyjnego. W tabeli \emph{session} odnajdziemy informacje o aktywnych sesjach logowania użytkowników. Tabela \emph{verification} przechowuje informacje o wysłanych e-mailach z potwierdzeniem po założeniu konta. Natomiast tabela \emph{invitation} nie jest w praktyce wykorzystywana w projekcie i dotyczy zaproszeń użytkowników do organizacji przez innych użytkowników aplikacji (w praktyce dane konto użytkownika jest wyłącznie dla jednej organizacji).
-
-
-
-% Backend:
-% - integruje różne systemy:
-%     - zapis danych do bazy, a wyświetlanie ich na froncie w różnych formatach
-%     - obsługuje zapytania do klasyfikatora i LLM
-%     - wysyła okresowo powiadomienia email
-%     - obsługuje generowanie linków do przesyłania zdjęć na bucket
-% - obsługuje bezpośrednio:
-%     - uwierzytelnianie i kontrolę dostępu z użyciem Better Auth:
-%         - użytkownicy, hodowle (organizacje), sesje i hashe danych uwierzytelniających są zapisane w bazie danych z adapterem Drizzle
-%         - sesja przechowywana jest jako ciasteczko sameSite: none,httpOnly: true, secure: true, partitioned: true, czyli niedostępne z poziomu kodu javascript po stronie klienta, następuje surowa walidacja czy nazwa domenowa nie uległa zmianie, wymusza protokół https i jest przechowywane osobno dla różnych kontekstów strony (wyłącznie dla api)
-%         - wysyłanie potwierdzeń założenia konta, 
-%     - logikę biznesową (CRUD, obliczenia ważności, generowanie raportów, przetwarzanie ustawień użytkowników)
-%     - zadania okresowe CRON (wysyłanie powiadomień email o końcu ważności)
-%     - współbieżny dostęp do danych z użyciem transakcji
-%     - migracje i początkowe populacje bazy danych
-% - jest silnie typowany w Typescript, ze schematem w Zod oraz relacjami bazy danych z DrizzleORM
-% - można zapisać wszystkie jego endpointy do postaci OpenAPI, a także do klienta Hono RPC
-% - jest zasadniczo bezstanowy, chociaż nie natywnie klastrowalny ze względu na cron joby (by były powtórzenia powiadomień)
-% - napisany w Typescript, kompilowany do Javascript i uruchamiany w nodejs (distroless docker)
-% - parametry konfiguracyjne zależne od środowiska są konfigurowane przez zmienne środowiskowe w pliku .env i bibliotekę dotenv
-% - udostępnia statyczne pliki do klasyfikatora do załadowania testsetu
-% - ma skonfigurowany jednolity logger requestów do API, zapytań do bazy danych, wydarzeń okresowych i innych operacji
 
 \section{Google Cloud Storage} \label{sec:gcs}
 
@@ -147,43 +93,135 @@ W aplikacji \definicja{Moje Konie} usługa magazynu obiektowego jest wykorzystyw
 \end{enumerate}
 
 
-% \subsection{Mechanizmy bezpiczeństwa}
+\section{Charakterystyka wykorzystanych technologii wdrożeniowych}
 
-% Traefik
-% Docker
-% Distroless / hardened images
-% Cloudflare
-% Firewall
-% Ciasteczka?
-% Better auth?
-% 
+Współczesne procesy wytwarzania i dostarczania oprogramowania opierają się na automatyzacji oraz standaryzacji środowisk uruchomieniowych. W celu realizacji niniejszego projektu wykorzystano zestaw narzędzi umożliwiających definicję infrastruktury w kodzie, jej automatyczną konfigurację oraz izolację procesów aplikacji. Poniżej przedstawiono charakterystykę kluczowych technologii wykorzystanych w procesie wdrożenia.
 
-% Bezpieczeństwo jest zapewniane przez protokół HTTPS poprzez wdrożenie aplikacji za reverse proxy, które jednocześnie centralizuje żądania do systemu i umożliwia niezależną skalowalność komponentów schowanych za nim. W przypadku tego projektu zdecydowano się na wybór Traefik, ze względu na wysoką wydajność przetwarzania zapytań, prostą konfigurację z dobrą integracją ze środowiskiem konteneryzacji Docker (w szczególności z Docker Compose) i zewnętrznym serwisem do wystawiania publicznie zaufanych certyfikatów TLS Let's Encrypt. 
+\subsection{Konteneryzacja i platforma Docker}
 
+Konteneryzacja to metoda wirtualizacji na poziomie systemu operacyjnego, która pozwala na uruchamianie aplikacji w izolowanych przestrzeniach użytkownika, zwanych kontenerami. W przeciwieństwie do tradycyjnych maszyn wirtualnych, które wymagają emulacji całego sprzętu i uruchomienia pełnego systemu operacyjnego dla każdego systemu gościa, kontenery współdzielą jądro systemu operacyjnego gospodarza. Podejście to zmniejsza zapotrzebowanie na zasoby sprzętowe oraz przyspiesza czas uruchamiania aplikacji.
 
-\section{Wdrożenie i dystrybucja projektu}
+\textit{Docker} jest platformą technologiczną umożliwiającą tworzenie, wdrażanie i uruchamianie aplikacji w kontenerach. Architektura rozwiązania opiera się na kilku kluczowych pojęciach:
 
-Tekst, aby przesunąć obrazki.
+\begin{itemize}
+    \item \textbf{Obraz} (\english{Image}) -- niezmienny szablon (artefakt) zawierający kod aplikacji, biblioteki, zależności oraz definicję środowiska uruchomieniowego. Obrazy budowane są warstwowo na podstawie pliku \texttt{Dockerfile} napisanego w języku dziedzinowym (\english{domain-specific language}). Użycie warstw pozwala na efektywne wykorzystanie pamięci masowej poprzez współdzielenie identycznych warstw między różnymi obrazami.
+    \item \textbf{Kontener} (\english{Container}) -- instancja obrazu uruchomiona w czasie rzeczywistym. Jest to odizolowany proces lub grupa procesów, które posiadają własny system plików i przestrzeń sieciową, odseparowaną od reszty systemu.
+    \item \textbf{Silnik} (\english{Docker Engine}) -- usługa systemowa środowiska uruchomieniowego odpowiedzialnego za budowanie i obsługę cyklu życia kontenerów.
+\end{itemize}
 
-% W github actions uruchamiany jest tsc i vite. Pliki *.js i definicja openapi jest kopiowana do obrazu backendu ...
+Wykorzystanie platformy Docker w projekcie zapewnia spójność środowiska pomiędzy etapem deweloperskim, testowym i produkcyjnym, eliminując problem różnic w konfiguracji bibliotek systemowych.
+
+\subsection{Infrastruktura jako kod}
+
+Podejście \textit{Infrastruktura jako kod} (\english{Infrastructure as Code}, \akronim{IaC}) polega na zarządzaniu infrastrukturą informatyczną (serwerami, sieciami) za pomocą plików konfiguracyjnych, zamiast ręcznej konfiguracji poprzez interfejsy graficzne czy jednorazowe skrypty. Pozwala to na wersjonowanie infrastruktury, łatwe powielanie środowisk oraz automatyzację wdrażania. W projekcie wykorzystano dwa komplementarne narzędzia realizujące ten paradygmat: \textit{Terraform} oraz \textit{Ansible}.
+
+\subsection{Terraform -- powoływanie infrastruktury}
+
+\textit{Terraform} to narzędzie służące do bezpiecznego i efektywnego tworzenia, zmieniania oraz wersjonowania infrastruktury. Działa w modelu deklaratywnym, co oznacza, że użytkownik definiuje w kodzie stan docelowy infrastruktury (np. jedną maszynę wirtualną i regułę zapory sieciowej), a narzędzie samodzielnie ustala kolejność operacji niezbędnych do osiągnięcia tego stanu.
+
+Kluczową cechą \textit{Terraform} jest wykorzystanie interfejsów programistycznych dostawców usług chmurowych w celu powoływania zasobów. Deklaracja sprzętowa może opisywać jednocześnie wielu dostawców dzięki systemowi wtyczek w jednym, spójnym, dziedzinowym języku konfiguracyjnym. \textit{Terraform} powiela informacje o aktualnym stanie infrastruktury w pliku stanu, co pozwala na śledzenie zmian, planowanie aktualizacji zasobów i zapobiega nieplanowanym rekonstrukcjom stanu od zera.
+
+\subsection{Ansible -- zarządzanie konfiguracją}
+
+O ile \textit{Terraform} służy głównie do powoływania zasobów (tworzenia serwerów), o tyle \textit{Ansible} jest narzędziem do zarządzania konfiguracją i automatyzacji zadań na już istniejących maszynach. Pozwala na instalację oprogramowania, edycję plików konfiguracyjnych oraz zarządzanie usługami systemowymi.
+
+\textit{Ansible} wyróżnia się architekturą bezagentową. Oznacza to, że na zarządzanych serwerach nie jest wymagana instalacja żadnego dodatkowego oprogramowania klienckiego. Komunikacja odbywa się z wykorzystaniem standardowego protokołu SSH (w systemach Linux). Scenariusze automatyzacji, zwane \textit{playbooks}, zapisywane są w formacie YAML.
+
+Istotną cechą \textit{Ansible} jest idempotentność operacji. Oznacza to, że wielokrotne wykonanie tego samego scenariusza konfiguracji nie spowoduje błędów ani niepożądanych zmian, jeśli system znajduje się już w oczekiwanym stanie. Gwarantuje to stabilność i przewidywalność procesu wdrożenia aplikacji.
+
+\subsection{GitHub Actions -- automatyzacja procesów}
+
+\textit{GitHub Actions} to platforma do ciągłej integracji i ciągłego dostarczania (\english{Continuous Integration / Continuous Delivery}, \akronim{CI/CD}), zintegrowana bezpośrednio z systemem kontroli wersji \textit{GitHub}. Umożliwia ona definiowanie przepływów pracy w formacie YAML, które są automatycznie uruchamiane w odpowiedzi na określone zdarzenia w repozytorium, takie jak wypchnięcie kodu, otwarcie zgłoszenia czy utworzenie nowego wydania.
+
+Architektura \textit{GitHub Actions} opiera się na koncepcji wykonawców (\english{runner}) -- maszyn wirtualnych lub kontenerów, na których wykonywane są zdefiniowane zadania. W projekcie wykorzystano udostępniane przez \textit{GitHub} współdzielone maszyny z systemem operacyjnym \textit{Ubuntu}, co eliminuje konieczność utrzymywania własnej infrastruktury do budowania aplikacji. Platforma ta oferuje bogaty ekosystem gotowych akcji (\english{actions}), które można wykorzystać jako modularne bloki budulcowe do tworzenia złożonych potoków wdrażania, obejmujących kompilację kodu, testowanie, budowanie obrazów kontenerowych oraz interakcję z chmurą obliczeniową.
+
+\section{Konteneryzacja i proces budowania}
+
+Aby zapewnić niezawodność procesu wytwarzania oprogramowania (\english{software supply chain}) oraz bezpieczeństwo wdrożenia, w projekcie wykorzystano technologię konteneryzacji. Podejście to gwarantuje spójność środowiska uruchomieniowego niezależnie od infrastruktury docelowej. Projekt składa się z monorepozytorium (TypeScript) oraz dedykowanej usługi klasyfikatora (Python). Ze względu na oddzielną architekturę projektu klasyfikatora zaimplementowaną w języku \textit{Python} zdecydowano się na rozdzielenie repozytoriów kodu. W obu przypadkach zastosowano strategie budowania obrazów zoptymalizowane pod kątem redukcji rozmiaru artefaktów oraz powierzchni ataku.
 
 \begin{figure}[t]
 \centering\includegraphics[width=\textwidth]{figures/repozytorium-zaleznosci-budowanie.png}
 \caption{Struktura repozytorium kodu, uproszczony diagram zależności oraz tworzenia paczki dystrybucyjnej}\label{rys:repozytorium-zaleznosci-budowanie}
 \end{figure}
 
-% Cały proces tworzenia paczki do dystrybucji dla części frontend jest złożony ze względu na optymalizację rozmiaru paczki, która to jest istotnym czynnikiem w szybkości ładowania strony, a także sztywny podział odpowiedzialności frontend - backend. Proces budowania przebiega następująco:
-% \begin{enumerate}
-% \item Kod w TypeScript z użyciem komponentów React w różnych plikach jest kompilowany do kodu w JavaScript (zmianę dodatkowych konstrukcji językowych na ich implementacje w JavaScript oraz pozbycie się typów), wyrażenia TailwindCSS zamieniane na klasy i dodawane do arkusza styli, a pliki multimedialne kopiowane bezpośrednio.
-% \item Kod w JavaScript i style CSS są minifikowane (krótkie arbitralne nazwy funkcji i plików, usuwanie pomijalnych białych znaków i komentarzy, przepisywanie wyrażeń na krótsze o równoważnym znaczeniu).
-% \item Zawartość plików jest przenoszona do innych plików o arbitralnych, unikalnych nazwach i stałym rozmiarze
-% \item Zależności są analizowane pod kątem wykorzystania funkcji, a nieużywany kod usuwany
-% \item Wynikowy katalog jest kopiowany do obrazu Dockera z web serwerem HTTP Nginx, który jest skonfigurowany do serwowania plików statycznych z maksymalnym cache oraz manifestem progresywnej aplikacji internetowej.
-% \end{enumerate}
+W celu uniknięcia przedostania się kodu źródłowego, narzędzi deweloperskich oraz zbędnych zależności do środowiska produkcyjnego, w całym projekcie zastosowano mechanizm wieloetapowego budowania. Konfiguracja obrazów \textit{Docker} dla monorepozytorium (frontend i backend) zdefiniowana dzieli proces na cztery logiczne etapy:
 
+\begin{enumerate}
+    \item \textbf{Etap kompilacji}: Wykorzystuje pełny obraz środowiska \textit{Node.js} -- środowiska uruchomieniowego kodu \textit{JavaScript}. W tym kroku następuje instalacja wszystkich zależności (w szczególności deweloperskich) z użyciem programu \textit{npm}, budowanie aplikacji i kompilacja kodu.
+    \item \textbf{Etap przygotowania zależności backendu}: Ponownie obraz środowiska \textit{Node.js}, gdzie instalowane są wyłącznie biblioteki wymagane do działania backendu, lecz z pominięciem narzędzi deweloperskich. Redukuje to wektor ataku w finalnym obrazie (m.in. liczbę potencjalnych podatności i zagrożeń).
+    \item \textbf{Etap scalania dla frontendu}: Finalny obraz ze statycznymi plikami aplikacji frontendu bazujący na uproszczonym obrazie serwera HTTP \textit{Nginx}. Obraz skonfigurowano pod aplikację jednostronicową i progresywną aplikację internetową. Wymagane przez aplikację zależności do działania po stronie klienta są zapewniane w procesie budowy z paczką dystrybucji. Oznacza to przekopiowanie zależności do paczki lub utworzenie odnośników do pobrania paczek z sieci dostarczania zawartości (\english{Content Delivery Network}, \akronim{CDN}). 
+    \item \textbf{Etap scalania dla backendu}: Finalny obraz uruchamiający serwer backendu rozszerzający uproszczony obraz środowiska \textit{Node.js} o skompilowany kod z pierwszej i pliki zależności z drugiej warstwy.
+\end{enumerate}
+
+W procesie wykorzystano nowoczesny mechanizm buforowania (\english{cache}) dostępny w silniku budowania \textit{Docker BuildKit}. Pozwala on na przechowywanie pobranych pakietów menedżera zależności pomiędzy kolejnymi uruchomieniami potoku przetwarzania, co redukuje ruch sieciowy i przyspiesza proces.
+
+Moduł klasyfikatora intencji, napisany w języku Python, wymagał odrębnego podejścia do procesu budowania. Ze względu na specyfikę środowiska Python oraz konieczność obsługi dużych bibliotek numerycznych i uczenia maszynowego (takich jak \textit{scikit-learn}, \textit{sentence-transformers}, \textit{numpy}) wykorzystano menedżer pakietów \textit{uv}. Zastosowana strategia budowania obrazu \textit{Docker} opiera się na zaleceniach z dokumentacji \textit{uv} i korzysta m.in. z dedykowanego obrazu z preinstalowanym narzędziem \textit{uv} i interpreterem języka \textit{Python}, pomija zależności deweloperskie, wymusza kompilację plików źródłowych Python do kodu bajtowego (.pyc), wstępnie przetwarza i weryfikuje zbiór danych do działania modelu.
+
+\section{Automatyzacja procesów ciągłej integracji i dostarczania}
+
+Proces ciągłej integracji i dostarczania (\english{Continuous Integration / Continuous Delivery}, CI/CD) został w pełni zautomatyzowany z wykorzystaniem platformy \textit{GitHub Actions}. Potok przetwarzania jest uruchamiany automatycznie przy każdym wypchnięciu zmian do gałęzi głównej (\texttt{main}) lub utworzeniu tagu wersji (np. \texttt{v1.0.0}).
+
+Kluczowym aspektem wdrożonego potoku jest jego optymalizacja pod kątem czasu wykonania oraz bezpieczeństwa łańcucha dostaw. Składa się on z następujących, sekwencyjnie wykonywanych kroków:
+
+\begin{enumerate}
+    \item \textbf{Inicjalizacja środowiska}: Konfiguracja narzędzia \textit{Cosign} (do podpisywania obrazów \textit{Docker}) oraz \textit{Docker Buildx} (silnika budowania obrazów \textit{Docker} obsługującego zaawansowany mechanizm buforowania pakietów).
+    \item \textbf{Uwierzytelnienie}: Logowanie do rejestru obrazów \textit{Docker} -- \textit{GitHub Container Registry} przy użyciu jednorazowego tokenu generowanego przez GitHub dla czasu trwania zadania.
+    \item \textbf{Zarządzanie pamięcią podręczną}: W celu przyspieszenia instalacji zależności w kontenerach, zastosowano technikę \textit{cache dance}. Pozwala ona na wstrzyknięcie pamięci podręcznej z systemu plików \textit{GitHub Actions} bezpośrednio do warstw budowania \textit{Docker BuildKit}. Dzięki temu, jeśli pliki definiujące zależności (np. \texttt{package-lock.json}) nie uległy zmianie, Docker nie musi ponownie pakietów z internetu, lecz korzysta z lokalnej kopii.
+    \item \textbf{Równoległe budowanie (Docker Bake)}: Zamiast sekwencyjnego budowania poszczególnych obrazów, wykorzystano moduł silinka \textit{Docker Buildx} -- \textit{Docker Bake}. Pozwala on na zdefiniowanie grup celów (backend, frontend) i ich równoległe budowanie, co skraca całkowity czas operacji. Akcja automatycznie zarządza tagowaniem obrazów oraz przesyłaniem ich do rejestru \textit{GitHub Container Registry}.
+    \item \textbf{Kryptograficzne podpisywanie obrazów}: Każdy zbudowany i przesłany obraz \textit{Docker} jest podpisywany cyfrowo przy użyciu narzędzia \textit{Cosign} w trybie \textit{keyless}. Korzysta on z tymczasowej tożsamości (aktywnej tylko w trakcie działania potoku i dostępnej tylko wewnątrz środowiska GitHub Actions) do wygenerowania ulotnego certyfikatu do podpisu. Dzięki temu, w rejestrze publicznym (\textit{Rekor transparency log}) odkładany jest dowód, że dany obraz (identyfikowany przez skrót \textit{SHA}) został zbudowany na podstawie precyzyjnej wersji kodu źródłowego w jawnie zdefiniowanym środowisku \textit{Github Actions}, co zabezpiecza przed atakami typu \textit{Supply Chain}.
+\end{enumerate}
 
 \begin{figure}[t]
 \centering\includegraphics[width=\textwidth]{figures/diagram-wdrozenia.png}
 \caption{Diagram wdrożenia z użyciem Terraform i Ansible}\label{rys:diagram-wdrozenia}
 \end{figure}
 
+Cała infrastruktura, poza warstwą aplikacji, jest definiowana w kodzie (\english{Infrastructure as Code}, IaC) z wykorzystaniem narzędzi Terraform (do powoływania zasobów chmurowych) oraz Ansible (do konfiguracji serwera), co przedstawiono na Rysunku \ref{rys:diagram-wdrozenia}.
+
+Proces wdrażania zmian w infrastrukturze i aplikacji podzielony jest na trzy uzupełniające się warstwy:
+
+\begin{enumerate}
+    \item \textbf{Infrastruktura chmurowa (Terraform)}: Warstwa ta definiuje zasoby w chmurze \textit{Google Cloud Platform}. Skrypty \textit{Terraform} uruchamiane z lokalnej maszyny deweloperskiej odpowiadają za powołanie instancji maszyny wirtualnej i zewnętrznych partycji dysków trwałych, rezerwację statycznych adresów IP, konfigurację zapory sieciowej, otwierając jedynie niezbędne porty dla ruchu przychodzącego i zasobników magazynu obiektowego do zdjęć wraz z regułami dostępu oraz kontem usługi.
+    
+    \item \textbf{Konfiguracja systemu operacyjnego (Ansible)}: Po powołaniu infrastruktury, narzędzie \textit{Ansible} jest wykorzystywane do wstępnej konfiguracji serwera. Skrypty te, również uruchamiane doraźnie (podczas pierwszej konfiguracji systemu), instalują środowisko uruchomieniowe \textit{Docker}, konfigurują zewnętrzne dyski trwałe (dedykowane osobno dla danych bazy danych i osobno dla kopii zapasowych w celu zapewnienia odpowiedniej wydajności i separacji awarii) oraz konfigurują narzędzie \textit{Borgmatic} do automatycznego tworzenia szyfrowanych kopii zapasowych bazy danych (działające poza środowiskiem Docker ze względu na ograniczenia tej technologii do uruchamiania zadań okresowych).
+    
+    \item \textbf{Wdrażanie aplikacji (Ansible w CI/CD)}: Bieżące aktualizacje kodu aplikacji są obsługiwane przez automatyczne przepływy pracy w \textit{GitHub Actions}. Przepływ pracy po wypchnięciu zmian do repozytorium kontroli wersji uruchamia zestaw zadań, który bezpiecznie kopiuje pliki konfiguracyjne \textit{Docker Compose} definiujące uruchomienie kontenerów na serwer oraz zmienne środowiskowe (takie jak hasła do bazy danych czy klucze API) pobrane z bezpiecznego magazynu sekretów \textit{GitHub Secrets} bezpośrednio do pliku \texttt{.env} na serwerze. Następnie \textit{Ansible} wykonuje polecenia restartu kontenerów, co powoduje pobranie najnowszych obrazów i uruchomienie zaktualizowanej wersji aplikacji. Proces ten jest rozdzielony na niezależne przepływy dla głównej aplikacji, klasyfikatora NLP oraz warstwy bazy danych i proxy, co pozwala na niezależne aktualizacje komponentów. Dodatkowo, wszystkie kontenery aplikacyjne, w tym klasyfikator, działają w trybie automatycznego restartu, co przywraca dostępność usług w przypadku przejściowych awarii.
+\end{enumerate}
+
+\section{Mechanizmy bezpieczeństwa}
+
+Wdrożenie systemu zrealizowano zgodnie ze strategią obrony w głąb, implementując wielowarstwowe mechanizmy zabezpieczeń obejmujące łańcuch dostaw, infrastrukturę sieciową, środowisko uruchomieniowe oraz warstwę aplikacji.
+
+\subsection{Bezpieczeństwo infrastruktury sieciowej}
+
+Ochrona serwera i kontenerów opiera się na minimalizacji powierzchni ataku:
+
+\begin{itemize}
+
+    \item \textbf{Ochrona sieciowa (Cloudflare i Firewall)}: Punktem wejścia do systemu jest usługa \textit{Cloudflare}, pełniąca funkcję zapory sieciowej aplikacji (\english{Web Application Firewall}, \akronim{WAF}) oraz serwera nazw domen (\english{Domain Name System}, \akronim{DNS}). Ukrywa ona rzeczywisty adres IP serwera i filtruje złośliwy ruch. Zapora sieciowa \textit{Google Cloud} dodatkowo ogranicza ruch przychodzący do serwera wyłącznie do protokołów HTTPS i SSH.
+    \item \textbf{Odwrotny pośrednik (Traefik)}: Bezpośrednio na serwerze ruchem zarządza odwrotne proxy (\english{reverse proxy}) \textit{Traefik}. Jest on skonfigurowany jako jedyny punkt styku udostępnionych aplikacji z siecią zewnętrzną, obsługując wyłącznie ruch szyfrowany na porcie \texttt{443} -- po protokole HTTPS. Certyfikaty TLS są zapewniane dzięki bezpłatnej usłudze zautomatyzowanego i otwartego urzędu certyfikacji \textit{Lets's Encrypt} udostępnianej przez organizację non-profit Internet Security Research Group (\akronim{ISRG}). \textit{Traefik} automatycznie zarządza cyklem życia certyfikatów TLS, wykorzystując mechanizm wyzwań DNS (\english{DNS challenge}) w integracji z API \textit{Cloudflare}. Użycie tego mechanizmu pozwala na uzyskanie zaufanych certyfikatów z usługi \textit{Let's Encrypt} bez ujawniania publicznie powiązania zewnętrznego adresu IP serwera aplikacji z nazwą domenową (wszystkie żądania certyfikatów są zapisywane w publicznym rejestrze, a inne mechanizmy wyzwań służących potwierdzeniu autentyczności żądania wymagają bezpośredniego ruchu po nazwie domenowej do serwera z Internetu).
+    \item \textbf{Izolowane sieci wirtualne}:  Separacja komponentów systemu została zrealizowana poprzez izolowane sieci wirtualne wewnątrz środowiska \textit{Docker}. Kontener bazy danych PostgreSQL nie udostępnia żadnych portów na zewnątrz hosta i jest dostępny wyłącznie dla kontenera backendu poprzez dedykowaną sieć wewnętrzną. Taka konfiguracja uniemożliwia bezpośredni dostęp do danych z poziomu Internetu, nawet w przypadku błędnej konfiguracji zapory ogniowej.
+\end{itemize}
+
+\subsection{Bezpieczeństwo aplikacji i środowiska uruchomieniowego}
+
+Na poziomie kodu aplikacji wdrożono mechanizmy zapobiegające błędom logicznym i wstrzyknięciom:
+
+\begin{itemize}
+    \item \textbf{Walidacja danych (Zod)}: Wszystkie dane wejściowe trafiające do API są rygorystycznie weryfikowane przy użyciu biblioteki \textit{Zod} pod kątem zgodności ze zdefiniowanym schematem. Zapobiega to przetwarzaniu nieprawidłowych lub złośliwych struktur danych.
+    \item \textbf{Architektura modułowa}: Podział systemu na niezależne kontenery (frontend, backend, klasyfikator, baza danych) odseparowane wirtualnymi sieciami \textit{Docker} ogranicza zasięg ewentualnego ataku (\english{blast radius}). Kompromitacja jednego elementu (np. klasyfikatora) nie zapewnia dostępu do innych komponentów (np. do bazy danych, która akceptuje połączenia tylko z sieci wewnętrznej).
+    \item \textbf{Dodatkowo zabezpieczone obrazy kontenerów}: Aplikacje uruchamiane są w oparciu o obrazy, takie jak \textit{Google Distroless} (dla backendu) czy \textit{Chainguard} (dla serwera Nginx). Obrazy te są pozbawione powłoki systemowej (shell) oraz zbędnych narzędzi, co drastycznie utrudnia atakującemu wykonanie złośliwego kodu w przypadku przełamania zabezpieczeń aplikacji.
+    \item \textbf{Zasada najmniejszych przywilejów}: Kontenery są skonfigurowane do pracy bez uprawnień administratora (\english{root}), wykorzystując dedykowanych użytkowników systemowych. Zapobiega to eskalacji uprawnień na system gospodarza w przypadku ucieczki z kontenera.
+\end{itemize}
+
+\subsection{Bezpieczeństwo łańcucha dostaw}
+
+Istotnym elementem bezpieczeństwa nowoczesnych systemów jest ochrona procesu wytwarzania oprogramowania (\english{Software Supply Chain Security}). W projekcie zastosowano szereg mechanizmów gwarantujących integralność i pochodzenie kodu:
+
+\begin{itemize}
+    \item \textbf{Podpisywanie obrazów (Cosign i Rekor)}: Wszystkie obrazy \textit{Docker} generowane w procesie CI/CD są kryptograficznie podpisywane przy użyciu narzędzia \textit{Cosign} w trybie \textit{keyless}. Mechanizm ten wykorzystuje protokół \textit{OpenID Connect} (OIDC) do uwierzytelnienia tożsamości procesu \textit{GitHub Actions} w urzędzie certyfikacji \textit{Fulcio}, który wydaje krótkotrwały certyfikat cyfrowy. Podpisany skrót obrazu jest następnie rejestrowany w publicznym, niemodyfikowalnym logu transparentności \textit{Rekor}. Umożliwia to późniejszą weryfikację, że dany obraz został zbudowany z konkretnej, precyzyjnej wersji kodu źródłowego w zaufanym środowisku wykonawczym, uniemożliwiając podstawienie złośliwego artefaktu przez osoby trzecie.
+
+    \item \textbf{Automatyzacja aktualizacji (Dependabot)}: W repozytorium skonfigurowano narzędzie \textit{Dependabot}, które okresowo monitoruje zależności projektu pod kątem znanych podatności (CVE). W przypadku wykrycia luki bezpieczeństwa w używanej bibliotece system automatycznie generuje zgłoszenie z aktualizacją do bezpiecznej wersji, co pozwala na szybką reakcję na nowe zagrożenia.
+
+    \item \textbf{Precyzyjne wersjonowanie zależności}: Aby zagwarantować powtarzalność procesu budowania (ang. \english{reproducible builds}) i ochronę przed atakami na łańcuch dostaw, zastosowano precyzyjne wersje bibliotek. W projekcie wykorzystano pliki \texttt{package-lock.json} (dla ekosystemu \textit{Node.js}) oraz \texttt{uv.lock} (dla środowiska \textit{Python}), które zawierają sumy kontrolne konkretnych wersji pakietów. Gwarantuje to instalację identycznego kodu na każdym środowisku. Dodatkowo, w definicjach przepływów pracy \textit{GitHub Actions}, odwołania do zewnętrznych akcji realizowane są poprzez unikalny skrót SHA identyfikujący zmianę (np. \texttt{actions/checkout@a5ac7...}), zamiast modyfikowalnych tagów wersji, co eliminuje ryzyko wykonania złośliwego kodu w przypadku przejęcia repozytorium dostawcy akcji.
+\end{itemize}
