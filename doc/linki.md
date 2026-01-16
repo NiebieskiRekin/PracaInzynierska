@@ -48,3 +48,7 @@ Linki
 - scalar: https://scalar.com/
 - google cloud storage: https://cloud.google.com/storage
 - pełny opis podpisów do bucketów: https://docs.cloud.google.com/storage/docs/access-control/signing-urls-manually https://docs.cloud.google.com/storage/docs/authentication/signatures
+- uv docker https://docs.astral.sh/uv/guides/integration/docker/
+- model bezpieczeństwa certyfikatów rekor do podpisywania obrazów https://docs.sigstore.dev/about/security/ wyjasnienie https://shibumi.dev/posts/what-are-ephemeral-certificates/
+- rejestr certyfikatów TLS Let's encrypt https://crt.sh/
+- https://certificate.transparency.dev/ https://certificate.transparency.dev/howctworks/ 
