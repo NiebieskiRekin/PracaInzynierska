@@ -66,11 +66,11 @@ Gemini 1.5 Flash & 0,41               & 0,39                  & 0,44            
 \end{tabular}
 \end{table}
 
-Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje, szczególnie w~zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje, szczególnie w~zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
 
-W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych, zapytanie charakteryzowało się znaczną długością, co~drastycznie zwiększało koszty oraz czas odpowiedzi systemu \cite{bommasani2021opportunities}. %TODO - nie wiem czemy biblio podkreślona?
+W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych, zapytanie charakteryzowało się znaczną długością, co~ powodowało, że wraz z rozwojem systemu i licbą obsługiwanych endpointów rozwiązanie te nie mogło być skalowane. %TODO - nie wiem czemy biblio podkreślona?
 
-Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny. Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia mechanizmu uwagi modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego \cite{vaswani2017attention}.
+Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny. Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego.
 
 
 % TODO - Akapit, dlaczego zero-shot nie działał. - done
@@ -243,3 +243,16 @@ Szczególne znaczenie dla sukcesu projektu miała implementacja wieloetapowej or
 Ewolucja techniczna systemu, wymuszona przez czynniki zewnętrzne, takie jak wyłączenie interfejsów API dla starszych wersji modeli i konieczność migracji na Gemini 2.5 Flash, ukazała elastyczność zaprojektowanej warstwy oczyszczania danych. Mechanizm ten, w połączeniu z walidacją semantyczną, okazał się kluczowe dla zachowania ciągłości działania systemu przy zmianach silników wnioskujących. Jednocześnie, zaimplementowane mechanizmy bezpieczeństwa, w tym autoryzacja sesyjna oraz restrykcyjny system limitowania zapytań, przekształciły eksperymentalny prototyp w rozwiązanie gotowe do eksploatacji produkcyjnej, chroniąc zasoby chmurowe przed nadużyciami.
 
 Podsumowując, mimo odnotowanych drobnych rozbieżności w polach tekstowych typu „opis”, gdzie modele wykazują tendencję do modyfikowania szyku zdań użytkownika, system w pełni realizuje postawione założenia inżynierskie. Połączenie generatywnej sztucznej inteligencji z klasycznymi metodami walidacji danych i dwuetapową orkiestrą kontekstu pozwoliło na stworzenie narzędzia, które oferuje szybkość naturalnej komunikacji przy jednoczesnym zachowaniu rygoru technicznego wymaganego przez systemy bazodanowe. Zrealizowane badania dowodzą, że odciążenie modelu językowego od roli klasyfikatora na rzecz dedykowanego modułu predykcyjnego jest optymalnym wzorcem projektowym dla nowoczesnych systemów hybrydowych.
+
+
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki Finalnej oceny całego modelu(Model Hybdrydowy)}
+\label{tab:llm_comparison1}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+Model Hybdrydowy         & 0,85                 & 0,89                  & 0,85                 \\ \hline
+\end{tabular}
+\end{table}
