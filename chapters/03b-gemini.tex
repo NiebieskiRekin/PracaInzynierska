@@ -66,11 +66,11 @@ Gemini 1.5 Flash & 0,41               & 0,39                  & 0,44            
 \end{tabular}
 \end{table}
 
-Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje, szczególnie w~zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z powodu braku wiedzy o aktualnych rekordach w bazie, wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje, szczególnie w~zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
 
-W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych, zapytanie charakteryzowało się znaczną długością, co~drastycznie zwiększało koszty oraz czas odpowiedzi systemu \cite{bommasani2021opportunities}. %TODO - nie wiem czemy biblio podkreślona?
+W praktyce podejście to generowało szereg problemów inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych, zapytanie charakteryzowało się znaczną długością, co~ powodowało, że wraz z rozwojem systemu i licbą obsługiwanych endpointów rozwiązanie te nie mogło być skalowane. %TODO - nie wiem czemy biblio podkreślona?
 
-Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny. Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia mechanizmu uwagi modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego \cite{vaswani2017attention}.
+Ponadto model musiał przetwarzać rozbudowany zbiór danych wejściowych, w którym znaczna część stanowiła szum informacyjny. Przykładowo, przy prostej prośbie o „dodanie nowego konia”, model musiał analizować również schematy dotyczące leczenia, kowali czy rozrodu. Prowadziło to do niepotrzebnego obciążenia modelu i zwiększało prawdopodobieństwo pomyłki w doborze właściwego punktu końcowego.
 
 
 % TODO - Akapit, dlaczego zero-shot nie działał. - done
