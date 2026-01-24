@@ -13,10 +13,12 @@ W specyficznych warunkach pracy terenowej, takich jak stajnia czy padok, tradycy
 System musi być zdolny do poprawnej interpretacji i przekierowania zapytania do jednego z ośmiu predefiniowanych obszarów funkcjonalnych (końcówek REST API), obsługujących zarządzanie hodowlą:
 \begin{description}
     \item \textbf{Zarządzanie stadem:} rejestracja i edycja koni (\texttt{/api/konie}).
-    \item \textbf{Rozród:} ewidencja kryć, wyźrebień i kontroli weterynaryjnej rozrodu (\texttt{/api/wydarzenia/rozrody}).
+    \item \textbf{Rozród:} ewidencja kryć, wyźrebień i kontroli weterynaryjnej rozrodu\\ 
+    (\texttt{/api/wydarzenia/rozrody}).
     \item \textbf{Profilaktyka:} odnotowywanie szczepień, odrobaczania, suplementacji czy wizyt dentystycznych (\texttt{/api/wydarzenia/zdarzenia\_profilaktyczne}).
-    \item \textbf{Pielęgnacja kopyt:} dokumentowanie wizyt kowala i zabiegów werkowania (\texttt{/api/wydarzenia/podkucie}).
-    \item \textbf{Weterynaria i zdrowie:} monitorowanie procesów leczenia (\texttt{/api/wydarzenia/leczenia}), diagnozowanie chorób (\texttt{/api/wydarzenia/choroby}) oraz zarządzanie bazą kontaktów do specjalistów (\texttt{/api/kowale}, \texttt{/api/weterynarze}).
+    \item \textbf{Pielęgnacja kopyt:} dokumentowanie wizyt kowala i zabiegów werkowania\\ (\texttt{/api/wydarzenia/podkucie}).
+    \item \textbf{Weterynaria i zdrowie:} monitorowanie procesów leczenia (\texttt{/api/wydarzenia/leczenia}), diagnozowanie chorób (\texttt{/api/wydarzenia/choroby}) 
+    \item \textbf{Baza kontaktów:} zarządzanie bazą kontaktów do specjalistów\\ (\texttt{/api/kowale}, \texttt{/api/weterynarze}).
 \end{description}
 
 \subsection*{Trudności w przetwarzaniu języka naturalnego (NLP)}
@@ -26,7 +28,7 @@ Zrozumienie intencji użytkownika w tym konkretnym przypadku napotyka na bariery
 \begin{description}
     \item[Zróżnicowanie lingwistyczne i semantyczne:] Użytkownicy używają różnych konstrukcji dla tej samej czynności (np. ,,Kasztanka została zaszczepiona'' vs ,,Dodaj szczepienie dla Kasztanki''). Zgodnie z tezą Manninga \cite{manning2008}, system musi tu wykazać się zdolnością rozumeinia, by odwzorować oba sformułowania na właściwą końcówkę profilaktyki.
     
-    \item[Specjalistyczna terminologia:] Branża jeździecka operuje słownictwem (np. ,,werkowanie'', ,,źrebność''), które rzadko występuje w korpusach języka ogólnego, co wymaga od modelu wysokiej jakości reprezentacji wektorowych (\english{embeddings}) zdolnych do uchwycenia relacji między tymi terminami a ich medycznym znaczeniem.
+    \item[Specjalistyczna terminologia:] Branża jeździecka operuje słownictwem\\ (np. ,,werkowanie'', ,,źrebność''), które rzadko występuje w korpusach języka ogólnego, co wymaga od modelu wysokiej jakości reprezentacji wektorowych (\english{embeddings}) zdolnych do uchwycenia relacji między tymi terminami a ich medycznym znaczeniem.
 \end{description}
 
 \section{Ewolucja architektury: od modelu monolitycznego do podejścia hybrydowego}
@@ -75,7 +77,30 @@ Fundamentem działania nowoczesnych systemów rozumienia tekstu jest transformac
 
 W przeciwieństwie do tradycyjnych metod, takich jak Bag-of-Words czy TF-IDF, które bazują na częstotliwości występowania słów, modele oparte na osadzeniach kodują relacje semantyczne i kontekstualne. Model E5 generuje wektory o stałej długości 1024 komponentów, co pozwala na uchwycenie subtelnych różnic znaczeniowych między zapytaniami.
 
-Wykorzystanie wariantu ,,instruct'' wprowadza dodatkową warstwę precyzji -- system wymaga stosowania prefiksów instrukcyjnych (np. \texttt{query:} dla danych wejściowych użytkownika oraz \texttt{passage:} dla wzorców w bazie wiedzy). Taka asymetria w procesie wektoryzacji jest kluczowa dla efektywnego mapowania krótkich, często niekompletnych pytań na bardziej rozbudowane opisy funkcji systemowych zawarte w dokumentacji API \cite{reimers2019}.
+Wykorzystanie wariantu ,,instruct'' wprowadza dodatkową warstwę precyzji -- system wymaga stosowania prefiksów instrukcyjnych (np. \texttt{query:} dla danych wejściowych użytkownika\\  oraz \texttt{passage:} dla wzorców w bazie wiedzy). 
+Taka asymetria w procesie wektoryzacji jest kluczowa dla efektywnego mapowania krótkich, często niekompletnych pytań na opisy funkcji systemowych zawarte w dokumentacji API \cite{reimers2019}.
+
+W praktycznej implementacji proces ten opiera się na dwóch niezależnych strumieniach danych, integrowanych w wspólnej przestrzeni wektorowej. Pierwszym z nich jest dynamiczne zapytanie użytkownika (\textit{query}), czyli surowa wypowiedź naturalna, która po procesie normalizacji jest zamieniana na wektor . Drugim elementem jest statyczna baza wiedzy, składająca się w bieżącej wersji systemu z 480 zdefiniowanych przykładów (\textit{passages}), reprezentujących wzorcowe sformułowania dla poszczególnych intencji.
+
+Poniższy przykład ilustruje strukturę przygotowania danych przed ich wektoryzacją, prezentując transformację zapytania użytkownika o nowym koniu oraz fragment bazy 480 wzorców:
+
+\begin{verbatim}
+# 1. STRUMIEŃ ZAPYTANIA (Query) - wypowiedź użytkownika
+"query: dodaj nowego konia blyskawica to 6 letnia klacz wlasnie ja przywiozlem"
+
+# 2. STRUMIEŃ BAZY WIEDZY (Passages) - wybrane z 480 przykładów
+"passage: chce dodac mloda klacz kore do hodowli"
+"passage: prosze wprowadzic nowego konia brego kon rekreacyjny czteroletni"
+"passage: dodaj do mojej stajni 6 letniego ogiera zenita"
+"passage: dopisz konia neptuna mlodego walacha do jazdy terenowej"
+"passage: zarejestruj w hodowli klacz melodie 3 lata"
+\end{verbatim}
+
+
+
+Zastosowana asymetria pozwala na obliczenie podobieństwa cosinusowego między wektorem zapytania a każdym z wektorów bazy. Dzięki semantycznemu kodowaniu modelu E5, system potrafi zidentyfikować, że potoczna fraza „właśnie ją przywiozłem” w połączeniu z opisem zwierzęcia odpowiada intencji rejestracji nowego obiektu, wykazując najwyższą korelację z przykładami takimi jak „wprowadź nowego konia” czy „dopisz konia do stajni”.
+
+
 
 \subsection*{Baza wiedzy i kotwice}
 
@@ -101,7 +126,13 @@ gdzie:
     \item $N$ -- liczba wektorów wzorcowych przypisanych do danej intencji.
 \end{itemize}
 
-Celem tej modyfikacji było stworzenie stabilnego ,,środka ciężkości'' dla każdej operacji API.
+Celem tej modyfikacji było wyznaczenie stabilnego „środka ciężkości” dla każdej operacji dostępnej w interfejsie API. W tak zdefiniowanej przestrzeni metrycznej, proces decyzyjny klasyfikatora polega na wyznaczeniu miary podobieństwa cosinusowego między wektorem zapytania użytkownika $q$ a wszystkimi centroidami $C_i$. Ostateczna klasyfikacja dokonywana jest poprzez wybór intencji, która wykazuje najwyższą wartość tego podobieństwa, co można zapisać za pomocą operatora argumentu maksymalizującego:
+
+\begin{equation}
+    \text{intent} = \arg\max_{i} \left( \frac{q \cdot C_i}{\|q\| \|C_i\|} \right)
+\end{equation}
+
+Podejście to pozwoliło na zredukowanie wpływu szumu informacyjnego oraz wyeliminowanie problemu nadmiernej czułości na odosobnione, nietypowe sformułowania znajdujące się w bazie wzorców. Dzięki uśrednieniu reprezentacji wektorowych, model zyskał wyższą zdolność do generalizacji, skupiając się na kluczowych cechach semantycznych wspólnych dla całej grupy 480 przykładów definiujących logiczne punkty końcowe systemu.
 
 \subsection*{Logika decyzyjna i progi pewności}
 
@@ -198,11 +229,31 @@ W uczeniu maszynowym regularyzacja jest procesem wprowadzania dodatkowych inform
 \end{itemize}
 
 
-W celu optymalizacji kompromisu między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w architekturze systemu ,,Moje Konie'' zrezygnowano z deterministycznego wyboru pojedynczej wartości parametru $k$ na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny funkcjonuje jako komitet klasyfikatorów $k$-NN, operujących na zróżnicowanych hiperparametrach, wyselekcjonowanych na podstawie wyników eksperymentalnych (opisanych w poprzedniej sekcji).
+W celu optymalizacji kompromisu między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w architekturze systemu  zrezygnowano z deterministycznego wyboru pojedynczej metody na rzecz podejścia zespołowego (\textit{Ensemble Learning}). Skonstruowany model finalny funkcjonuje jako komitet klasyfikatorów $\mathcal{M}$, w skład którego wchodzą algorytmy $k$-NN dla $k \in \{4, 5, 6, 8, 12\}$ oraz klasyfikator oparty na centroidach kategorii.
 
-Ostateczna decyzja klasyfikacyjna podejmowana jest w procedurze głosowania. System agreguje predykcje wszystkich estymatorów składowych, przypisując użytkownikowi intencję o najwyższej liczbie wskazań. W sytuacjach spornych (remis), algorytm aplikuje heurystykę rozstrzygającą opartą na sumie podobieństw cosinusowych, co premiuje klasę o najwyższej lokalnej gęstości semantycznej względem wektora zapytania.
+Ostateczna decyzja klasyfikacyjna podejmowana jest w procedurze głosowania większościowego (\textit{majority voting}). Formalnie, wybór końcowej intencji $I_{final}$ definiuje się jako zadanie poszukiwania argumentu maksymalizującego liczbę wskazań w całym zespole:
 
-Zastosowana strategia znajduje uzasadnienie w teorii uczenia zespołowego. Jak wskazuje Dietterich \cite{dietterich2000}, uśrednianie wyników wielu modeli pozwala zredukować ryzyko wyboru błędnej hipotezy, wynikające ze stochastycznej natury danych treningowych . W projektowanym systemie głosowanie między modelami o zróżnicowanej ,,ziarnistości'' (różne wartości $k$) pełni rolę niejawnej regularyzacji, stabilizując predykcję w obszarach niejednoznacznych semantycznie.
+\begin{equation}
+    I_{final} = \arg\max_{i \in \text{Intencje}} \sum_{m \in \mathcal{M}} \mathbb{1}(P_m(q) = i)
+\end{equation}
+
+gdzie:
+\begin{itemize}
+    \item $\mathcal{M}$ -- zbiór modeli składowych (klasyfikatory $k$-NN oraz model centroidów),
+    \item $P_m(q)$ -- intencja wskazana przez $m$-ty klasyfikator dla zapytania $q$,
+    \item $\mathbb{1}(\cdot)$ -- funkcja wskaźnikowa przyjmująca wartość 1, gdy warunek jest spełniony.
+\end{itemize}
+
+W sytuacjach spornych, gdy co najmniej dwie intencje uzyskają identyczną liczbę głosów, algorytm aplikuje heurystykę rozstrzygającą (\textit{tie-breaker}). Polega ona na porównaniu skumulowanej wiarygodności (\textit{confidence score}), obliczanej jako suma podobieństw cosinusowych zwróconych przez te modele z komitetu, które wskazały daną klasę:
+
+\begin{equation}
+    S_i = \sum_{m \in \mathcal{M}_i} \text{sim}(q, \text{ref}_m)
+\end{equation}
+
+gdzie $\mathcal{M}_i$ to podzbiór modeli głosujących na intencję $i$, a $\text{sim}(q, \text{ref}_m)$ oznacza podobieństwo cosinusowe zapytania do najbliższych sąsiadów lub centroidu w danym modelu. Zwycięża klasa o najwyższej wartości $S_i$, co premiuje intencję o większej lokalnej gęstości semantycznej lub silniejszym powiązaniu ze środkiem ciężkości kategorii.
+
+
+Zastosowana strategia znajduje uzasadnienie w teorii uczenia zespołowego. Jak wskazuje Dietterich \cite{dietterich2000}, uśrednianie wyników wielu modeli pozwala zredukować ryzyko wyboru błędnej hipotezy. W projektowanym systemie głosowanie między modelami o zróżnicowanej „ziarnistości” pełni rolę niejawnej regularyzacji, stabilizując predykcję w obszarach niejednoznacznych semantycznie.
 
 Ewaluacja końcowa modelu zintegrowanego (Ensemble) wykazała wyniki przedstawione w Tabeli~\ref{tab:final_results}. Choć są one marginalnie niższe w porównaniu do najlepszych konfiguracji pojedynczych (Tabela~\ref{tab:top_configurations}), spadek ten uznano za pomijalny koszt regularyzacji. Zwiększona stabilność predykcji daje bowiem silniejsze podstawy do prognozowania wysokiej skuteczności systemu w środowisku produkcyjnym.
 
