@@ -1,0 +1,235 @@
+\chapter{Opracowanie i ocena eksperymentalna metody wypełniania żądań REST}
+
+\section{Inżynieria zapytań}
+
+Proces opracowania metody automatycznego mapowania wypowiedzi użytkownika w języku naturalnym na strukturalne żądania w formacie JSON, zgodne z interfejsem programistycznym aplikacji typu REST, miał charakter iteracyjny. Takie podejście jest zgodne z iteracyjnym paradygmatem rozwoju systemów generatywnej sztucznej inteligencji (\english{Generative AI}), opisywanym w literaturze jako kluczowy element poprawy jakości wnioskowania modeli LLM \cite{brown2020language,ouyang2022training}. Ewolucja zastosowanych metod obejmowała przejście od prostych strategii, umożliwiających wnioskowanie bez dostarczonych przykładów (\english{Zero-Shot}), do bardziej zaawansowanych technik, które dzięki wykorzystaniu niewielkiej liczby reprezentatywnych przykładów (\english{Few-Shot Prompting}), pozwalają precyzyjniej ukierunkować model i znacząco zwiększyć poprawność generowanych struktur \cite{brown2020language,liu2023pre}.
+
+W początkowej fazie eksperymentów skoncentrowano się na testowaniu możliwości \definicja{dużych modeli językowych} (\akronim{LLM}, \english{Large Language Models}) bez wykorzystania dodatkowego klasyfikatora intencji. Przyjęto wówczas założenie, że model o wystarczająco dużej liczbie parametrów będzie w~stanie samodzielnie zidentyfikować cel użytkownika, dobrać odpowiedni punkt końcowy (\english{endpoint}) oraz dokonać ekstrakcji danych. W tym celu opracowano zapytanie (\english{prompt}), które zawierało opis struktury bazy danych oraz ścisłe żądanie zwrotu odpowiedzi w formacie JSON.
+
+Pierwotna konstrukcja zapytania charakteryzowała się znaczną długością, co wynikało z konieczności zawarcia w jednym zapytaniu pełnej wiedzy o architekturze systemu. W praktyce oznaczało to bezpośrednie włączenie do promptu zarówno aktualnego stanu bazy danych dla danej hodowli, jak i wybranych fragmentów dokumentacji OpenAPI, które odzwierciedlały definicje obiektów oraz dostępnych punktów końcowych. Na wykazie \ref{wyk:prompt_verbatim} przedstawiono strukturę tego zapytania, które składało się z kilku kluczowych sekcji:
+
+\newpage
+\begin{wykaz}[ht]
+    \centering
+    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
+        \begin{verbatim}
+Schemat danych wejściowych (format JSON): {schema_prompt}
+
+Twoim zadaniem jest wygenerować obiekt w formacie JSON zgodny z powyższym schematem danych wejściowych na podstawie opisu użytkownika. 
+
+Aktualny stan bazy danych: {stan}
+Użytkownik: {prompt}
+
+Odpowiedź w formacie JSON:
+        \end{verbatim}
+    \end{tcolorbox}
+    \caption{Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}
+    \label{wyk:prompt_verbatim}
+\end{wykaz}
+
+\begin{itemize}
+    \item \textbf{Definicja schematu danych wejściowych:} sekcja \texttt{\{schema\_prompt\}} zawiera pełny opis struktur JSON dla wszystkich obsługiwanych punktów końcowych systemu. Dzięki temu model ma pełną wiedzę o formacie danych, jednak konieczne jest przetwarzanie wielu tabel i pól, często niezwiązanych z aktualnym zapytaniem.
+    \item \textbf{Instrukcja zadania:} polecenie wyraźnie nakazuje wygenerowanie obiektu JSON na podstawie opisu użytkownika, zgodnie ze schematem i aktualnym stanem bazy.
+    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{stan\}} zawiera bieżące informacje o obiektach w systemie (np. konie, kowale, weterynarze). Model może wykorzystywać te dane do wypełnienia odpowiednich pól i odwołań w JSON.
+    \item \textbf{Użytkownik:} sekcja \texttt{\{prompt\}} przekazuje opis, zapytanie lub wymagania użytkownika, które mają zostać odwzorowane w formacie JSON.
+    \item \textbf{Odpowiedź w formacie JSON:} model ma zwrócić wyłącznie poprawny obiekt JSON, zgodny z definicją schematu i z ograniczeniami wynikającymi z aktualnego stanu bazy oraz opisu użytkownika. Nie należy dodawać pól ani wartości spoza schematu.
+\end{itemize}
+
+Zbiorcze wyniki tej fazy testów przedstawia tabela \ref{tab:llm_comparison1}. Analiza danych wskazuje na niską skuteczność podejścia \textit{Zero-Shot}. Uzyskane wyniki pozwalają domniemywać, że przyczyną tego stanu rzeczy jest rozproszenie mechanizmu uwagi (\english{attention}) modelu na zbyt rozbudowanym opisie schematu.
+
+Testom eksperymentalnym poddano wybrane duże modele językowe, obejmujące zarówno modele komercyjne, jak i otwartoźródłowe. Wśród nich znalazły się: 
+\begin{description}
+    \item[GPT-4o] (\english{OpenAI}) -- zaawansowany model komercyjny, optymalizowany pod kątem wielomodalności i wysokiej precyzji w zadaniach logicznych. \textbf{Typ:} Zamknięty (SaaS).
+    
+    \item[DeepSeek-V3] (\english{DeepSeek}) -- model o otwartej architekturze, charakteryzujący się wysoką wydajnością obliczeniową i zoptymalizowanym kosztem inferencji. \textbf{Typ:} Otwartoźródłowy (\english{Open-weights}).
+    
+    \item[Gemini 1.5 Flash] (\english{Google}) -- model komercyjny zoptymalizowany pod kątem zaawansowanego rozumowania językowego oraz przetwarzania złożonych danych wejściowych w formacie wielomodalnym. \textbf{Typ:} Zamknięty (SaaS).
+\end{description}
+
+W celu obiektywnej oceny jakości generowanych odpowiedzi zdefiniowano trzy kluczowe miary eksperymentalne:
+\begin{itemize}
+    \item \textbf{Skuteczność (\english{Effectiveness}):} mierzona binarnie (0 lub 1). Wartość 1 oznacza poprawną identyfikację docelowego punktu końcowego (\english{endpoint selection}), natomiast 0 wskazuje na wybór błędnego adresu URL.
+    \item \textbf{Precyzja (\english{Precision}):} mierzona w znormalizowanym zakresie od 0 do 1. W badaniu przyjęto model oceny oparty na płaskiej strukturze par klucz-wartość, co wynika z braku zagnieżdżeń w testowanych schematach. Miara ta obliczana jest jako stosunek liczby poprawnie odwzorowanych elementów do sumy wszystkich unikatowych kluczy obecnych zarówno w~obiekcie wzorcowym, jak i wygenerowanym. W praktyce oznacza to, że wynik jest obniżany w~trzech przypadkach: gdy model pominie wymagany klucz, gdy przypisze mu błędną wartość lub gdy wygeneruje dodatkowe, nadmiarowe klucze spoza schematu. Wartość 1 oznacza idealną zgodność struktury i treści, natomiast 0 oznacza całkowity brak wspólnych elementów.
+    \item \textbf{Efektywność (\english{Efficiency}):} wskaźnik binarny weryfikujący poprawność operacyjną wygenerowanego żądania. Wartość 1 (sukces) przypisywana jest w przypadku otrzymania kodu odpowiedzi z grupy 2xx protokołu HTTP, co potwierdza pomyślne przejście walidacji schematu oraz trwały zapis danych w bazie. Wartość 0 oznacza błąd po stronie klienta (np.~błąd struktury 4xx) lub błąd serwera (5xx), uniemożliwiający realizację żądania.
+\end{itemize}
+
+%Precyzja i efektywność liczona tylko dla poprawnie zdefiniowanych endpointów, w przeciwnym przypadku nie była liczona czy jak robimy?
+
+Wszystkie testy eksperymentalne przeprowadzono w oparciu o zestaw przygotowanych endpointów REST, odpowiadających głównym obszarom funkcjonalnym systemu. Wśród obsługiwanych endpointów znalazły się: \texttt{/api/konie} (zarządzanie stadem), \texttt{/api/wydarzenia/rozrody} (rozród), \texttt{/api/wydarzenia/zdarzenia\_profilaktyczne} (profilaktyka), \texttt{/api/wydarzenia/podkucie} (pielęgnacja kopyt), \texttt{/api/wydarzenia/leczenia} i \texttt{/api/wydarzenia/choroby} (weterynaria i zdrowie) oraz \texttt{/api/kowale} i \texttt{/api/weterynarze} (zarządzanie kontaktami do specjalistów).
+
+Dla każdego z tych endpointów opracowano 20 przykładowych scenariuszy użycia, które stanowiły zestaw danych testowych, a nie treningowych. Scenariusze te zostały przygotowane ręcznie przez członków zespołu badawczego i obejmowały typowe zapytania użytkowników, w tym zarówno poprawne, jak i potencjalnie problematyczne przypadki danych. Dzięki temu wyniki eksperymentów odzwierciedlają zdolność modeli do generowania poprawnych struktur JSON w podejściu Zero-Shot, bez wcześniejszego uczenia na konkretnych przykładach.
+
+Aby zwiększyć stabilność wyników i ograniczyć wpływ losowości generatywnych modeli, każde zapytanie testowe zostało wykonane pięciokrotnie dla wszystkich badanych modeli. Ostateczne wyniki przedstawiono jako średnią z tych pięciu powtórzeń, co pozwala czytelnikowi na ocenę powtarzalności odpowiedzi modeli oraz zapewnia wiarygodność prezentowanych miar skuteczności, precyzji i efektywności. Takie podejście pozwoliło zarówno na obiektywną ocenę jakości generowanych struktur JSON, jak i na identyfikację potencjalnych problemów związanych z halucynacjami modeli czy niejednoznacznością interpretacji zapytań użytkowników.
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki wstępnej oceny eksperymentalnej modeli LLM (podejście Zero-Shot)}
+\label{tab:llm_comparison1}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+GPT-4o         & 0,34                 & 0,28                  & 0,41                 \\ \hline
+DeepSeek-V3    & 0,45                 & 0,34                  & 0,45                 \\ \hline
+Gemini 1.5 Flash & 0,41               & 0,39                  & 0,44                 \\ \hline
+\end{tabular}
+\end{table}
+
+Wraz z rozwojem badań nad modelami generatywnymi istotnym elementem stało się opracowanie skutecznych technik inżynierii zapytań (\english{prompt engineering}). W literaturze \cite{liu2023pre,zhou2023comprehensive} podkreśla się, że poprawne konstruowanie zapytań może znacząco wpływać na jakość odpowiedzi LLM, szczególnie w zadaniach wymagających precyzyjnej struktury odpowiedzi lub wnioskowania na podstawie złożonych danych. Do kluczowych technik należą m.in.: stosowanie jednoznacznych instrukcji i jasnych ograniczeń formalnych, minimalizowanie niejednoznaczności poprzez kontekstowe doprecyzowanie roli modelu, przekazywanie przykładów poprawnych odpowiedzi (metody \english{Few-Shot}), stosowanie formatów szablonowych oraz technik wymuszających strukturę wyjścia (np. „Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON”). Praktyki te pozwalają ograniczyć halucynacje modeli, zwiększyć stabilność generowanych odpowiedzi oraz poprawić zgodność wyników z oczekiwaniami systemu wykonawczego.
+
+\newpage
+\begin{wykaz}[ht]
+    \centering
+    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
+        \begin{verbatim}
+ROLA:
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
+zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz
+wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
+
+ZASADY:
+1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
+2. Nie dodawaj żadnych pól, kluczy ani wartości, które nie występują w schemacie.
+3. Jeśli użytkownik opisuje dane niezgodne ze schematem - pomiń je.
+4. Jeśli użytkownik podaje wartość niepoprawną typologicznie - dopasuj ją do schematu,
+ale nie zgaduj wartości niepodanych.
+5. Nie generuj tekstu objaśniającego ani komentarzy.
+6. Wybierz najbardziej pasujący endpoint REST na podstawie struktury danych.
+7. Analizuj problem krok po kroku (nie wyświetlaj rozumowania) i dopiero potem wygeneruj JSON.
+8. Jeśli dane mają odwołanie do istniejących obiektów, używaj wartości ze stanu bazy.
+9. W przypadku niejednoznaczności wybierz najprostsze poprawne rozwiązanie.
+
+
+SCHEMAT DANYCH (JSON):
+{schema_prompt}
+
+AKTUALNY STAN BAZY:
+{stan}
+
+UŻYTKOWNIK:
+{prompt}
+
+WYNIK:
+Zwróć obiekt JSON zawierający:
+{
+"endpoint": "<wybrany_endpoint>",
+"data": <wygenerowany_json>
+}
+        \end{verbatim}
+    \end{tcolorbox}
+    \caption{Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}
+    \label{wyk:zero-shot-prompt-engineering}
+\end{wykaz}
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki eksperymentalne z udoskonalonym promptem Zero-Shot (wybrany endpoint)}
+\label{tab:llm_comparison2}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+GPT-4o & 0,62 & 0,57 & 0,65 \\ \hline
+DeepSeek-V3 & 0,55 & 0,51 & 0,57 \\ \hline
+Gemini 1.5 Flash & 0,59 & 0,54 & 0,60 \\ \hline
+\end{tabular}
+\end{table}
+
+
+Analiza wyników wskazuje, że udoskonalony prompt Zero-Shot znacząco poprawił skuteczność i precyzję generowanych odpowiedzi w porównaniu z pierwotnym podejściem (Tabela \ref{tab:llm_comparison1}). Modele rzadziej generowały nieistniejące identyfikatory i lepiej odwzorowywały strukturę danych zgodnie z wybranym schematem endpointu. Efektywność, rozumiana jako poprawne wykonanie żądania w systemie REST, także uległa istotnej poprawie, co pokazuje, że zmniejszenie rozproszenia uwagi i ograniczenie promptu do konkretnego endpointu miało bezpośredni wpływ na stabilność wyników.
+
+Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne halucynacje, szczególnie w~zakresie identyfikatorów relacyjnych. Modele często tworzyły nieistniejące numery ID lub błędnie interpretowały polskie nazewnictwo fachowe stosowane w hodowli koni, co bezpośrednio obniżało miarę precyzji i efektywności. Przykładowo, model potrafił poprawnie wybrać endpoint (skuteczność=1), lecz z wstawiał losowe klucze obce, co skutkowało odrzuceniem żądania przez backend (efektywność wynosząca 0).
+
+Doświadczenia z~podejściem bazowym stały się bezpośrednim impulsem do wdrożenia strategii \textit{Few-Shot Prompting}. Nowa architektura zapytania (Wykaz \ref{wyk:pierwotny_prompt}) została wzbogacona o~sekwencję par przykładów uczących, co pozwoliło modelowi na interpretację intencji użytkownika na podstawie konkretnych wzorców, a~nie tylko abstrakcyjnego opisu technicznego. Dzięki temu \definicja{duży model językowy} zyskał punkt odniesienia w~zakresie oczekiwanej struktury obiektu \textsf{JSON} oraz sposobu mapowania potocznych sformułowań na parametry funkcji \akronim{API}.
+
+\begin{wykaz}[ht]
+    \centering
+    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
+        \begin{verbatim}
+ROLA:
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
+zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz
+wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
+
+
+ZASADY:
+1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
+2. Nie dodawaj żadnych pól, kluczy ani wartości, które nie występują w schemacie.
+3. Jeśli użytkownik opisuje dane niezgodne ze schematem – pomiń je.
+4. Jeśli użytkownik podaje wartość niepoprawną typologicznie – dopasuj ją do schematu,
+ale nie zgaduj wartości niepodanych.
+5. Nie generuj tekstu objaśniającego ani komentarzy.
+6. Wybierz najbardziej pasujący endpoint REST na podstawie struktury danych.
+7. Analizuj problem krok po kroku (nie wyświetlaj rozumowania) i dopiero potem wygeneruj JSON.
+8. Jeśli dane mają odwołanie do istniejących obiektów, używaj wartości ze stanu bazy.
+9. W przypadku niejednoznaczności wybierz najprostsze poprawne rozwiązanie.
+
+
+SCHEMAT DANYCH (JSON):
+{schema_prompt}
+
+
+AKTUALNY STAN BAZY:
+{stan}
+
+
+% Pętla generująca przykłady few-shot:
+for train in examples_train:
+  Użytkownik: {train_prompt}
+  WYNIK:
+  Zwróć obiekt JSON zawierający:
+  {
+  "endpoint": "<wybrany_endpoint>",
+  "data": <wygenerowany_json>
+  }
+% Koniec pętli
+
+UŻYTKOWNIK:
+{prompt}
+
+
+WYNIK:
+Zwróć obiekt JSON zawierający:
+{
+"endpoint": "<wybrany_endpoint>",
+"data": <wygenerowany_json>
+}
+        \end{verbatim}
+    \end{tcolorbox}
+    \caption{Struktura zapytania zawierająca pełny schemat bazy danych i przykłady uczące.}
+    \label{wyk:few-shot}
+\end{wykaz}
+
+Wykaz \ref{wyk:few-shot} przedstawia szablon zapytania. Fragmenty ujęte w nawiasy klamrowe (np. \texttt{{stan}}) oraz instrukcje sterujące (pętla \texttt{for}) stanowią elementy dynamiczne, które są automatycznie uzupełniane danymi z systemu przed wysłaniem zapytania do modelu. Struktura zoptymalizowanego zapytania w~podejściu \textit{Few-Shot} zachowała kluczowe sekcje z~poprzedniej iteracji, wzbogacając je~o~moduł demonstracyjny dla modelu. Elementy takie jak definicja schematu danych oraz ogólna instrukcja zadania pozostały identyczne jak w~przypadku metody \textit{Zero-Shot}, co pozwoliło na rzetelne porównanie wpływu samych przykładów na jakość generowanych odpowiedzi:
+
+\begin{description}
+    \item \textbf{Definicja schematu danych:} sekcja \texttt{\{schema\_prompt\}} zawiera kompletny opis struktury \textsf{JSON} dla wybranego endpointu, określający wymagane i opcjonalne pola oraz typy danych. Dzięki temu model ma pełną wiedzę o formacie odpowiedzi, jednocześnie ograniczając konieczność przetwarzania informacji niezwiązanych z bieżącym zapytaniem użytkownika.
+    \item \textbf{Instrukcja zadania:} jasne polecenie nakazuje modelowi wygenerowanie poprawnego obiektu \textsf{JSON} w oparciu o opis użytkownika oraz dane ze stanu bazy, bez dodawania pól ani wartości spoza schematu. Model ma również korzystać z dostępnych danych referencyjnych w bazie przy wypełnianiu powiązań.
+    \item \textbf{Przykłady uczące (Few-Shot):} sekcja iteracyjnie wstawiająca pary \texttt{\{train\_prompt\}} i \texttt{\{train\_json\}}. Te przykłady służą jako wzorzec poprawnego mapowania opisów użytkownika na struktury \textsf{JSON}, pomagając modelowi uniknąć błędów logicznych i halucynacji przy generowaniu nowych zapytań.
+    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{stan\}} przekazuje bieżące informacje o obiektach systemu (np. konie, kowale, weterynarze), które mogą być wykorzystywane do wypełniania powiązań i wartości w generowanym \textsf{JSON}.
+    \item \textbf{Użytkownik:} sekcja \texttt{\{prompt\}} zawiera aktualne zapytanie lub opis użytkownika, które mają zostać odwzorowane w formacie \textsf{JSON}.
+    \item \textbf{Wynik:} model zwraca wyłącznie poprawny obiekt \textsf{JSON}, zgodny ze schematem i przykładowymi wzorcami, z uwzględnieniem aktualnego stanu bazy. Endpoint jest już wybrany przez klasyfikator, więc model generuje jedynie poprawną strukturę danych.
+\end{description}
+
+\begin{table}[h!]
+\centering
+\caption{Wyniki wstępnej oceny eksperymentalnej modeli LLM (podejście Few-Shot)}
+\label{tab:llm_few_shot}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Model} & \textbf{Skuteczność} & \textbf{Śr. Precyzja} & \textbf{Efektywność} \\ \hline
+GPT-4o         & 0,74                 & 0,68                  & 0,79                 \\ \hline
+DeepSeek-V3    & 0,81                 & 0,64                  & 0,65                 \\ \hline
+Gemini 1.5 Flash & 0,81               & 0,84                  & 0,79                 \\ \hline
+\end{tabular}
+\end{table}
+
+Zbiorcze wyniki oceny modeli w~podejściu \textit{Few-Shot} (Tabela \ref{tab:llm_few_shot}) potwierdziły znaczącą przewagę tej metody nad próbami \textit{Zero-Shot}. Na szczególną uwagę zasługują wyniki modelu \textbf{Gemini 1.5 Flash}, który wykazał się najwyższą średnią precyzją ($0,84$), zachowując przy tym wysoką skuteczność ($0,81$) oraz satysfakcjonujący wskaźnik sukcesu ($0,79$). Połączenie tych cech czyni go optymalnym silnikiem dla projektowanego \definicja{Asystenta NLP} w~kontekście stabilności struktury wyjściowej JSON.
+
+Warto zaznaczyć, że modele \textit{Gemini 1.5 Flash} oraz \textit{DeepSeek-V3} posiadały istotną przewagę implementacyjną w stosunku do modelu \textit{GPT-4o}. Ze względu na brak dostępu do interfejsu programistycznego dla tego ostatniego, testy mogły być przeprowadzane wyłącznie w trybie interaktywnym za pośrednictwem przeglądarki. Pozostałe modele umożliwiały natomiast pełną automatyzację oraz integrację z potokiem przetwarzania danych, a także precyzyjną kontrolę parametrów generowania odpowiedzi, takich jak stopień losowości czy szczegółowość wygenerowanego tekstu. W kontekście systemów produkcyjnych działających w czasie rzeczywistym możliwość programistycznego wywołania modelu okazała się kluczowym czynnikiem przy wyborze końcowej technologii.
+
+W toku prac wdrożeniowych nastąpiła konieczność migracji z modelu \textit{Gemini 1.5 Flash} na nowszą wersję \textit{Gemini 2.5 Flash}. Zmiana ta była podyktowana decyzją dostawcy o wyłączeniu dostępu do interfejsu programistycznego starszej wersji modelu. Migracja, choć wymuszona czynnikami zewnętrznymi, pozwoliła na utrzymanie dotychczasowych wskaźników precyzji przy jednoczesnym zapewnieniu stabilności infrastrukturalnej systemu w długofalowej perspektywie eksploatacyjnej. Dzięki tak zaprojektowanej architekturze, opartej na modelu Gemini, system osiągnął wysoką deterministyczność przy zachowaniu naturalności interfejsu użytkownika.
+
+W praktyce podejście to generowało kilka istotnych ograniczeń inżynierskich. Ze względu na wstrzykiwanie pełnej specyfikacji bazy danych do zapytania, jego długość była znaczna, a wraz ze wzrostem liczby obsługiwanych endpointów oraz rozrostem systemu, metoda stawała się coraz mniej skalowalna.
+
+Dodatkowo, model musiał przetwarzać rozbudowany zbiór danych wejściowych, z którego znaczna część stanowiła informacyjny „szum”. Na przykład, przy prostym poleceniu typu „dodaj nowego konia”, model analizował jednocześnie schematy związane z leczeniem, kowalami, rozrodem czy profilaktyką, co prowadziło do nadmiernego obciążenia i zwiększało ryzyko pomyłki przy wyborze właściwego endpointu lub błędnej interpretacji danych.
+
+Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
