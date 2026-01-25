@@ -11,10 +11,7 @@ W początkowej fazie eksperymentów skoncentrowano się na testowaniu możliwoś
 Pierwotna konstrukcja zapytania charakteryzowała się znaczną długością, co wynikało z konieczności zawarcia w jednym zapytaniu pełnej wiedzy o architekturze systemu. W praktyce oznaczało to bezpośrednie włączenie do promptu zarówno aktualnego stanu bazy danych dla danej hodowli, jak i wybranych fragmentów dokumentacji OpenAPI, które odzwierciedlały definicje obiektów oraz dostępnych punktów końcowych. Na wykazie \ref{wyk:prompt_verbatim} przedstawiono strukturę tego zapytania, które składało się z kilku kluczowych sekcji:
 
 \newpage
-\begin{wykaz}[ht]
-    \centering
-    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-        \begin{verbatim}
+\begin{lstlisting}[caption={Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}, label={wyk:prompt_verbatim}]
 Schemat danych wejściowych (format JSON): {schema_prompt}
 
 Twoim zadaniem jest wygenerować obiekt w formacie JSON zgodny z powyższym schematem danych wejściowych na podstawie opisu użytkownika. 
@@ -23,11 +20,7 @@ Aktualny stan bazy danych: {stan}
 Użytkownik: {prompt}
 
 Odpowiedź w formacie JSON:
-        \end{verbatim}
-    \end{tcolorbox}
-    \caption{Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}
-    \label{wyk:prompt_verbatim}
-\end{wykaz}
+\end{lstlisting}
 
 \begin{itemize}
     \item \textbf{Definicja schematu danych wejściowych:} sekcja \texttt{\{schema\_prompt\}} zawiera pełny opis struktur JSON dla wszystkich obsługiwanych punktów końcowych systemu. Dzięki temu model ma pełną wiedzę o formacie danych, jednak konieczne jest przetwarzanie wielu tabel i pól, często niezwiązanych z aktualnym zapytaniem.
@@ -82,21 +75,15 @@ Wstępne wyniki pokazały, że podejście \textit{Zero-Shot} generuje liczne hal
 Wraz z rozwojem badań nad modelami generatywnymi istotnym elementem stało się opracowanie skutecznych technik inżynierii zapytań (\english{prompt engineering}). W literaturze \cite{liu2023pre,zhou2023comprehensive} podkreśla się, że poprawne konstruowanie zapytań może znacząco wpływać na jakość odpowiedzi LLM, szczególnie w zadaniach wymagających precyzyjnej struktury odpowiedzi lub wnioskowania na podstawie złożonych danych. Do kluczowych technik należą m.in.: stosowanie jednoznacznych instrukcji i jasnych ograniczeń formalnych, minimalizowanie niejednoznaczności poprzez kontekstowe doprecyzowanie roli modelu, przekazywanie przykładów poprawnych odpowiedzi (metody \english{Few-Shot}), stosowanie formatów szablonowych oraz technik sugerujących strukturę wyjścia (np. „Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON”). Praktyki te pozwalają ograniczyć halucynacje modeli, zwiększyć stabilność generowanych odpowiedzi oraz poprawić zgodność wyników z oczekiwaniami systemu wykonawczego.
 
 \newpage
-\begin{wykaz}[ht]
-    \centering
-    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-        \begin{verbatim}
+\begin{lstlisting}[caption={Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}, label={wyk:zero-shot-prompt-engineering}]
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz
-wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
 
 ZASADY:
 1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
 2. Nie dodawaj żadnych pól, kluczy ani wartości, które nie występują w schemacie.
 3. Jeśli użytkownik opisuje dane niezgodne ze schematem - pomiń je.
-4. Jeśli użytkownik podaje wartość niepoprawną typologicznie - dopasuj ją do schematu,
-ale nie zgaduj wartości niepodanych.
+4. Jeśli użytkownik podaje wartość niepoprawną typologicznie - dopasuj ją do schematu, ale nie zgaduj wartości niepodanych.
 5. Nie generuj tekstu objaśniającego ani komentarzy.
 6. Wybierz najbardziej pasujący endpoint REST na podstawie struktury danych.
 7. Analizuj problem krok po kroku (nie wyświetlaj rozumowania) i dopiero potem wygeneruj JSON.
@@ -119,11 +106,7 @@ Zwróć obiekt JSON zawierający:
 "endpoint": "<wybrany_endpoint>",
 "data": <wygenerowany_json>
 }
-        \end{verbatim}
-    \end{tcolorbox}
-    \caption{Struktura pierwotnego zapytania zawierająca pełny schemat bazy danych.}
-    \label{wyk:zero-shot-prompt-engineering}
-\end{wykaz}
+\end{lstlisting}
 
 \begin{table}[h!]
 \centering
@@ -145,22 +128,16 @@ Analiza wyników przedstawionych w tabeli \ref{tab:llm_comparison2} wskazuje, ż
 
 Doświadczenia z~podejściem bazowym stały się bezpośrednim impulsem do wdrożenia strategii \textit{Few-Shot Prompting}. Nowa architektura zapytania (Wykaz \ref{wyk:few-shot}) została wzbogacona o~sekwencję par przykładów uczących, co pozwoliło modelowi na interpretację intencji użytkownika na podstawie konkretnych wzorców, a~nie tylko abstrakcyjnego opisu technicznego. Dzięki temu \definicja{duży model językowy} zyskał punkt odniesienia w~zakresie oczekiwanej struktury obiektu \textsf{JSON} oraz sposobu mapowania potocznych sformułowań na parametry funkcji \akronim{API}.
 
-\begin{wykaz}[ht]
-    \centering
-    \begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-        \begin{verbatim}
+\begin{lstlisting}[caption={Struktura zapytania zawierająca pełny schemat bazy danych i przykłady uczące.}, label={wyk:few-shot}]
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz
-wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest dokładna analiza opisu oraz wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
 
 
 ZASADY:
 1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
 2. Nie dodawaj żadnych pól, kluczy ani wartości, które nie występują w schemacie.
 3. Jeśli użytkownik opisuje dane niezgodne ze schematem - pomiń je.
-4. Jeśli użytkownik podaje wartość niepoprawną typologicznie - dopasuj ją do schematu,
-ale nie zgaduj wartości niepodanych.
+4. Jeśli użytkownik podaje wartość niepoprawną typologicznie - dopasuj ją do schematu, ale nie zgaduj wartości niepodanych.
 5. Nie generuj tekstu objaśniającego ani komentarzy.
 6. Wybierz najbardziej pasujący endpoint REST na podstawie struktury danych.
 7. Analizuj problem krok po kroku (nie wyświetlaj rozumowania) i dopiero potem wygeneruj JSON.
@@ -197,11 +174,7 @@ Zwróć obiekt JSON zawierający:
 "endpoint": "<wybrany_endpoint>",
 "data": <wygenerowany_json>
 }
-        \end{verbatim}
-    \end{tcolorbox}
-    \caption{Struktura zapytania zawierająca pełny schemat bazy danych i przykłady uczące.}
-    \label{wyk:few-shot}
-\end{wykaz}
+\end{lstlisting}
 
 Wykaz \ref{wyk:few-shot} przedstawia szablon zapytania. Fragmenty ujęte w nawiasy klamrowe (np. \texttt{{stan}}) oraz instrukcje sterujące (pętla \texttt{for}) stanowią elementy dynamiczne, które są automatycznie uzupełniane danymi z systemu przed wysłaniem zapytania do modelu. Struktura zoptymalizowanego zapytania w~podejściu \textit{Few-Shot} zachowała kluczowe sekcje z~poprzedniej iteracji, wzbogacając je~o~moduł demonstracyjny dla modelu. Elementy takie jak definicja schematu danych oraz ogólna instrukcja zadania pozostały identyczne jak w~przypadku metody \textit{Zero-Shot}, co pozwoliło na rzetelne porównanie wpływu samych przykładów na jakość generowanych odpowiedzi:
 
@@ -279,11 +252,9 @@ W praktyce proces przygotowania zapytania przebiega następująco:
 Tak przygotowany prompt zapewnia modelowi zarówno precyzyjną strukturę danych, jak i praktyczne wzorce zachowań, co zwiększa skuteczność, precyzję oraz efektywność generowanych żądań. Poniżej przedstawiono przykładową strukturę promptu dla nowego podejścia:
 
 
-\begin{verbatim}
+\begin{lstlisting}
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie
-poprawnego obiektu JSON zgodnego ze schematem danych.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
 
 
 ZASADY:
@@ -326,7 +297,7 @@ ${prompt}
 WYNIK:
 Zwróć wyłącznie obiekt JSON zgodny ze schematem ${predictedEndpoint}:
 <data_json>
-\end{verbatim}
+\end{lstlisting}
 
 %TODO: dodać odwołanie w kodzie do wykazu
 
@@ -368,10 +339,7 @@ Aby rozwiązać ten problem, zaimplementowano mechanizm orkiestracji (\english{o
 \end{enumerate}
 
 %================ Wykaz 1 =================
-\begin{wykaz}[ht]
-\centering
-\begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-\begin{verbatim}
+\begin{lstlisting}[caption={Pierwsze zapytanie w procesie orkiestracji: ekstrakcja encji głównej (konia).}, label={wyk:leczenie_chaining_faza1}]
 # Faza 1: Ekstrakcja podmiotu i rozwiązywanie encji
 ROLA:
 Jesteś systemem identyfikującym encję główną (zwierzę) na podstawie wypowiedzi użytkownika.
@@ -386,23 +354,15 @@ Zwróć wyłącznie unikalny identyfikator zwierzęcia istniejącego w bazie:
 {
 "id_konia": "<wyekstrahowany_id>"
 }
-\end{verbatim}
-\end{tcolorbox}
-\caption{Pierwsze zapytanie w procesie orkiestracji: ekstrakcja encji głównej (konia).}
-\label{wyk:leczenie_chaining_faza1}
-\end{wykaz}
+\end{lstlisting}
 
 
 %================ Wykaz 2 =================
-\begin{wykaz}[ht]
-\centering
-\begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-\begin{verbatim}
+\begin{lstlisting}[caption={Drugie zapytanie w procesie orkiestracji: selektywne zasilenie kontekstu chorób i generowanie końcowego JSON.}, label={wyk:leczenie_chaining_faza2}]
+
 # Faza 2 i 3: Selektywne zasilenie kontekstu i generowanie końcowe
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie obiektu JSON
-opisującego procedurę leczenia, powiązaną z istniejącą historią choroby.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie obiektu JSON opisującego procedurę leczenia, powiązaną z istniejącą historią choroby.
 
 
 ZASADY:
@@ -431,11 +391,7 @@ Zwróć obiekt JSON zawierający:
 "data": "<data_operacji>"
 }
 }
-\end{verbatim}
-\end{tcolorbox}
-\caption{Drugie zapytanie w procesie orkiestracji: selektywne zasilenie kontekstu chorób i generowanie końcowego JSON.}
-\label{wyk:leczenie_chaining_faza2}
-\end{wykaz}
+\end{lstlisting}
 
 Zastosowanie opisanej wieloetapowej orkiestracji, przedstawionej w Wykazach \ref{wyk:leczenie_chaining_faza1} i \ref{wyk:leczenie_chaining_faza2}, pozwoliło na skuteczne obejście ograniczeń wynikających z braku trwałego stanu modelu językowego. Pierwszy etap procesu (Wykaz \ref{wyk:leczenie_chaining_faza1}) koncentruje się wyłącznie na ekstrakcji podmiotu, czyli identyfikacji konkretnego zwierzęcia w systemie na podstawie wypowiedzi użytkownika, co umożliwia precyzyjne wyodrębnienie odpowiedniego identyfikatora encji. Drugi etap (Wykaz \ref{wyk:leczenie_chaining_faza2}) obejmuje selektywne zasilenie kontekstu wyłącznie danymi istotnymi dla zidentyfikowanego zwierzęcia oraz generowanie końcowego obiektu JSON, powiązanego z istniejącymi rekordami chorób.  
 
@@ -457,17 +413,12 @@ Takie podejście pozwala odciążyć model od roli klasyfikatora i walidatora, p
 
 Równolegle z rozwojem warstwy oczyszczającej, dokonano finalnej optymalizacji instrukcji sterującej. Aktualna postać zapytania (zaprezentowana na wykazie \ref{wyk:aktualny_prompt}) jest wynikiem licznych iteracji mających na celu maksymalizację gęstości informacyjnej przy jednoczesnym ograniczeniu szumu. W przeciwieństwie do pierwotnych wersji obecna struktura wykorzystuje ściśle zdefiniowane separatory danych oraz logiczny podział na sekcję wiedzy o stanie bazy, sekcję instrukcji technicznych oraz sekcję przykładów kontekstowych.
 
-\begin{wykaz}[ht]
-\centering
-\begin{tcolorbox}[colback=gray!5, colframe=gray!50, arc=0mm, boxrule=0.5pt]
-\begin{verbatim}
+\begin{lstlisting}[caption={Finałowa struktura zapytania dla modelu z rozdzieleniem na podstawowe i złożone endpointy, z uwzględnieniem warstwy Few-Shot i selektywnego zasilenia kontekstu dla leczenia.}, label={wyk:final_prompt}]
 # =========================
 # Zapytanie dla PODSTAWOWYCH ENDPOINTÓW
 # =========================
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie obiektu JSON
-zgodnego ze schematem endpointu podstawowego.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie obiektu JSON zgodnego ze schematem endpointu podstawowego.
 
 ZASADY:
 1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
@@ -514,8 +465,7 @@ WYNIK:
 
 # Faza 2 i 3: Selektywne zasilenie kontekstu i generowanie końcowe
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST dla złożonych operacji (leczenia).
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST dla złożonych operacji (leczenia).
 
 ZASADY:
 1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
@@ -538,25 +488,11 @@ WYNIK:
     "data": "<data_operacji>"
   }
 }
-\end{verbatim}
-\end{tcolorbox}
-\caption{Finałowa struktura zapytania dla modelu z rozdzieleniem na podstawowe i złożone endpointy, z uwzględnieniem warstwy Few-Shot i selektywnego zasilenia kontekstu dla leczenia.}
-\label{wyk:final_prompt}
-\end{wykaz}
+\end{lstlisting}
 
-\begin{wykaz}[ht]
-    \centering
-    \begin{tcolorbox}[
-        colback=lightbg, 
-        colframe=grayframe, 
-        arc=1mm, 
-        boxrule=0.5pt,
-        left=2mm, right=2mm, top=2mm, bottom=2mm
-    ]
-\begin{lstlisting}
+\begin{lstlisting}[caption={Zoptymalizowana struktura promptu zintegrowana z kontekstem bazy danych i dynamicznym schematem.}, label={wyk:aktualny_prompt}]
 ROLA:
-Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON
-zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
+Jesteś systemem przetwarzania zapytań użytkownika na poprawne struktury JSON zgodne z interfejsem REST. Twoim zadaniem jest wygenerowanie wyłącznie poprawnego obiektu JSON zgodnego ze schematem danych.
 
 ZASADY:
 1. Odpowiadaj WYŁĄCZNIE w poprawnym formacie JSON.
@@ -595,10 +531,6 @@ WYNIK:
 Zwróć wyłącznie obiekt JSON zgodny ze schematem ${predictedEndpoint}:
 <data_json>
 \end{lstlisting}
-    \end{tcolorbox}
-    \caption{Zoptymalizowana struktura promptu zintegrowana z kontekstem bazy danych i dynamicznym schematem.}
-    \label{wyk:aktualny_prompt}
-\end{wykaz}
 
 Ocena eksperymentalna zaimplementowanej metody wykazała wysoką deterministyczność systemu w obszarach podlegających bezpośredniej generacji:
 
