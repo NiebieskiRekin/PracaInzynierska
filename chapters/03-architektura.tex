@@ -20,10 +20,6 @@ Ze względu na charakter pracy użytkowników końcowych, priorytetem stała si�
 
 W aspekcie bezpieczeństwa przyjęto rygorystyczne standardy ochrony danych. Dostęp do systemu jest chroniony procesem uwierzytelniania (e-mail oraz hasło), a same hasła przechowywane są w bazie danych wyłącznie w postaci bezpiecznych skrótów kryptograficznych (\english{hash}), co uniemożliwia ich odtworzenie. System realizuje strukturę wielodostępową (\english{multi-tenancy}) na poziomie logicznym, gdzie użytkownik po zalogowaniu uzyskuje autoryzację wyłącznie do zasobów przypisanych do jego hodowli. Wszelkie operacje krytyczne, takie jak usuwanie danych, wymagają dodatkowego potwierdzenia. i działają w trybie łagodnego usuwania (\english{soft delete}). Oznacza to, że rekord nie jest fizycznie usuwany z bazy danych, lecz następuje jedynie zmiana wartości logicznej w dedykowanej kolumnie \texttt{active}. Formularze edycyjne wyposażono w walidację danych wejściowych, aby zapewnić ich integralność.
 
-System zaprojektowano z myślą o wydajności pozwalającej na obsługę 400 zarejestrowanych użytkowników, przy założeniu do 100 jednoczesnych sesji. Architektura rozwiązania ma na celu minimalizację kosztów utrzymania oraz uproszczenie procesów administracyjnych, co ma kluczowe znaczenie dla długoterminowej trwałości projektu.
-
-% TODO: W jaki sposób zostało to uwzględnione i czy było to jakoś weryfikowane. Trzeba lepiej opisać lub usunąć fragment.
-
 \section{Opis architektury aplikacji}
 
 Realizacja powyższych założeń, w szczególności wymogu dostępności na wielu platformach sprzętowych oraz centralizacji danych, podyktowała wybór architektury systemu webowego z przeglądarkowym interfejsem użytkownika. Aplikacje internetowe pozwalają na wykorzystanie bogatego i dojrzałego zaplecza technologicznego do wyświetlania stron internetowych, co znacząco upraszcza aspekt dystrybucji oprogramowania oraz współbieżnego dostępu do danych. 
