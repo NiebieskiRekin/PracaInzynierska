@@ -186,7 +186,6 @@ Zwróć obiekt JSON zawierający:
     "data": <wygenerowany_json>
 }
 \end{lstlisting}
-\end{lstlisting}
 
 Wykaz \ref{wyk:few-shot} przedstawia szablon zapytania. Fragmenty ujęte w nawiasy klamrowe poprzedzone tokenem zastępczym \texttt{\$} stanowią elementy dynamiczne, które są automatycznie uzupełniane danymi z systemu przed wysłaniem zapytania do modelu. Struktura zoptymalizowanego zapytania w~podejściu \textit{Few-Shot} zachowała kluczowe sekcje z~poprzedniej iteracji, wzbogacając je~o~moduł demonstracyjny dla modelu. Elementy takie jak definicja schematu danych oraz ogólna instrukcja zadania pozostały identyczne jak w~przypadku metody \textit{Zero-Shot}, co pozwoliło na rzetelne porównanie wpływu samych przykładów na jakość generowanych odpowiedzi:
 
@@ -430,7 +429,6 @@ Zwróć wyłącznie unikalny identyfikator zwierzęcia istniejącego w bazie:
     "id_konia": "<wyekstrahowany_id>"
 }
 \end{lstlisting}
-\end{lstlisting}
 
 
 %================ Wykaz 2 =================
@@ -467,7 +465,6 @@ Zwróć obiekt JSON zawierający:
         "data": "<data_operacji>"
     }
 }
-\end{lstlisting}
 \end{lstlisting}
 
 Zastosowanie opisanej wieloetapowej orkiestracji, przedstawionej w Wykazach \ref{wyk:leczenie_chaining_faza1} i \ref{wyk:leczenie_chaining_faza2}, pozwoliło na skuteczne obejście ograniczeń wynikających z braku trwałego stanu modelu językowego. Pierwszy etap procesu (Wykaz \ref{wyk:leczenie_chaining_faza1}) koncentruje się wyłącznie na ekstrakcji podmiotu, czyli identyfikacji konkretnego zwierzęcia w systemie na podstawie wypowiedzi użytkownika, co umożliwia precyzyjne wyodrębnienie odpowiedniego identyfikatora encji. Drugi etap (Wykaz \ref{wyk:leczenie_chaining_faza2}) obejmuje selektywne zasilenie kontekstu wyłącznie danymi istotnymi dla zidentyfikowanego zwierzęcia oraz generowanie końcowego obiektu JSON, powiązanego z istniejącymi rekordami chorób.  
