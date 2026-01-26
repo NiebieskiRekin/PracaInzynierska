@@ -1,6 +1,6 @@
 \chapter{Opracowanie i ocena eksperymentalna metody wypełniania żądań REST}
 
-%TODO - poprawić wykazy - uspójnić język programowania i dynamicznie dodawane elementy
+%TODO - dodać opis przykładu ze zbioru testowego dla wybranego endpointu
 
 \section{Inżynieria zapytań}
 
@@ -223,7 +223,7 @@ W praktyce podejście to generowało kilka istotnych ograniczeń inżynierskich.
 
 Dodatkowo, model musiał przetwarzać rozbudowany zbiór danych wejściowych, z którego znaczna część stanowiła informacyjny „szum”. Na przykład, przy prostym poleceniu typu „dodaj nowego konia”, model analizował jednocześnie schematy związane z leczeniem, kowalami, rozrodem czy profilaktyką, co prowadziło do nadmiernego obciążenia i zwiększało ryzyko pomyłki przy wyborze właściwego endpointu lub błędnej interpretacji danych.
 
-Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, szczegółowo opisanego w rozdziale \ref{chapters:Klasyfikator_intencji} \refname{chapters:Klasyfikator_intencji}, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
+Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Dane te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do rzadszych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, szczegółowo opisanego w rozdziale \ref{chapters:Klasyfikator_intencji} \nameref{chapters:Klasyfikator_intencji}, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
 
 
 \section{Dynamiczna inżynieria zapytań}
