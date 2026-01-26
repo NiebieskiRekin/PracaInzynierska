@@ -36,17 +36,17 @@ Komunikacja między warstwami frontendu i~backendu odbywa się w~warstwie 7~mode
 
 Ze względu na wymóg współbieżnego, spójnego dostępu do danych o złożonych, ale stabilnych relacjach został wybrany system zarządzania relacyjną bazą danych \textit{PostgreSQL}\cite{postgres}. Spośród dostępnych na rynku rozwiązań wyróżnia się on brakiem opłat licencyjnych, bogatą dokumentacją, bardzo dobrą optymalizacją przetwarzania na małych i średnich zbiorach danych, obszernym zestawem funkcji, a także jest dobrze znany i lubiany przez zespół projektowy. Dostęp do bazy danych i przekazanie danych do warstwy prezentacji jest realizowane przez backend, co jest jego głównym zadaniem w kontekście aplikacji. Zostało to szczegółowo opisane w rozdziale \ref{sec:backend}: \nameref{sec:backend}. 
 
-% Traefik
-
-% Dodatkowo aplikacja w swojej implementacji wykorzystuje szereg zewnętrznych usług:
-% \begin{enumerate}
-%     \item Cloudflare -- DNS i filtrowanie ruchu
-%     \item Let's encrypt -- wystawienie certyfiaktu TLS
-%     \item Google Cloud Platform Firewall -- zapora sieciowa
-%     \item Gemini LLM -- przetwarzanie słownych zapytań użytkownika na żądania REST
-%     \item Gmail -- powiadomienia E-mail
-%     \item Google Cloud Platform Object Storage Bucket - miejsce przechowywania zdjęć
-% \end{enumerate} 
+Dodatkowo aplikacja wykorzystuje następujące usługi:
+\begin{enumerate}
+    \item \textit{Traefik} -- odwrotny pośrednik (\english{reverse proxy}),
+    \item \textit{Cloudflare} -- DNS i filtrowanie ruchu sieciowego,
+    \item \textit{Firewall} -- zapora ogniowa \textit{Google Cloud Platform},
+    \item \textit{Let's encrypt} -- wystawienie certyfiaktu TLS,
+    \item \textit{Gemini LLM} -- przetwarzanie zapytań użytkownika na żądania REST,
+    \item \textit{Gmail} -- powiadomienia E-mail,
+    \item \textit{Object Storage Bucket} -- miejsce przechowywania zdjęć.
+\end{enumerate}
+Dokładniejszy opis komponentów aplikacji 1-4 ma miejsce w podrozdziale \ref{sec:net-inf-sec}: \nameref{sec:net-inf-sec}. Wykorzystanie usługi dużego modelu językowego Gemini z uwagi na istotność w kontekście pracy zostało wnikliwie opisane w rozdziale \ref{sec:gemini}: \nameref{sec:gemini}. Komentarz dotyczący realizacji okresowych powiadomień o wygasającej ważności istotnych zdarzeń profilaktycznych lub jednorazowych wiadomości w celu potwierdzenia posiadanego adresu e-mail z użyciem Gmail pojawia się epizodycznie wewnątrz podrozdziału \ref{sec:backend}: \nameref{sec:backend}. Mechanizm przechowywania zdjęć przedstawiono w podrozdziale \ref{sec:gcs}: \nameref{sec:gcs}.
 
 \section{Frontend}
 
@@ -126,7 +126,7 @@ Dane zapisywane do zasobnika są reprezentowane jako \textit{obiekty}. Odpowiada
 W~aplikacji \definicja{Moje Konie} usługa magazynu obiektowego jest wykorzystywana do przechowywania zdjęć koni i~udostępniania ich użytkownikom. W~tym celu zaimplementowano wzorzec bezpośredniego dostępu autoryzowanego. Aby zoptymalizować wydajność i~zredukować obciążenie sieciowe serwera (backendu), operacje przesyłania i~pobierania plików zostały oddelegowane bezpośrednio do infrastruktury \textit{Google} z~wykorzystaniem mechanizmu \textit{podpisanego odnośnika} (\english{signed URL}) \cite{google_signed_urls}. Aplikacja korzysta z~biblioteki \texttt{@google-cloud/storage}, która upraszcza implementację tego procesu. Mechanizm udostępniania zasobów składa się z~trzech kroków:
 
 \begin{enumerate}
-    \item \textbf{Konfiguracja tożsamości i kluczy}: Uwierzytelnianie procesu podpisywania odbywa się z~użyciem pary kluczy asymetrycznych. Backend posiada klucz prywatny oraz identyfikator konta usługi (\english{service account}), które tworzą jego tożsamość ładowaną podczas startu aplikacji. Konto to posiada nadane uprawnienia do zarządzania zasobnikiem. Weryfikacja tych uprawnień nie następuje w~momencie generowania linku przez backend, lecz jest odroczona do momentu faktycznej próby dostępu przez klienta.
+    \item \textbf{Konfiguracja tożsamości i kluczy}: Uwierzytelnianie procesu podpisywania odbywa się z~użyciem pary kluczy asymetrycznych. Backend posiada klucz prywatny oraz identyfikator konta usługi (\english{service account}), które tworzą jego tożsamość ładowaną podczas startu aplikacji. Konto to posiada nadane uprawnienia do zarządzania zasobnikiem. Weryfikacja tych uprawnień nie następuje w~momencie generowania linku przez backend, lecz jest odroczona do momentu faktycznej próby dostępu przez klienta. Przepływ poświadczenia został uproszczony na rysunku \ref{rys:architektura-sieciowa} i został oznaczony przerywaną strzałką. W rzeczywistości przepływ inicjuje strona użytkownika i przekazuje podpisane zapytanie.
     
     \item \textbf{Generowanie podpisanego żądania}: Gdy użytkownik chce wykonać operację na obiekcie, backend nie łączy się z ~usługą \textit{Google Cloud Storage}. Zamiast tego przygotowuje autoryzację zgodnie ze standardem \textit{GOOG4-RSA-SHA256} \cite{google_sign_rsa_sha}. Proces ten polega na zamianie parametrów planowanego żądania HTTP (metody, ścieżki do zasobu, nagłówków i~czasu wygaśnięcia) w~znormalizowany ciąg znaków. Następnie ciąg ten przekształcany jest w skrót \textit{SHA-256}, który zostaje zaszyfrowany kluczem prywatnym backendu. Ten zaszyfrowany skrót stanowi kryptograficzny podpis dołączany do adresu URL. Utworzony odnośnik ma ograniczony czas ważności, co minimalizuje ryzyko nieuprawnionego dostępu w~przypadku jego przechwycenia.
     
@@ -237,7 +237,7 @@ Proces wdrażania zmian w~infrastrukturze i~aplikacji podzielony jest na trzy uz
 
 Wdrożenie systemu zrealizowano zgodnie ze strategią obrony w głąb, implementując wielowarstwowe mechanizmy zabezpieczeń obejmujące łańcuch dostaw, infrastrukturę sieciową, środowisko uruchomieniowe oraz warstwę aplikacji.
 
-\subsection{Bezpieczeństwo infrastruktury sieciowej}
+\subsection{Bezpieczeństwo infrastruktury sieciowej} \label{sec:net-inf-sec}
 
 Ochrona serwera i kontenerów opiera się na minimalizacji powierzchni ataku:
 
