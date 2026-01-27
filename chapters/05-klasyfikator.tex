@@ -42,7 +42,7 @@ Wstępne testy wykazały, że mimo wysokiej elastyczności modeli LLM, takie roz
 \begin{description}
 	\item[Nadmiarowość kontekstu:] Dołączanie pełnego schematu API (wszystkich ośmiu końcówek) do każdego zapytania drastycznie zwiększało liczbę tokenów wejściowych. Generuje to nieuzasadnione koszty operacyjne, zwłaszcza przy częstym korzystaniu z płatnych API, oraz zwiększa czas oczekiwania na odpowiedź \cite{liu2023}, a~zatem takie rozwiązanie nie jest skalowane do większych systemów.
     
-	\item[Szum informacyjny:] Przekazywanie do modelu informacji o końcówkach niezwiązanych z danym zapytaniem (np. schemat rozrodu przy pytaniu o kowala) zwiększa ryzyko halucynacji. Model, mając zbyt szeroki kontekst, może próbować odwzorowywać dane do niewłaściwych pól, co obniża ogólną precyzję żądania.
+	\item[Szum informacyjny:] Przekazywanie do modelu informacji o końcówkach niezwiązanych z danym zapytaniem (np. schemat rozrodu przy pytaniu o kowala) zwiększa ryzyko halucynacji. Model, mając zbyt szeroki kontekst, może próbować odwzorowywać dane do niewłaściwych pól, co obniża ogólną precyzję żądania.
     
 	\item[Trudność w debugowaniu:] Przy podejściu ,,wszystko w jednym'', trudno jest jednoznacznie określić, czy błąd wynika z błędnego rozpoznania intencji, czy z problemów modelu ze zbudowaniem poprawnego obiektu JSON.
 \end{description}
@@ -53,7 +53,7 @@ Zdecydowano się na zmianę architektury na model hybrydowy, w którym proces pr
 Głównym założeniem tej zmiany było przeniesienie ciężaru klasyfikacji na lokalny lub tańszy w~eksploatacji model wektorowy, co pozwoliło na:
 
 \begin{description}
-	\item[Dynamiczne budowanie zapytania:] Do modelu LLM wysyłany jest wyłącznie ten fragment dokumentacji API, który jest bezpośrednio związany z intencją wykrytą przez klasyfikator. Takie podejście, znane jako \textit{context pruning}, pozwala na redukcję rozmiaru zapytania o~znaczący procent, co przekłada się na realne oszczędności tokenów \cite{jimenez2022}.
+	\item[Dynamiczne budowanie zapytania:] Do modelu LLM wysyłany jest wyłącznie ten fragment dokumentacji API, który jest bezpośrednio związany z intencją wykrytą przez klasyfikator. Takie podejście, znane jako \textit{context pruning}, pozwala na redukcję rozmiaru zapytania o~znaczący procent, co przekłada się na realne oszczędności tokenów.
     
 	\item[Większą precyzję odwzorowania:] Model LLM, otrzymując instrukcję dotyczącą tylko jednej, konkretnej końcówki, rzadziej popełnia błędy w~odwzorowaniu pól technicznych i lepiej radzi sobie z ekstrakcją parametrów z tekstu.
     
