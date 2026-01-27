@@ -1,5 +1,5 @@
 \chapter{Opracowanie i ocena eksperymentalna metody wypełniania żądań REST} \label{sec:gemini}
-
+\label{chapters:06-gemini}
 %TODO - dodać opis przykładu ze zbioru testowego dla wybranego endpointu
 
 \section{Inżynieria zapytań}
@@ -217,7 +217,7 @@ W toku prac wdrożeniowych nastąpiła konieczność migracji z modelu \textit{G
 
 W praktyce, dotychczasowe podejście prowadziło do szeregu ograniczeń inżynierskich. Wstrzykiwanie pełnej specyfikacji bazy danych do każdego zapytania powodowało znaczący wzrost jego długości, a tym samym stopniowe obniżanie skalowalności rozwiązania. Model musiał jednocześnie przetwarzać rozbudowany zbiór danych wejściowych, z którego znaczna część stanowiła „szum” informacyjny. W efekcie nawet przy prostych poleceniach, takich jak „dodaj nowego konia”, model równolegle interpretował schematy dotyczące leczenia, rozrodu, kowali czy profilaktyki, co zwiększało obciążenie obliczeniowe oraz ryzyko błędnej interpretacji, w tym wyboru niewłaściwej końcówki.
 
-Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Informacje te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do sporadycznych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, szczegółowo opisanego w rozdziale \ref{chapters:Klasyfikator_intencji} \nameref{chapters:Klasyfikator_intencji}, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
+Dodatkowym obciążeniem było wstrzykiwanie aktualnego stanu bazy danych dla wszystkich encji jednocześnie. Informacje te nie tylko konsumowały dostępne okno kontekstowe (\english{context window}), ale również prowadziły do sporadycznych, lecz trudnych do zdiagnozowania błędów semantycznych, w których model próbował powiązać dane użytkownika z nieprawidłowym kontekstem pochodzącym z innej części bazy. Doświadczenia te stały się bezpośrednim impulsem do wprowadzenia dedykowanego klasyfikatora, szczegółowo opisanego w rozdziale \ref{chapters:05-Klasyfikator_intencji} \nameref{chapters:05-Klasyfikator_intencji}, który pozwolił na selektywne ładowanie wyłącznie tych fragmentów schematu i danych, które są krytyczne dla realizacji konkretnego żądania.
 
 
 \section{Dynamiczna inżynieria zapytań}
