@@ -3,7 +3,7 @@
 
 \section{Inżynieria zapytań}
 
-Proces opracowania metody automatycznego mapowania wypowiedzi użytkownika w języku naturalnym na strukturalne żądania w formacie JSON, zgodne z interfejsem programistycznym aplikacji typu REST, miał charakter iteracyjny. Takie podejście jest zgodne z iteracyjnym paradygmatem rozwoju systemów generatywnej sztucznej inteligencji (\english{Generative AI}), opisywanym w~literaturze jako kluczowy element poprawy jakości wnioskowania dużych modeli językowych (\akronim{LLM}) \cite{brown2020language,ouyang2022training}. Ewolucja zastosowanych metod obejmowała przejście od prostych strategii, umożliwiających wnioskowanie bez dostarczonych przykładów (\english{Zero-Shot}), do bardziej zaawansowanych technik, które dzięki wykorzystaniu niewielkiej liczby reprezentatywnych przykładów (\english{Few-Shot Prompting}), pozwalają precyzyjniej ukierunkować model i znacząco zwiększyć poprawność generowanych struktur \cite{brown2020language,liu2023pre}.
+Proces opracowania metody automatycznego mapowania wypowiedzi użytkownika w języku naturalnym na strukturalne żądania w formacie JSON, zgodne z interfejsem programistycznym aplikacji typu REST, miał charakter iteracyjny. Takie podejście jest zgodne z iteracyjnym paradygmatem rozwoju systemów generatywnej sztucznej inteligencji (\english{Generative AI}), opisywanym w~literaturze jako kluczowy element poprawy jakości wnioskowania dużych modeli językowych (\akronim{LLM}, \english{Large Language Models}) \cite{brown2020language,ouyang2022training}. Ewolucja zastosowanych metod obejmowała przejście od prostych strategii, umożliwiających wnioskowanie bez dostarczonych przykładów (\english{Zero-Shot}), do bardziej zaawansowanych technik, które dzięki wykorzystaniu niewielkiej liczby reprezentatywnych przykładów (\english{Few-Shot Prompting}), pozwalają precyzyjniej ukierunkować model i znacząco zwiększyć poprawność generowanych struktur \cite{brown2020language,liu2023pre}.
 
 \subsection{Środowisko eksperymentalne}
 \label{subsec:eksperymenty_miary}
@@ -19,7 +19,7 @@ Testom eksperymentalnym poddano wybrane duże modele językowe, obejmujące zar�
 W celu obiektywnej oceny jakości generowanych odpowiedzi zdefiniowano trzy kluczowe miary eksperymentalne:
 \begin{itemize}
     \item \textbf{Skuteczność (\english{Effectiveness}):} mierzona binarnie (0 lub 1). Wartość 1 oznacza poprawną identyfikację docelowego punktu końcowego (\english{endpoint selection}), natomiast 0~wskazuje na wybór błędnego adresu URL.
-    \item \textbf{Precyzja (\english{Precision}):} mierzona w znormalizowanym zakresie od 0 do 1. W badaniu przyjęto model oceny oparty na płaskiej strukturze par klucz-wartość, co wynika z braku zagnieżdżeń w testowanych schematach. Miara ta obliczana jest jako stosunek liczby poprawnie odwzorowanych elementów do sumy wszystkich unikatowych kluczy obecnych zarówno w~obiekcie wzorcowym, jak i wygenerowanym. W praktyce oznacza to, że wynik jest obniżany w~trzech przypadkach: gdy model pominie wymagany klucz, gdy przypisze mu błędną wartość lub gdy wygeneruje dodatkowe, nadmiarowe klucze spoza schematu. Wartość 1 oznacza idealną zgodność struktury i treści, natomiast 0 oznacza całkowity brak wspólnych elementów. Precyzja była liczona tylko dla poprawnie zidentyfikowanych końcówek API.
+    \item \textbf{Precyzja (\english{Precision}):} mierzona w znormalizowanym zakresie od 0 do 1. W badaniu przyjęto model oceny oparty na płaskiej strukturze par klucz-wartość, co wynika z braku zagnieżdżeń w testowanych schematach. Miara ta obliczana jest jako stosunek liczby poprawnie odwzorowanych elementów do sumy wszystkich unikatowych kluczy obecnych zarówno w~obiekcie wzorcowym, jak i wygenerowanym. W praktyce oznacza to, że wynik jest obniżany w~trzech przypadkach: gdy model pominie wymagany klucz, gdy przypisze mu błędną wartość lub gdy wygeneruje dodatkowe, nadmiarowe klucze spoza schematu. Wartość 1 oznacza idealną zgodność struktury i treści, natomiast 0 oznacza całkowity brak wspólnych elementów.
     \item \textbf{Efektywność (\english{Efficiency}):} wskaźnik binarny weryfikujący poprawność operacyjną wygenerowanego żądania. Wartość 1 (sukces) przypisywana jest w przypadku otrzymania kodu odpowiedzi z grupy 2xx protokołu HTTP, co potwierdza pomyślne przejście walidacji schematu oraz trwały zapis danych w bazie. Wartość 0 oznacza błąd po stronie klienta (np.~błąd struktury 4xx) lub błąd serwera (5xx), uniemożliwiający realizację żądania.
 \end{itemize}
 
@@ -53,7 +53,7 @@ Pierwotna konstrukcja zapytania charakteryzowała się znaczną długością, co
 \begin{itemize}
     \item \textbf{Definicja schematu danych wejściowych:} sekcja \texttt{\{schema\_prompt\}} zawiera pełny opis struktur JSON dla wszystkich obsługiwanych punktów końcowych systemu. Dzięki temu model ma pełną wiedzę o formacie danych, jednak konieczne jest przetwarzanie wielu tabel i pól, często niezwiązanych z aktualnym zapytaniem.
     \item \textbf{Instrukcja zadania:} polecenie sugeruje wygenerowanie obiektu JSON na podstawie opisu użytkownika, zgodnie ze schematem i aktualnym stanem bazy.
-    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{stan\}} zawiera bieżące informacje o obiektach w systemie (np. konie, kowale, weterynarze). Model może wykorzystywać te dane do wypełnienia odpowiednich pól i odwołań w JSON.
+    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{context\_data\}} zawiera bieżące informacje o obiektach w systemie (np. konie, kowale, weterynarze). Model może wykorzystywać te dane do wypełnienia odpowiednich pól i odwołań w JSON.
     \item \textbf{Użytkownik:} sekcja \texttt{\{prompt\}} przekazuje opis, zapytanie lub wymagania użytkownika, które mają zostać odwzorowane w formacie JSON.
 \end{itemize}
 
@@ -62,7 +62,7 @@ Schemat danych wejściowych: ${schema_prompt}
 
 Twoim zadaniem jest wygenerować obiekt w formacie JSON zgodny z powyższym schematem danych wejściowych na podstawie opisu użytkownika.
 
-Aktualny stan bazy danych: ${stan}
+Aktualny stan bazy danych: ${context_data}
 Użytkownik: ${prompt}
 
 Odpowiedź w formacie JSON:
@@ -124,7 +124,7 @@ ZASADY:
 
 SCHEMAT DANYCH: ${schema_prompt}
 
-AKTUALNY STAN BAZY: ${stan}
+AKTUALNY STAN BAZY: ${context_data}
 
 UŻYTKOWNIK: ${prompt}
 
@@ -161,7 +161,7 @@ SCHEMAT DANYCH (JSON):
 ${schema_prompt}
 
 AKTUALNY STAN BAZY:
-${stan}
+${context_data}
 
 PRZYKŁADY UCZĄCE:
 ${examples_train.map(train => `
@@ -191,7 +191,7 @@ Wykaz \ref{wyk:few-shot} przedstawia szablon zapytania. Fragmenty ujęte w nawia
     \item \textbf{Definicja schematu danych:} sekcja \texttt{\{schema\_prompt\}} zawiera kompletny opis struktury \textsf{JSON} dla wybranej końcówki, określający wymagane i opcjonalne pola oraz typy danych. Dzięki temu model ma pełną wiedzę o formacie odpowiedzi, jednocześnie ograniczając konieczność przetwarzania informacji niezwiązanych z bieżącym zapytaniem użytkownika.
     \item \textbf{Instrukcja zadania:} jasne polecenie sugeruje modelowi wygenerowanie obiektu \textsf{JSON} w oparciu o opis użytkownika oraz dane ze stanu bazy, bez dodawania pól ani wartości spoza schematu. Model ma również korzystać z dostępnych danych referencyjnych w bazie przy wypełnianiu powiązań. W początkowej fazie eksperymentów liczba przykładów została ograniczona do stałej wartości dwóch dla każdej końcówki API. Wynikało to z dużego rozmiaru konstrukcji zapytania oraz chęci zachowania stabilności okna kontekstowego. Dokładniejszą analizę wpływu liczby przykładów na jakość odpowiedzi przeprowadzono w sekcji \ref{subsec:wybor_przykladow} \nameref{subsec:wybor_przykladow}.
     \item \textbf{Przykłady uczące:} sekcja iteracyjnie wstawiająca pary \texttt{\{train\_prompt\}} i \texttt{\{train\_json\}}. Te przykłady służą jako wzorzec poprawnego mapowania opisów użytkownika na struktury \textsf{JSON}, pomagając modelowi uniknąć błędów logicznych i halucynacji przy generowaniu nowych zapytań.
-    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{stan\}} przekazuje bieżące informacje o obiektach systemu (np. konie, kowale, weterynarze), które mogą być wykorzystywane do wypełniania powiązań i wartości w generowanym \textsf{JSON}.
+    \item \textbf{Aktualny stan bazy danych:} sekcja \texttt{\{context\_data\}} przekazuje bieżące informacje o obiektach systemu (np. konie, kowale, weterynarze), które mogą być wykorzystywane do wypełniania powiązań i wartości w generowanym \textsf{JSON}.
     \item \textbf{Użytkownik:} sekcja \texttt{\{prompt\}} zawiera aktualne zapytanie lub opis użytkownika, które mają zostać odwzorowane w formacie \textsf{JSON}.
 \end{description}
 
@@ -232,7 +232,7 @@ Ewolucja od pierwotnego, ogólnego zapytania do ustrukturyzowanej, warstwowej in
 \end{description}
 
 
-W kolejnej iteracji zapytania kluczową rolę odegrał \definicja{klasyfikator intencji}, szczegółowo opisany w rozdziale \ref{chapters:Klasyfikator_intencji}: \nameref{chapters:Klasyfikator_intencji}, który na podstawie zapytania użytkownika wybiera właściwy punkt końcowy REST. Dzięki temu do modelu trafiają wyłącznie fragmenty danych niezbędne do wykonania konkretnego żądania, co znacząco zmniejsza rozproszenie uwagi i ryzyko błędów. Dynamiczne zapytanie jest następnie generowany w~trzech warstwach: strukturalnej, kontekstowej i behawioralnej, z możliwością wstrzyknięcia przykładów \textit{Few-Shot}.
+W kolejnej iteracji zapytania kluczową rolę odegrał \definicja{klasyfikator intencji}, szczegółowo opisany w rozdziale \ref{chapters:05-Klasyfikator_intencji}: \nameref{chapters:05-Klasyfikator_intencji}, który na podstawie zapytania użytkownika wybiera właściwy punkt końcowy REST. Dzięki temu do modelu trafiają wyłącznie fragmenty danych niezbędne do wykonania konkretnego żądania, co znacząco zmniejsza rozproszenie uwagi i ryzyko błędów. Dynamiczne zapytanie jest następnie generowany w~trzech warstwach: strukturalnej, kontekstowej i behawioralnej, z możliwością wstrzyknięcia przykładów \textit{Few-Shot}.
 
 
 W praktyce proces przygotowania zapytania przebiega następująco:
@@ -270,10 +270,10 @@ ${correctJSON}
 
 ${EndpointRequiresContext(predictedEndpoint) ? `
 AKTUALNY STAN BAZY:
-${EndpointRequires.Horses(predictedEndpoint) ? `KONIE: ${konie}` : ''}
-${EndpointRequires.Farriers(predictedEndpoint) ? `KOWALE: ${kowale}` : ''}
-${EndpointRequires.Veterinarians(predictedEndpoint) ? `WETERYNARZE: ${weterynarze}` : ''}
-${EndpointRequires.HorsesDiseases(predictedEndpoint) ? `CHOROBY: ${chorobyText}` : ''}
+${EndpointRequires.Horses(predictedEndpoint) ? `KONIE: ${horses}` : ''}
+${EndpointRequires.Farriers(predictedEndpoint) ? `KOWALE: ${farriers}` : ''}
+${EndpointRequires.Veterinarians(predictedEndpoint) ? `WETERYNARZE: ${veterinarians}` : ''}
+${EndpointRequires.HorsesDiseases(predictedEndpoint) ? `CHOROBY: ${HorsesDiseases}` : ''}
 ` : ''}
 
 DZISIEJSZA DATA: ${new Date().toLocaleDateString("pl-PL")}
@@ -416,7 +416,7 @@ ${correctJSON}
 `).join('\n')}
 
 KONIE: 
-${konie}
+${horses}
 
 UŻYTKOWNIK:
 ${prompt}
@@ -424,7 +424,7 @@ ${prompt}
 WYNIK:
 Zwróć wyłącznie unikalny identyfikator zwierzęcia istniejącego w bazie:
 {
-    "id_konia": "<wyekstrahowany_id>"
+    "id_konia": "<id_konia_w_bazie_danych>"
 }
 \end{lstlisting}
 
@@ -448,7 +448,7 @@ ${correctJSON}
 `).join('\n')}
 
 AKTUALNY STAN BAZY:
-Choroby konia (dla id_konia = ${wyekstrahowany_id}): ${chorobyFiltr}
+Choroby konia (dla id_konia = ${horse_id}): ${horseDiseasesFiltered}
 
 UŻYTKOWNIK: ${prompt}
 
@@ -457,7 +457,7 @@ Zwróć obiekt JSON zawierający:
 {
     "endpoint": "api/wydarzenia/leczenia",
     "data": {
-        "id_konia": "<wyekstrahowany_id>",
+        "id_konia": "<id_konia>",
         "id_choroby": "<wybrany_id_choroby>",
         "procedura": "<opis_leczenia>",
         "data": "<data_operacji>"
@@ -518,9 +518,9 @@ ${correctJSON}
 
 ${EndpointRequiresContext(predictedEndpoint) ? `
 AKTUALNY STAN BAZY:
-${EndpointRequires.Horses(predictedEndpoint) ? `KONIE: ${konie}` : ''}
-${EndpointRequires.Farriers(predictedEndpoint) ? `KOWALE: ${kowale}` : ''}
-${EndpointRequires.Veterinarians(predictedEndpoint) ? `WETERYNARZE: ${weterynarze}` : ''}
+${EndpointRequires.Horses(predictedEndpoint) ? `KONIE: ${horses}` : ''}
+${EndpointRequires.Farriers(predictedEndpoint) ? `KOWALE: ${farriers}` : ''}
+${EndpointRequires.Veterinarians(predictedEndpoint) ? `WETERYNARZE: ${veterinarians}` : ''}
 ` : ''}
 
 UŻYTKOWNIK: ${prompt}
