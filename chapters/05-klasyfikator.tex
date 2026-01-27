@@ -143,16 +143,16 @@ Krytyczna analiza zachowania modelu pozwoliła na uproszczenie logiki decyzyjnej
 
 W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu \definicja{Moje Konie}, przeprowadzono serię testów ewaluacyjnych. Do eksperymentu przyjęto zbiór danych podzielony na:
 \begin{description}
-	\item[Bazę wiedzy:] 60 reprezentatywnych przykładów, pełniących rolę kotwic (\english{anchors}).
+	\item[Bazę wiedzy:] 60 reprezentatywnych przykładów, pełniących funkcję kotwic (\english{anchors}).
 	\item[Zbiór testowy:] 40 unikalnych, nieznanych modelowi przykładów.
 \end{description}
 
-Dane były generowane ręcznie przez uczestników projektów, którzy na podstawie swojego doświadczenia z hodowcami koni próbowali odtworzyć ich sposób mówienia jednocześnie zapewniając, że przykłady spełniają podstawowe wymagania systemu. Zależalo nam, że nasz zbiór danych pokrywał różny poziom formalności przekazywanai informacji stąd np. w końcówce \texttt{api/wydarzenia/\allowbreak{}rozrody} znajdują się przykłady takie jak:
+Dane były generowane ręcznie przez uczestników projektu, którzy na podstawie swojego doświadczenia z hodowcami koni próbowali odtworzyć ich sposób mówienia, jednocześnie zapewniając, że przykłady spełniają podstawowe wymagania systemu. Zależało nam, że nasz zbiór danych pokrywał różny poziom formalności przekazywanai informacji stąd np. w końcówce \texttt{api/wydarzenia/\allowbreak{}rozrody} znajdują się przykłady takie jak:
 
 \begin{itemize}
     \item ,,Dino miał dzisiaj sprawdzanie źrebności. Alicja powiedziała, że wszystko było ok'',
     \item ,,Dodaj proszę informację, że klacz Bella była dziś inseminowana przez dr Kowalską'',
-    \item ,,Wczoraj Tomek inseminował mi Lasera''.
+    \item ,,Wczoraj Tomek podkuł Lasera''.
 \end{itemize}
 Dane zostały przygotowane w formacie JSON, gdzie dla każdej końcówki przypisana jest lista zdań.
 
@@ -171,27 +171,22 @@ W klasycznym algorytmie k-NN dochodzi do sytuacji spornych, gdzie dwie lub więc
 %
 gdzie $N_c$ to zbiór sąsiadów należących do spornej klasy $c$, a $\vec{x}$ to wektor zapytania. Takie podejście premiuje klasę, której przykłady znajdują się ,,semantycznie bliżej'' zapytania użytkownika.
 W~ramach eksperymentu przeprowadzono ewaluację algorytmu k-NN dla wartości parametru $k$~w~zakresie od 1 do 20 dla pełnego zbioru danych. Wyniki uzyskane dla zbioru testowego przedstawiono na Rysunku~\ref{fig:knn_eval}.
-% Sprawdzic formatowanie/ odniesienie od rysunku
 
-% MIEJSCE NA WYKRES
 \begin{figure}%[H]
     \centering
-    % Odkomentuj poniższą linię po dodaniu pliku graficznego o nazwie 'wykres_knn.png'
     \includegraphics[width=0.9\textwidth]{public/wykres_knn.png} 
-    \caption{Ewaluacja parametru k (k-NN) -- dokładność (\english{accuracy}) oraz F1-makro (\english{F1-macro}). Najlepsze wyniki uzyskano dla $k=4$.
-    Czerwonymi okręgami zaznaczono pięc najlepszych wyników pod względem dokładności.}
+    \caption{Ewaluacja parametru k (k-NN) -- dokładność (\english{accuracy}) oraz F1-makro (\english{F1-macro}). Najlepsze wyniki uzyskano dla $k=4$.
+    Czerwonymi okręgami zaznaczono pięć najlepszych wyników pod względem dokładności.}
     \label{fig:knn_eval}
 \end{figure}
 
 % TODO - wykres jako wykres + odwołania i opis
 % TODO - tabelka jako tabelka
 
-Eksperyment wykazał, że najwyższą dokładność uzyskano dla parametru $k \in \{4, 5, 6, 8, 12\}$. Należy jednak zaznaczyć, że rozpiętość wyników dokładności wyniosła ok. $0{,}05$, co przy ograniczonej liczebności zbioru testowego ($40$ przykładów na końcówkę) nakazuje zachować ostrożność w~interpretacji istotności tych różnic. 
+Eksperyment wykazał, że najwyższą dokładność uzyskano dla parametru $k \in \{4, 5, 6, 8, 12\}$. Należy jednak zaznaczyć, że rozpiętość wyników dokładności wyniosła ok. $0{,}05$, co przy ograniczonej liczebności zbioru testowego ($40$ przykładów na końcówkę) nakazuje zachować ostrożność w~interpretacji istotności tych różnic. 
 
-% Tekst główny
 Dodatkowo, dla tego samego zbioru danych, zweryfikowano podejście oparte na centroidach. Metoda ta niespodziewanie osiągnęła najwyższe wyniki zarówno pod względem dokładności, jak i~miary F1, co przedstawiono w Tabeli~\ref{tab:top_configurations}.
 
-% Tabela
 \begin{table}[H]
     \centering
     \caption{6 najlepszych konfiguracji wg. dokładności.}
@@ -214,8 +209,6 @@ Dodatkowo, dla tego samego zbioru danych, zweryfikowano podejście oparte na cen
         \hline
     \end{tabular}
 \end{table}
-
-% Sprawdzic czy tabelka sie dobrze zrobiła
 
 \subsection{Regularyzacja modelu poprzez zespołowe głosowanie}
 
@@ -255,7 +248,6 @@ Zastosowana strategia znajduje uzasadnienie w teorii uczenia zespołowego. Jak w
 
 Ewaluacja końcowa modelu zespołowego (\english{ensemble}) wykazała wyniki przedstawione w~Tabeli~\ref{tab:final_results}. Choć są one marginalnie niższe w porównaniu do najlepszych konfiguracji pojedynczych (Tabela~\ref{tab:top_configurations}), spadek ten uznano za pomijalny koszt regularyzacji. Zwiększona stabilność predykcji daje bowiem silniejsze podstawy do prognozowania wysokiej skuteczności systemu w~środowisku produkcyjnym.
 
-% Tabela
 \begin{table}[H]
     \centering
     \caption{Wyniki końcowe modelu zespołowego (\english{ensemble}) po regularyzacji}
@@ -279,10 +271,8 @@ Ewaluacja końcowa modelu zespołowego (\english{ensemble}) wykazała wyniki prz
 
 Ostateczną weryfikację skuteczności wdrożonego rozwiązania stanowi analiza macierzy pomyłek (\english{confusion matrix}), przedstawionej na Rysunku~\ref{fig:macierz_pomylek}. Pozwala ona nie tylko na ocenę globalnej precyzji, ale przede wszystkim na zidentyfikowanie semantycznych ,,obszarów ryzyka'', w których model ma trudności z poprawną separacją klas.
 
-% MIEJSCE NA macierz
 \begin{figure}%[H]
     \centering
-    % Upewnij się, że ścieżka do pliku jest poprawna
     \includegraphics[width=0.9\textwidth]{public/macierz_pomylek.png} 
     \caption{Macierz pomyłek dla finalnego modelu w środowisku produkcyjnym.}
     \label{fig:macierz_pomylek}
