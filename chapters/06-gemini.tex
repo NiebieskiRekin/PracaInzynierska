@@ -470,7 +470,7 @@ Zastosowanie opisanej wieloetapowej orkiestracji, przedstawionej w Wykazach \ref
 
 Tak skonstruowany, inteligentny, wieloetapowy proces przetwarzania danych eliminuje potrzebę jednoczesnego przekazywania pełnego stanu bazy do modelu, co w pierwotnym podejściu prowadziło do halucynacji i błędów referencyjnych. Rozdzielenie zadań na wyraźne fazy zwiększa szansę na uzyskanie poprawnych wyników, zgodnych ze schematem JSON struktur oraz pozwala zachować pełną integralność bazy danych, przy jednoczesnym utrzymaniu naturalnego, konwersacyjnego interfejsu użytkownika.
 
-Efektywność tej strategii potwierdzają wyniki eksperymentalne dla końcówki \texttt{api/wydarzenia/\allowbreak{}leczenia}, przedstawione w Tabeli \ref{tab:wyniki_leczenia}. Zastosowanie wieloetapowej orkiestracji pozwoliło zwiększyć średnią precyzję z $0{,}70$ do $0{,}86$ oraz efektywność z $0{,}72$ do $0{,}95$. Wzrost tych wartości wskazuje, że model znacznie rzadziej popełniał błędy w przypisywaniu procedur medycznych do istniejących rekordów chorób, a generowane obiekty JSON były w większości przypadków poprawne i zgodne ze schematem.
+Efektywność tej strategii potwierdzają wyniki eksperymentalne dla końcówki \texttt{api/wydarzenia/\allowbreak{}leczenia}, przedstawione w Tabeli \ref{tab:wyniki_leczenia}. Zastosowanie wieloetapowej orkiestracji pozwoliło zwiększyć średnią precyzję z $0{,}70$ do $0{,}86$ oraz efektywność z $0{,}72$ do $0{,}88$. Wzrost tych wartości wskazuje, że model znacznie rzadziej popełniał błędy w przypisywaniu procedur medycznych do istniejących rekordów chorób, a generowane obiekty JSON były w większości przypadków poprawne i zgodne ze schematem.
 
 \begin{table}[h!]
 \centering
@@ -480,7 +480,7 @@ Efektywność tej strategii potwierdzają wyniki eksperymentalne dla końcówki 
 \hline
 \textbf{Podejście} & \textbf{Sr. Prezycja} & \textbf{Efektywność} \\ \hline
 Zapytanie jednokrokowe & 0,70 & 0,72 \\ \hline
-Wieloetapowa orkiestracja & 0,86 & 0,95 \\ \hline
+Wieloetapowa orkiestracja & 0,86 & 0,88 \\ \hline
 \end{tabular}
 \end{table}
 
