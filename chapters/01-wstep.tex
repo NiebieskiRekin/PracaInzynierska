@@ -1,10 +1,11 @@
 \chapter{Wstęp}
+\label{chapters:01-wstep}
 
-Postęp technologiczny w zakresie sztucznej inteligencji oraz \definicja{przetwarzania języka naturalnego} (\akronim{NLP}, \english{Natural Language Processing}) sprawia, że interakcja człowieka z komputerem staje się coraz bardziej intuicyjna. Jak zauważył Alan Turing już w 1950 roku \cite{turing1950}: „Maszyna może być uznana za inteligentną, jeśli jej odpowiedzi są nieodróżnialne od odpowiedzi człowieka”. Dziś wizja ta znajduje odzwierciedlenie w systemach zdolnych do interpretacji ludzkich wypowiedzi i podejmowania działań w oparciu o ich znaczenie.
+Postęp technologiczny w zakresie sztucznej inteligencji oraz \definicja{przetwarzania języka naturalnego} (\akronim{NLP}, \english{Natural Language Processing}) sprawia, że interakcja człowieka z komputerem staje się coraz bardziej intuicyjna. Jak zauważył Alan Turing już w 1950 roku \cite{turing1950}: „Maszyna może być uznana za inteligentną, jeśli jej odpowiedzi są nieodróżnialne od odpowiedzi człowieka”. Dziś wizja ta znajduje odzwierciedlenie w systemach zdolnych do interpretacji ludzkich wypowiedzi i~podejmowania działań w oparciu o ich znaczenie.
 
 Inspiracją do podjęcia niniejszego tematu była obserwacja potrzeb środowiska hodowców koni –- grupy zawodowej, która mimo dużego doświadczenia praktycznego często cechuje się niskim stopniem zinformatyzowania. Pomysł stworzenia aplikacji zrodził się z rozmowy z jednym z hodowców, wujkiem członka zespołu, który zwrócił uwagę na brak narzędzi umożliwiających wygodne zarządzanie stadniną. Zidentyfikowany problem oraz szybki rozwój technologii NLP doprowadziły do koncepcji stworzenia aplikacji sterowanej językiem naturalnym.
 
-Celem projektu stało się opracowanie systemu webowego umożliwiającego zarządzanie stadniną koni oraz obsługę aplikacji poprzez komendy w języku naturalnym. Tego rodzaju rozwiązanie może istotnie obniżyć próg wejścia dla użytkowników nieposiadających kompetencji technicznych, a jednocześnie stanowić przykład praktycznego wykorzystania nowoczesnych modeli językowych w rzeczywistym środowisku.
+Celem projektu stało się opracowanie systemu webowego umożliwiającego zarządzanie stadniną koni oraz obsługę aplikacji poprzez komendy w języku naturalnym. Tego rodzaju rozwiązanie może istotnie obniżyć próg wejścia dla użytkowników nieposiadających kompetencji technicznych, a jednocześnie stanowić przykład praktycznego wykorzystania nowoczesnych modeli językowych w~rzeczywistym środowisku.
 
 Zakres pracy obejmuje analizę problemu, zaprojektowanie i implementację aplikacji webowej \definicja{Moje Konie}, stworzenie klasyfikatora intencji użytkownika, a także opracowanie metody automatycznego generowania zapytań REST na podstawie wypowiedzi naturalnych. Zakres czasowy pracy obejmował pełny cykl wytwarzania oprogramowania –- od analizy wymagań, poprzez implementację i integrację, aż po testy oraz ocenę skuteczności zastosowanych metod.
 
@@ -20,20 +21,14 @@ Celem pracy jest opracowanie aplikacji webowej \definicja{Moje Konie} wykorzystu
 
 	Struktura pracy jest następująca:
 	\begin{description}
-		\item[Rozdział~1] przedstawia przegląd literatury dotyczącej przetwarzania języka naturalnego oraz systemów interakcji człowiek–komputer.
-		\item[Rozdział~2] opisuje projekt i implementację serwerowej części aplikacji do zarządzania stadniną koni.
-		\item[Rozdział~3] zawiera opracowanie i ocenę eksperymentalną klasyfikatora intencji użytkownika.
-		\item[Rozdział~4] opisuje metodę wypełniania żądań REST na podstawie wypowiedzi użytkownika przy użyciu dużego modelu językowego.
-		\item[Rozdział~5] prezentuje integrację opracowanych modułów w aplikacji \definicja{Moje Konie}.
-		\item[Rozdział~6] zawiera podsumowanie oraz wnioski z przeprowadzonej pracy.
+		\item[Rozdział~\ref{chapters:02-teoria} \nameref{chapters:02-teoria}] przedstawia przegląd literatury dotyczącej przetwarzania języka naturalnego oraz systemów interakcji człowiek-komputer.
+		\item[Rozdział~\ref{chapters:03-architektura} \nameref{chapters:03-architektura}] opisuje projekt i implementację serwerowej części aplikacji do zarządzania stadniną koni.
+		\item[Rozdział~\ref{chapters:04-front} \nameref{chapters:04-front}] prezentuje integrację opracowanych modułów w aplikacji \definicja{Moje Konie}.
+		\item[Rozdział~\ref{chapters:05-Klasyfikator_intencji} \nameref{chapters:05-Klasyfikator_intencji}] zawiera opracowanie i ocenę eksperymentalną klasyfikatora intencji użytkownika.
+		\item[Rozdział~\ref{chapters:06-gemini} \nameref{chapters:06-gemini}] opisuje metodę wypełniania żądań REST na podstawie wypowiedzi użytkownika przy użyciu dużego modelu językowego.
+		\item[Rozdział~\ref{chapters:07-podsumowanie} \nameref{chapters:07-podsumowanie}] zawiera podsumowanie oraz wnioski z przeprowadzonej pracy.
 	\end{description}
 
-	% TODO: Poprawić ostatecznie opisy rozdziałów, dodać je w formie linków.
+	Tomasz Pawłowski opracował architekturę systemu oraz był odpowiedzialny za implementację części serwerowej aplikacji, opisanych w rozdziale \ref{chapters:03-architektura}: \nameref{chapters:03-architektura}. Jakub Buler pełnił funkcję głównego programisty, odpowiadając za implementację i integrację aplikacji webowej, przedstawionej w rozdziale \ref{chapters:04-front}: \nameref{chapters:04-front}. Adam Detmer, jako kierownik projektu, zajmował się analizą biznesową, zarządzaniem zadaniami zespołu oraz opracowaniem klasyfikatora intencji użytkownika, przedstawionego w rozdziale \ref{chapters:05-Klasyfikator_intencji}: \nameref{chapters:05-Klasyfikator_intencji}. Jakub Kamieniarz odpowiadał za przygotowanie modułu generowania żądań REST z wykorzystaniem modelu językowego Gemini~2.5~Flash opisanym w rozdziale \ref{chapters:06-gemini}: \nameref{chapters:06-gemini}.
 
-	Tomasz Pawłowski opracował architekturę systemu oraz był odpowiedzialny za implementację części serwerowej aplikacji. Jakub Buler pełnił funkcję głównego programisty, odpowiadając za implementację i integrację aplikacji webowej. Adam Detmer, jako kierownik projektu, zajmował się analizą biznesową, zarządzaniem zadaniami zespołu oraz opracowaniem klasyfikatora intencji użytkownika. Jakub Kamieniarz odpowiadał za przygotowanie modułu generowania żądań REST z wykorzystaniem modelu językowego Gemini~2.5~Flash.
-
-	% TODO: Dobrze by było to powiązać z fragmentami pracy dyplomowej. Np. T.P. opracował architekturę systemu, opisaną w rozdziale 3.14 oraz był odpowiedzialny za implementację części serwerowej aplikacji, opisaną w rozdziale 2.72.
-	
-	% TODO: rozdzielić do osobnego pliku
-	% TODO: poprawić wcięcia
 	

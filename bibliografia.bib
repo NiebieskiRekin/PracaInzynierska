@@ -1,56 +1,8 @@
-@String{pub-AW          = "Ad{\-d}i{\-s}on-Wes{\-l}ey"}
-@String{pub-AW:adr      = "Reading, MA, USA"}
-
-@Book{Knuth1986,
-  author =       "Donald E. Knuth",
-  title =        "The {\TeX}book",
-  publisher =    pub-AW,
-  address =      pub-AW:adr,
-  year =         "1986",
-  series =       "Computers and Typesetting",
-  ISBN =         "0-201-13447-0",
-  LCCN =         "Z253.4.T47 K58 1986",
-  pages =        "ix + 483",
-  bibdate =      "Wed Dec 15 10:36:52 1993",
-}
-
-@Book{Lamport1985,
-  author =       "Leslie Lamport",
-  title =        "{\LaTeX} --- A Document Preparation System ---
-                 User's Guide and Reference Manual",
-  publisher =    pub-AW,
-  address =      pub-AW:adr,
-  year =         "1985",
-  ISBN =         "0-201-15790-X",
-  LCCN =         "Z253.4.L38 L35 1986",
-  pages =        "xiv + 242",
-  bibdate =      "Wed Dec 15 10:38:04 1993",
-}
-
-@misc{Drozdowski2006,
-  author = "Maciej Drozdowski",
-  title = "Jak pisać prace dyplomowe -- uwagi o formie",
-  howpublished = "[on-line] \url{http://www.cs.put.poznan.pl/mdrozdowski/dyd/txt/jak_mgr.html}",
-  year = {2006},
-}
-
-@book{TODO,
-  author    = {Placeholder},
-  title     = {Placeholder},
-  publisher = {Placeholder},
-  year      = {2026}
-}
-
-// POWYŻSZE SĄ Z SZABLONU
-@article{zhou2023comprehensive,
-author = {Zhou, Y. and Li, X. and Wang, H.},
-title = {A Comprehensive Survey on Prompting Techniques for Large Language Models},
-journal = {ACM Computing Surveys},
-year = {2023},
-volume = {56},
-number = {3},
-pages = {1--42},
-doi = {10.1145/3594067}
+@article{liu2023prompting,
+  title={Prompting frameworks for large language models: A survey},
+  author={Liu, Xiaoxia and Wang, Jingyi and Sun, Jun and Yuan, Xiaohan and Dong, Guoliang and Di, Peng and Wang, Wenhai and Wang, Dongxia},
+  journal={arXiv preprint arXiv:2311.12785},
+  year={2023}
 }
 
 @article{turing1950,
@@ -146,22 +98,24 @@ doi = {10.1145/3594067}
   year      = {2021}
 }
 
-@techreport{deepmind2025gemini,
-  author    = {Google DeepMind},
-  title     = {Gemini 2.5 Technical Report},
-  year      = {2025},
-  institution = {Google DeepMind}
+@article{deepmind2025gemini,
+  title={{Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities}},
+  author={Comanici, Gheorghe and Bieber, Eric and Schaekermann, Mike and Pasupat, Ice and Sachdeva, Noveen and Dhillon, Inderjit and Blistein, Marcel and Ram, Ori and Zhang, Dan and Rosen, Evan and others},
+  journal={arXiv preprint arXiv:2507.06261},
+  year={2025},
+  howpublished = {\url{https://storage.googleapis.com/deepmind-media/gemini/gemini_v2_5_report.pdf}}
 }
 
 @article{ouyang2022training,
-  author    = {Ouyang, Long and Wu, Jeff and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Gao, Luke and Semenov, Piotr and Snell, Charlie and Fridman, Josh and Sigler, Eric and Gray, Mateusz and Chess, Devin and Clark, Jack and Ziegler, Daniel M. and Brown, Tom and Kaplan, Jared and McLeavey, Christine and Zaremba, Wojciech},
-  title     = {Training Language Models to Follow Instructions with Human Feedback},
-  journal   = {arXiv preprint arXiv:2203.02155},
-  year      = {2022}
+  title={Training language models to follow instructions with human feedback},
+  author={Ouyang, Long and Wu, Jeffrey and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and others},
+  howpublished = {arXiv preprint arXiv:2203.02155},
+  journal={Advances in neural information processing systems},
+  year={2022}
 }
 
 @article{liu2023pre,
-  author    = {Liu, Pengfei and Yuan, Weizhe and Fu, Tianjian and Jiang, Zhe and Hayashi, Hiroaki and Neubig, Graham},
+  author    = {Liu, Pengfei and Yuan, Weizhe and Fu, Jinlan and Jiang, Zhengbao and Hayashi, Hiroaki and Neubig, Graham},
   title     = {Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing},
   journal   = {ACM Computing Surveys},
   year      = {2023},
@@ -178,12 +132,12 @@ doi = {10.1145/3594067}
   address   = {Cambridge}
 }
 
-@book{jurafsky2023,
-  author    = {Jurafsky, Dan and Martin, James H.},
-  title     = {Speech and Language Processing},
-  publisher = {Stanford University Press},
-  year      = {2023},
-  note      = {(3rd ed. draft)}
+@Book{jurafsky2023,
+  author = {Daniel Jurafsky and James H. Martin},
+  title = {Speech and Language Processing: An Introduction to Natural Language Processing, Computational Linguistics, and Speech Recognition, with Language Models},
+  year = {2026},
+  howpublished = {\url{https://web.stanford.edu/~jurafsky/slp3/}},
+  edition = {3rd}
 }
 
 @inproceedings{reimers2019,
@@ -193,18 +147,13 @@ doi = {10.1145/3594067}
   year      = {2019}
 }
 
-@misc{liu2023,
-  author    = {Liu, Nelson F. and others},
-  title     = {Lost in the Middle: How Language Models Use Long Contexts},
-  howpublished = {arXiv preprint arXiv:2307.03172},
-  year      = {2023}
-}
-
-@article{jimenez2022,
-  author    = {Jimenez Guirao, J. L. and others},
-  title     = {{RAG} vs Fine-tuning: Optimizing {LLMs} for Specific Domains},
-  journal   = {Journal of AI Research},
-  year      = {2022}
+@article{liu2023,
+  title={Lost in the middle: How language models use long contexts},
+  author={Liu, Nelson F. and others},
+  journal={Transactions of the association for computational linguistics},
+  volume={12},
+  pages={157--173},
+  year={2024}
 }
 
 @misc{wang2022,
@@ -233,11 +182,12 @@ doi = {10.1145/3594067}
 }
 
 @book{goodfellow2016,
-  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
-  title     = {Deep Learning},
-  publisher = {MIT Press},
-  year      = {2016},
-  note      = {Chapter 7: Regularization for Deep Learning}
+    title={Deep Learning},
+    author={Ian Goodfellow and Yoshua Bengio and Aaron Courville},
+    publisher={MIT Press},
+    howpublished = {\url{http://www.deeplearningbook.org}},
+    note = {Chapter 7: Regularization for Deep Learning},
+    year={2016}
 }
 
 @incollection{dietterich2000,
