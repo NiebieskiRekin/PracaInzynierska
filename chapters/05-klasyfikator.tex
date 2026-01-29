@@ -60,8 +60,8 @@ Głównym założeniem tej zmiany było przeniesienie ciężaru klasyfikacji na 
 	\item[Separację logiki:] Wyodrębnienie klasyfikatora pozwoliło na precyzyjne dostrajanie procesu wykrywania intencji (np. poprzez wykorzystanie algorytmu k-NN i doborze jego hiperparemetrów) niezależnie od warstwy generatywnej.
 \end{description}
 
-Wdrożenie tej separacji umożliwiło nam zbadanie, jak klasyczne metody uczenia maszynowego operujące na wektorach semantycznych radzą sobie z branżowym słownictwem.
-Nasz problem jednak wciąż wiązał się z:
+Wdrożenie tej separacji umożliwiło zbadanie, jak klasyczne metody uczenia maszynowego operujące na wektorach semantycznych radzą sobie z branżowym słownictwem.
+Problem jednak wciąż wiązał się z:
 
 \begin{description}
     \item[Niejasnością i skrótowością:] Krótkie komunikaty wysyłane w pośpiechu (np. ,,kowal u Gwiazdy'') wymuszają na systemie automatyczne rozpoznanie, że chodzi o wizytę kowala i przypisanie jej do konkretnego konia, co bez zrozumienia kontekstu branżowego byłoby niemożliwe.
@@ -147,12 +147,12 @@ W celu empirycznego wyznaczenia optymalnej konfiguracji dla systemu \definicja{M
 	\item[Zbiór testowy:] 40 unikalnych, nieznanych modelowi przykładów.
 \end{description}
 
-Dane były generowane ręcznie przez uczestników projektu, którzy na podstawie swojego doświadczenia z hodowcami koni próbowali odtworzyć ich sposób mówienia, jednocześnie zapewniając, że przykłady spełniają podstawowe wymagania systemu. Zależało nam, że nasz zbiór danych pokrywał różny poziom formalności przekazywania informacji stąd np. w końcówce \texttt{api/wydarzenia/\allowbreak{}rozrody} znajdują się przykłady takie jak:
+Dane były generowane ręcznie przez uczestników projektu, którzy na podstawie swojego doświadczenia z hodowcami koni próbowali odtworzyć ich sposób mówienia, jednocześnie zapewniając, że przykłady spełniają podstawowe wymagania systemu. Ważnym aspektem było, aby zbiór danych pokrywał różny poziom formalności przekazywania informacji stąd np. w końcówce \texttt{api/wydarzenia/\allowbreak{}rozrody} znajdują się przykłady takie jak:
 
 \begin{itemize}
     \item ,,Dino miał dzisiaj sprawdzanie źrebności. Alicja powiedziała, że wszystko było ok'',
     \item ,,Dodaj proszę informację, że klacz Bella była dziś inseminowana przez dr Kowalską'',
-    \item ,,Wczoraj Tomek podkuł Lasera''.
+    \item ,,Wczoraj Tomek uczestniczył przy wyźrebieniu Giny''.
 \end{itemize}
 Dane zostały przygotowane w formacie JSON, gdzie dla każdej końcówki przypisana jest lista zdań.
 
@@ -216,13 +216,13 @@ W uczeniu maszynowym regularyzacja jest procesem wprowadzania dodatkowych ograni
 
 \begin{itemize}
     \item Dla małych wartości $k$ (np. $k=1$), model wykazuje wysoką wariancję i jest nadmiernie wrażliwy na szum.
-    \item Dla dużych wartości $k$, następuje wzrost obciążenia (\textit{bias}) i zjawisko niedouczenia (\textit{underfitting}).
+    \item Dla dużych wartości $k$, następuje wzrost obciążenia (\english{bias}) i zjawisko niedouczenia (\english{underfitting}).
 \end{itemize}
 
 
-W celu optymalizacji kompromisu między obciążeniem a wariancją (\textit{bias-variance tradeoff}), w~architekturze systemu \definicja{Moje Konie} zrezygnowano z deterministycznego wyboru pojedynczej wartości parametru $k$ na rzecz podejścia zespołowego (\english{ensemble learning}). Skonstruowany model finalny funkcjonuje jako komitet klasyfikatorów $\mathcal{M}$, w skład którego wchodzą algorytmy $k$-NN dla $k \in \{4, 5, 6, 8, 12\}$ oraz klasyfikator oparty na centroidach kategorii.
+W celu optymalizacji kompromisu między obciążeniem a wariancją (\english{bias-variance tradeoff}), w~architekturze systemu \definicja{Moje Konie} zrezygnowano z deterministycznego wyboru pojedynczej wartości parametru $k$ na rzecz podejścia zespołowego (\english{ensemble learning}). Skonstruowany model finalny funkcjonuje jako komitet klasyfikatorów $\mathcal{M}$, w skład którego wchodzą algorytmy $k$-NN dla $k \in \{4, 5, 6, 8, 12\}$ oraz klasyfikator oparty na centroidach kategorii.
 
-Ostateczna decyzja klasyfikacyjna podejmowana jest w procedurze głosowania większościowego (\textit{majority voting}). Formalnie, wybór końcowej intencji $I_{final}$ definiuje się jako zadanie poszukiwania argumentu maksymalizującego liczbę wskazań w całym zespole:
+Ostateczna decyzja klasyfikacyjna podejmowana jest w procedurze głosowania większościowego (\english{majority voting}). Formalnie, wybór końcowej intencji $I_{final}$ definiuje się jako zadanie poszukiwania argumentu maksymalizującego liczbę wskazań w całym zespole:
 
 \begin{equation}
     I_{final} = \argmax_{i \in \text{Intencje}} \sum_{m \in \mathcal{M}} \mathbbm{1}(P_m(q) = i)
@@ -235,7 +235,7 @@ gdzie:
     \item $\mathbbm{1}(\cdot)$ -- funkcja wskaźnikowa przyjmująca wartość 1, gdy warunek jest spełniony.
 \end{itemize}
 
-W sytuacjach spornych, gdy co najmniej dwie intencje uzyskają identyczną liczbę głosów, algorytm aplikuje heurystykę rozstrzygającą (\textit{tie-breaker}). Polega ona na porównaniu skumulowanej wiarygodności (\textit{confidence score}), obliczanej jako suma podobieństw cosinusowych zwróconych przez te modele z komitetu, które wskazały daną klasę:
+W sytuacjach spornych, gdy co najmniej dwie intencje uzyskają identyczną liczbę głosów, algorytm aplikuje heurystykę rozstrzygającą (\english{tie-breaker}). Polega ona na porównaniu skumulowanej wiarygodności (\english{confidence score}), obliczanej jako suma podobieństw cosinusowych zwróconych przez te modele z komitetu, które wskazały daną klasę:
 
 \begin{equation}
     S_i = \sum_{m \in \mathcal{M}_i} \text{sim}(q, \text{ref}_m)
@@ -285,7 +285,7 @@ Szczegółowa inspekcja wyników prowadzi do następujących wniosków:
     
 	\item[Nakładanie się kontekstów medycznych:] Największe rozproszenie błędów widoczne jest w~grupie intencji weterynaryjnych: \texttt{choroby}, \texttt{leczenia} oraz \texttt{zdarzenia\_profilaktyczne}. Jest to zjawisko oczekiwane, wynikające z naturalnego podobieństwa semantycznego (np. szczepienie jest zarówno procedurą medyczną, jak i elementem profilaktyki).
     
-	\item[Interferencja profilaktyki i rozrodu:] Istotnym błędem jest mylenie intencji \texttt{zdarzenia\_\allowbreak{}profi\allowbreak{}laktyczne} z \texttt{rozrodami} (5 pomyłek). Wskazuje to na konieczność doprecyzowania bazy wiedzy o frazy rozróżniające opiekę nad źrebięciem (profilaktyka) od procesów hodowlanych w kolejnych etapach rozwoju proejktu.
+	\item[Interferencja profilaktyki i rozrodu:] Istotnym błędem jest mylenie intencji \texttt{zdarzenia\_\allowbreak{}profi\allowbreak{}laktyczne} z \texttt{rozrodami} (5 pomyłek). Wskazuje to na konieczność doprecyzowania bazy wiedzy o frazy rozróżniające opiekę nad źrebięciem (profilaktyka) od procesów hodowlanych w kolejnych etapach rozwoju projektu.
 \end{description}
 
 \paragraph{Rekomendacje dla rozwoju systemu:}~\\
